@@ -197,7 +197,7 @@ def cmd_run(a):
 		from .pipeline import load_kept
 
 		n = len([t for t in load_kept(env, a.verified) if t.get('context') or not a.blind][: a.limit or None]) * a.reps  # the tasks the real run would take
-		mids = {m for _, m in MODELS.get(a.model, [])} | {resolve(a.model)[1]}  # the same model measured on any route
+		mids = {m for _, m in MODELS.get(a.model, [])} or {resolve(a.model)[1]}  # the same model measured on any route; pricing needs no key
 		past = [r for f in flows(env) for rows in load_variants(f).values() for r in rows if r.get('status') == 'ok' and any(m in r.get('model', '') for m in mids)]
 		if not past:
 			return print(f'{n} episodes on {a.model}: not measured on this env yet - run a pilot first (--limit 5) and dry-run again')
