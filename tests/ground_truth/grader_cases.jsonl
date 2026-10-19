@@ -1,0 +1,70 @@
+{"task": {"answer_type": "number", "answer": "812"}, "pred": "812", "label": true, "why": "exact number"}
+{"task": {"answer_type": "number", "answer": "812"}, "pred": "WebArena contains 812 tasks.", "label": true, "why": "number wrapped in sentence"}
+{"task": {"answer_type": "number", "answer": "812"}, "pred": "812.0", "label": true, "why": "float form"}
+{"task": {"answer_type": "number", "answer": "812"}, "pred": "about 800 or 812", "label": false, "why": "hedging with two different numbers"}
+{"task": {"answer_type": "number", "answer": "812"}, "pred": "813", "label": false, "why": "off by one, no tolerance"}
+{"task": {"answer_type": "number", "answer": "2,350"}, "pred": "2350", "label": true, "why": "thousands separator in gold"}
+{"task": {"answer_type": "number", "answer": "2350"}, "pred": "2,350 tasks", "label": true, "why": "thousands separator in pred"}
+{"task": {"answer_type": "number", "answer": "1.2 million"}, "pred": "1,200,000", "label": true, "why": "scale word in gold"}
+{"task": {"answer_type": "number", "answer": "1200000"}, "pred": "1.2M", "label": true, "why": "scale suffix in pred"}
+{"task": {"answer_type": "number", "answer": "3.5", "rel_tol": 0.05}, "pred": "3.6", "label": true, "why": "within 5% relative tolerance"}
+{"task": {"answer_type": "number", "answer": "3.5", "rel_tol": 0.01}, "pred": "3.6", "label": false, "why": "outside 1% tolerance"}
+{"task": {"answer_type": "number", "answer": "14.41%"}, "pred": "14.41", "label": true, "why": "percent sign"}
+{"task": {"answer_type": "number", "answer": "-3"}, "pred": "-3", "label": true, "why": "negative number"}
+{"task": {"answer_type": "number", "answer": "-3"}, "pred": "3", "label": false, "why": "sign matters"}
+{"task": {"answer_type": "number", "answer": "137"}, "pred": "137 websites", "label": true, "why": "unit word that is not a scale"}
+{"task": {"answer_type": "number", "answer": "5"}, "pred": "5 billion", "label": false, "why": "scale word changes magnitude"}
+{"task": {"answer_type": "number", "answer": "42"}, "pred": "The answer is 42 (see page 42)", "label": true, "why": "same number repeated is not hedging"}
+{"task": {"answer_type": "number", "answer": "42"}, "pred": "", "label": false, "why": "empty"}
+{"task": {"answer_type": "number", "answer": "42"}, "pred": "I don't know", "label": false, "why": "no answer"}
+{"task": {"answer_type": "date", "answer": "2023-07-25"}, "pred": "25 Jul 2023", "label": true, "why": "arXiv style date"}
+{"task": {"answer_type": "date", "answer": "25 Jul 2023"}, "pred": "July 25, 2023", "label": true, "why": "US long form"}
+{"task": {"answer_type": "date", "answer": "25 Jul 2023"}, "pred": "Tue, 25 Jul 2023 22:59:32 UTC", "label": true, "why": "date embedded in timestamp"}
+{"task": {"answer_type": "date", "answer": "25 Jul 2023"}, "pred": "July 25th, 2023", "label": true, "why": "ordinal suffix"}
+{"task": {"answer_type": "date", "answer": "25 Jul 2023"}, "pred": "2023-07-26", "label": false, "why": "off by one day"}
+{"task": {"answer_type": "date", "answer": "25 Jul 2023"}, "pred": "July 2023", "label": false, "why": "missing day"}
+{"task": {"answer_type": "date", "answer": "2024-09-03"}, "pred": "3 September 2024", "label": true, "why": "full month name"}
+{"task": {"answer_type": "date", "answer": "2024-09-03"}, "pred": "Sept 3, 2024", "label": true, "why": "Sept abbreviation"}
+{"task": {"answer_type": "date", "answer": "2024-09-03"}, "pred": "unknown", "label": false, "why": "no date"}
+{"task": {"answer_type": "exact", "answer": "Shuyan Zhou"}, "pred": "shuyan zhou", "label": true, "why": "case-insensitive"}
+{"task": {"answer_type": "exact", "answer": "Shuyan Zhou"}, "pred": "Shuyan Zhou.", "label": true, "why": "trailing punctuation"}
+{"task": {"answer_type": "exact", "answer": "Shuyan Zhou"}, "pred": "The first author is Shuyan Zhou", "label": false, "why": "exact does not allow wrapping sentences (use contains)"}
+{"task": {"answer_type": "exact", "answer": "Carnegie Mellon University", "aliases": ["CMU"]}, "pred": "CMU", "label": true, "why": "alias"}
+{"task": {"answer_type": "exact", "answer": "Carnegie Mellon University", "aliases": ["CMU"]}, "pred": "MIT", "label": false, "why": "wrong entity"}
+{"task": {"answer_type": "exact", "answer": "Zürich"}, "pred": "Zurich", "label": true, "why": "diacritics folded"}
+{"task": {"answer_type": "exact", "answer": "The Pile"}, "pred": "Pile", "label": true, "why": "leading article dropped"}
+{"task": {"answer_type": "exact", "answer": "v4"}, "pred": "v3", "label": false, "why": "version mismatch"}
+{"task": {"answer_type": "exact", "answer": "GPT-4"}, "pred": "gpt 4", "label": true, "why": "hyphen vs space"}
+{"task": {"answer_type": "exact", "answer": "GPT-4"}, "pred": "GPT-4o", "label": false, "why": "different model"}
+{"task": {"answer_type": "exact", "answer": "3.11"}, "pred": "3.11", "label": true, "why": "version number with dot kept"}
+{"task": {"answer_type": "exact", "answer": "3.11"}, "pred": "311", "label": false, "why": "dot is significant inside numbers"}
+{"task": {"answer_type": "contains", "answer": "Shuyan Zhou"}, "pred": "The first author is Shuyan Zhou.", "label": true, "why": "contained"}
+{"task": {"answer_type": "contains", "answer": "Zhou"}, "pred": "Zhoulander", "label": false, "why": "token boundary required"}
+{"task": {"answer_type": "contains", "answer": "WebArena"}, "pred": "VisualWebArena", "label": false, "why": "different benchmark that contains the substring"}
+{"task": {"answer_type": "set", "answer": "Reddit, GitLab, Shopping"}, "pred": "gitlab; shopping; reddit", "label": true, "why": "order and separator independent"}
+{"task": {"answer_type": "set", "answer": "Reddit, GitLab, Shopping"}, "pred": "Reddit, GitLab", "label": false, "why": "missing item"}
+{"task": {"answer_type": "set", "answer": "Reddit, GitLab, Shopping"}, "pred": "Reddit, GitLab, Shopping, Wikipedia", "label": false, "why": "extra item"}
+{"task": {"answer_type": "set", "answer": "Reddit, GitLab, Shopping"}, "pred": "Reddit, GitLab and Shopping", "label": true, "why": "and as separator"}
+{"task": {"answer_type": "set", "answer": "Reddit, GitLab, Shopping", "min_recall": 0.66}, "pred": "Reddit, GitLab", "label": true, "why": "partial recall allowed by spec"}
+{"task": {"answer_type": "set", "answer": "Reddit, GitLab, Shopping", "min_recall": 0.66}, "pred": "Reddit, GitLab, Twitter", "label": false, "why": "wrong extra item still fails"}
+{"task": {"answer_type": "set", "answer": ["Alice", "Bob"]}, "pred": "bob, alice", "label": true, "why": "list gold"}
+{"task": {"answer_type": "set", "answer": "Alice, Bob"}, "pred": "", "label": false, "why": "empty"}
+{"task": {"answer_type": "contains", "answer": "Shuyan Zhou"}, "pred": "Not Shuyan Zhou", "label": false, "why": "negated mention"}
+{"task": {"answer_type": "contains", "answer": "Shuyan Zhou"}, "pred": "It is not Shuyan Zhou, it is Frank Xu", "label": false, "why": "negated mention mid-sentence"}
+{"task": {"answer_type": "contains", "answer": "Shuyan Zhou"}, "pred": "Shuyan Zhou or Frank Xu", "label": false, "why": "hedging between alternatives"}
+{"task": {"answer_type": "contains", "answer": "Shuyan Zhou"}, "pred": "Shuyan Zhou and Frank F. Xu are listed; the first author is Shuyan Zhou", "label": true, "why": "extra context but committed answer"}
+{"task": {"answer_type": "exact", "answer": "Shuyan Zhou"}, "pred": "Shuyan Zhou or Frank Xu", "label": false, "why": "hedging under exact"}
+{"task": {"answer_type": "date", "answer": "2024-03-09"}, "pred": "03/09/2024", "label": true, "why": "numeric slash dates are read as US MM/DD"}
+{"task": {"answer_type": "date", "answer": "2024-09-03"}, "pred": "03/09/2024", "label": false, "why": "ambiguous DD/MM form is not accepted; tasks ask for unambiguous dates"}
+{"task": {"answer_type": "exact", "answer": "Москва"}, "pred": "Санкт-Петербург", "label": false, "why": "non-Latin scripts must not normalize to empty"}
+{"task": {"answer_type": "exact", "answer": "東京"}, "pred": "東京", "label": true, "why": "non-Latin exact match"}
+{"task": {"answer_type": "exact", "answer": "東京"}, "pred": "大阪", "label": false, "why": "different non-Latin answer"}
+{"task": {"answer_type": "contains", "answer": "Paris"}, "pred": "Paris, Lyon, Berlin, Rome", "label": false, "why": "hedged candidate list"}
+{"task": {"answer_type": "contains", "answer": "Paris"}, "pred": "Paris and Lyon", "label": false, "why": "hedged with and"}
+{"task": {"answer_type": "date", "answer": "2020-01-01"}, "pred": "2020-01-01 or 2021-05-05", "label": false, "why": "hedged dates"}
+{"task": {"answer_type": "date", "answer": "2020-01-01"}, "pred": "1 January 2020 (2020-01-01)", "label": true, "why": "same date twice is not hedging"}
+{"task": {"answer_type": "number", "answer": "5"}, "pred": "5 m", "label": true, "why": "separated single letter is a unit, not a scale"}
+{"task": {"answer_type": "number", "answer": "5000000"}, "pred": "5 m", "label": false, "why": "metres are not millions"}
+{"task": {"answer_type": "set", "answer": "Apache-2.0, cc-by-4.0", "prompt": "What are the licenses of the WebVoyager repository and of the Mind2Web dataset?"}, "pred": "WebVoyager: Apache-2.0, Mind2Web: cc-by-4.0", "label": true, "why": "labeled list items"}
+{"task": {"answer_type": "set", "answer": "Apache-2.0, cc-by-4.0", "prompt": "What are the licenses of the WebVoyager repository and of the Mind2Web dataset?"}, "pred": "WebVoyager: MIT, Mind2Web: cc-by-4.0", "label": false, "why": "labeled list with a wrong item"}
+{"task": {"answer_type": "set", "answer": "Paris", "prompt": "Which city hosts the venue?"}, "pred": "Lyon: Paris", "label": false, "why": "label not from the question is not stripped"}

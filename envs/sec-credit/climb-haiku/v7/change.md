@@ -1,0 +1,1 @@
+Rewrite the calibration instruction to make explicit that a large gap between current count and threshold does NOT justify lowering below 0.75 when distress signals are present, because capital raises and accelerated issuances routinely close large gaps in a single quarter. [round 4, Probability too low for distressed small-cap crossing share/cash threshold]

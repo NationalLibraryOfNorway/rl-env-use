@@ -1,0 +1,535 @@
+{
+ "train_ids": [
+  "t_053d13ed",
+  "t_1e1ee39b",
+  "t_24f0cc10",
+  "t_4160a5bf",
+  "t_6082cd59",
+  "t_63d541f5",
+  "t_660f7188",
+  "t_68a455cd",
+  "t_6912aee2",
+  "t_7136ca6e",
+  "t_744d6b01",
+  "t_88799658",
+  "t_8d1513a7",
+  "t_a03f97c5",
+  "t_aca0dba9",
+  "t_ae0b7624",
+  "t_b20d82c3",
+  "t_e4e088c7",
+  "t_e76e90ca",
+  "t_f1d494e5",
+  "t_f7623f72"
+ ],
+ "test_ids": [
+  "t_05d7add5",
+  "t_0f0a9074",
+  "t_3407c7c5",
+  "t_4372b8db",
+  "t_43c148b0",
+  "t_5113fc9d",
+  "t_756815dc",
+  "t_7ba7a15f",
+  "t_81ca3c16",
+  "t_841c69d9",
+  "t_849197ee",
+  "t_976c2f9d",
+  "t_99d53e6b",
+  "t_c02ef1fd",
+  "t_c494762d",
+  "t_c4d02c29",
+  "t_c7af86cd",
+  "t_e29f4bb5",
+  "t_ece918cf"
+ ],
+ "policy": "qwen-35b",
+ "surface": "system prompt (CASE_SYS + extension)",
+ "proposer": "opus55",
+ "reps": 4,
+ "confidence": 0.95,
+ "split_seed": 0,
+ "approve_each_round": false,
+ "quarantined": [],
+ "usd": 8.187,
+ "baseline": {
+  "train": 0.5472,
+  "test": 0.5763,
+  "noise": 0.1385,
+  "mde": 0.1981,
+  "mixed_train": 0.476
+ },
+ "final": {
+  "variant": "v3",
+  "test": {
+   "n": 19,
+   "cases": 16,
+   "diff": 0.2091,
+   "lo": 0.065,
+   "hi": 0.3913,
+   "p_better": 0.9982
+  },
+  "baseline_test": 0.5679,
+  "best_test": 0.7769,
+  "reps": 4,
+  "test_looks": 4,
+  "decision": "merge"
+ },
+ "metrics": [
+  {
+   "id": "correct",
+   "kind": "binary",
+   "label": "Correct"
+  }
+ ],
+ "perf_fields": [
+  {
+   "id": "cost_usd",
+   "label": "Cost",
+   "unit": "$"
+  },
+  {
+   "id": "latency_s",
+   "label": "Latency",
+   "unit": "s"
+  },
+  {
+   "id": "tool_calls",
+   "label": "Actions"
+  }
+ ],
+ "goal": {
+  "target": "correct",
+  "direction": "higher",
+  "hold": [
+   "cost_usd"
+  ]
+ },
+ "rounds": [
+  {
+   "round": 1,
+   "candidates": [
+    {
+     "variant": "v1",
+     "change": "Add a forecasting-method instruction: missing results are not evidence of 'no'; estimate from base rates and design, and never answer exactly 0 or 1.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": 0.2555,
+      "lo": 0.099,
+      "hi": 0.3973,
+      "p_better": 0.9995
+     }
+    },
+    {
+     "variant": "v2",
+     "change": "Add an instruction to treat recalled publications as weak evidence and keep probabilities hedged unless the results appear in the materials.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": 0.2468,
+      "lo": 0.0987,
+      "hi": 0.3859,
+      "p_better": 0.9995
+     }
+    },
+    {
+     "variant": "v3",
+     "change": "Add worked base-rate priors per question type (direction, p<0.05, completion threshold), including that completers are not the same as enrollment.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": 0.26,
+      "lo": 0.1104,
+      "hi": 0.4066,
+      "p_better": 0.9998
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Treated absent results in the protocol as evidence the outcome did not happen, so answered 0 instead of forecasting from priors",
+     "task_ids": [
+      "t_053d13ed",
+      "t_6082cd59",
+      "t_6912aee2",
+      "t_744d6b01",
+      "t_e4e088c7",
+      "t_a03f97c5"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Relied on recalled or hallucinated published results with full certainty (0 or 1), and confused 'direction favors' with 'statistically significant'",
+     "task_ids": [
+      "t_63d541f5",
+      "t_7136ca6e",
+      "t_ae0b7624",
+      "t_b20d82c3",
+      "t_e76e90ca",
+      "t_f7623f72"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Assumed completers equal actual enrollment, or inferred high retention from a reached completion date, and answered with certainty",
+     "task_ids": [
+      "t_88799658",
+      "t_f1d494e5"
+     ],
+     "fixable": true
+    }
+   ],
+   "variant": "v3",
+   "change": "Add worked base-rate priors per question type (direction, p<0.05, completion threshold), including that completers are not the same as enrollment.",
+   "train": {
+    "n": 21,
+    "cases": 16,
+    "diff": 0.2682,
+    "lo": 0.1159,
+    "hi": 0.4157,
+    "p_better": 0.9995
+   },
+   "test": {
+    "n": 19,
+    "cases": 16,
+    "diff": 0.1941,
+    "lo": 0.0617,
+    "hi": 0.3416,
+    "p_better": 0.9988
+   },
+   "decision": "keep",
+   "test_now": 0.7703
+  },
+  {
+   "round": 2,
+   "candidates": [
+    {
+     "variant": "v4",
+     "change": "Rewrite the direction bullet so the model classifies the question by its Convention line, not by the word 'statistically'. If the Convention defines 'favors' as direction of the result, it gets the direction prior (raised to about 0.7), never the p<0.05 prior.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": 0.0106,
+      "lo": -0.0292,
+      "hi": 0.0486,
+      "p_better": 0.718
+     }
+    },
+    {
+     "variant": "v5",
+     "change": "Add a worked example (invented) of a 'did the primary outcome statistically favor X' question whose convention defines direction only. It shows the direction prior being used and the significance prior being rejected.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": -0.0297,
+      "lo": -0.068,
+      "hi": -0.0018,
+      "p_better": 0.0173
+     }
+    },
+    {
+     "variant": "v6",
+     "change": "Rewrite the completion bullet to cap design adjustments near \u00b10.1. Also explain that post-enrollment exclusions and data failures make even short device studies miss a planned-enrollment threshold, while long trials often retain well.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": -0.012,
+      "lo": -0.0467,
+      "hi": 0.0224,
+      "p_better": 0.245
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Direction-only 'favors intervention' question (defined by its Convention) treated as a p<0.05 question, so the 0.4 significance prior was used instead of the direction prior",
+     "task_ids": [
+      "t_053d13ed",
+      "t_6082cd59",
+      "t_63d541f5",
+      "t_ae0b7624"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Completion forecasts over-adjusted from the prior on design features (too high for a short device study, too low for long or vulnerable-population studies)",
+     "task_ids": [
+      "t_88799658",
+      "t_a03f97c5",
+      "t_6912aee2"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Significance outcome went against a reasonable endpoint-type adjustment (self-report vs objective); inherent forecast noise",
+     "task_ids": [
+      "t_744d6b01",
+      "t_7136ca6e",
+      "t_8d1513a7"
+     ],
+     "fixable": false
+    },
+    {
+     "name": "Direction or threshold outcome went against the prior; inherent forecast noise",
+     "task_ids": [
+      "t_24f0cc10",
+      "t_b20d82c3",
+      "t_4160a5bf",
+      "t_e4e088c7"
+     ],
+     "fixable": false
+    },
+    {
+     "name": "Reasonable answers with near-full scores (historical-control p-values, single-session completion, stated null pattern)",
+     "task_ids": [
+      "t_1e1ee39b",
+      "t_e76e90ca",
+      "t_f7623f72",
+      "t_f1d494e5",
+      "t_aca0dba9",
+      "t_68a455cd",
+      "t_660f7188"
+     ],
+     "fixable": false
+    }
+   ],
+   "variant": "v4",
+   "change": "Rewrite the direction bullet so the model classifies the question by its Convention line, not by the word 'statistically'. If the Convention defines 'favors' as direction of the result, it gets the direction prior (raised to about 0.7), never the p<0.05 prior.",
+   "train": {
+    "n": 21,
+    "cases": 16,
+    "diff": 0.0187,
+    "lo": -0.0192,
+    "hi": 0.0535,
+    "p_better": 0.8502
+   },
+   "test": {
+    "n": 19,
+    "cases": 16,
+    "diff": -0.0182,
+    "lo": -0.0848,
+    "hi": 0.0559,
+    "p_better": 0.3182
+   },
+   "decision": "revert (test flat or down)",
+   "test_now": 0.7703
+  },
+  {
+   "round": 3,
+   "candidates": [
+    {
+     "variant": "v7",
+     "change": "Added a first step: write a 'Resolves YES if' line as a concrete observable event, then choose the prior matching that event. This forces the model to identify what is being asked before it picks a base rate.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": -0.0008,
+      "lo": -0.0328,
+      "hi": 0.0295,
+      "p_better": 0.4808
+     }
+    },
+    {
+     "variant": "v8",
+     "change": "Rewrote the p<0.05 bullet. In unblinded behavioral trials, self-report tends to inflate favorable effects, while objective behavior biomarkers are often null. The old rule pointed the wrong way.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": 0.0057,
+      "lo": -0.0287,
+      "hi": 0.0507,
+      "p_better": 0.558
+     }
+    },
+    {
+     "variant": "v9",
+     "change": "Rewrote the adjustment line so \u00b10.15 is the total net shift, not a per-factor shift. Narrative mechanism or literature arguments are not extra adjustments. This stops the model from stacking factors and drifting far from the base rate.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": -0.0118,
+      "lo": -0.0354,
+      "hi": 0.0089,
+      "p_better": 0.144
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Convention defined 'favors' as direction of the point estimate, but the model used the p<0.05 prior because the stem said 'statistically'",
+     "task_ids": [
+      "t_053d13ed",
+      "t_6082cd59",
+      "t_63d541f5",
+      "t_ae0b7624"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Endpoint-type rule backwards: self-report in unblinded behavioral trials was lowered, objective adherence biomarker was raised",
+     "task_ids": [
+      "t_744d6b01",
+      "t_7136ca6e"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Several design or narrative adjustments stacked, pushing well past \u00b10.15 from the prior",
+     "task_ids": [
+      "t_a03f97c5",
+      "t_6912aee2",
+      "t_88799658",
+      "t_b20d82c3"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Direction prior applied correctly but the outcome went against it (irreducible noise)",
+     "task_ids": [
+      "t_24f0cc10",
+      "t_4160a5bf",
+      "t_aca0dba9",
+      "t_f1d494e5"
+     ],
+     "fixable": false
+    }
+   ],
+   "variant": "v8",
+   "change": "Rewrote the p<0.05 bullet. In unblinded behavioral trials, self-report tends to inflate favorable effects, while objective behavior biomarkers are often null. The old rule pointed the wrong way.",
+   "train": {
+    "n": 21,
+    "cases": 16,
+    "diff": 0.0259,
+    "lo": -0.0085,
+    "hi": 0.0679,
+    "p_better": 0.9042
+   },
+   "test": {
+    "n": 19,
+    "cases": 16,
+    "diff": -0.015,
+    "lo": -0.0912,
+    "hi": 0.0433,
+    "p_better": 0.3553
+   },
+   "decision": "revert (test flat or down)",
+   "test_now": 0.7703,
+   "quarantined": []
+  },
+  {
+   "round": 4,
+   "candidates": [
+    {
+     "variant": "v10",
+     "change": "Rewrote the adjustment line so the model makes one net adjustment of at most \u00b10.15 and stops stacking penalties for population, history or mechanism stories, which drove the large misses.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": 0.0082,
+      "lo": -0.009,
+      "hi": 0.0253,
+      "p_better": 0.834
+     }
+    },
+    {
+     "variant": "v11",
+     "change": "Rewrote the completion bullet and its example so the required-retention arithmetic drives the forecast and design features only nudge it within a 0.45\u20130.7 band, because design-based moves were anticorrelated with the outcomes.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": -0.0133,
+      "lo": -0.0548,
+      "hi": 0.0298,
+      "p_better": 0.2517
+     }
+    },
+    {
+     "variant": "v12",
+     "change": "Added a prior for questions asking whether an arm-level rate meets a pre-specified target or threshold, since investigators usually set targets they expect to reach.",
+     "train_screen": {
+      "n": 21,
+      "cases": 16,
+      "diff": -0.0013,
+      "lo": -0.0231,
+      "hi": 0.0171,
+      "p_better": 0.457
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Direction-only question answered with the p<0.05 prior because the question says 'statistically favor'",
+     "task_ids": [
+      "t_053d13ed",
+      "t_6082cd59",
+      "t_63d541f5",
+      "t_ae0b7624"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Several narrative penalties stacked (hard population, prior failures, side effects, noise), pushing far below the prior",
+     "task_ids": [
+      "t_b20d82c3",
+      "t_744d6b01",
+      "t_6082cd59"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Completion forecasts moved too far by design features instead of enrollment-to-denominator arithmetic",
+     "task_ids": [
+      "t_88799658",
+      "t_a03f97c5",
+      "t_6912aee2"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "No prior for an arm-level rate meeting a pre-specified target; the direction prior was borrowed and then lowered",
+     "task_ids": [
+      "t_4160a5bf"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Forecast reasonably near the prior; the outcome went the other way (irreducible noise)",
+     "task_ids": [
+      "t_24f0cc10",
+      "t_7136ca6e",
+      "t_f1d494e5"
+     ],
+     "fixable": false
+    }
+   ],
+   "variant": "v10",
+   "change": "Rewrote the adjustment line so the model makes one net adjustment of at most \u00b10.15 and stops stacking penalties for population, history or mechanism stories, which drove the large misses.",
+   "train": {
+    "n": 21,
+    "cases": 16,
+    "diff": -0.012,
+    "lo": -0.0434,
+    "hi": 0.018,
+    "p_better": 0.2112
+   },
+   "test": {
+    "n": 19,
+    "cases": 16,
+    "diff": -0.0035,
+    "lo": -0.0414,
+    "hi": 0.0389,
+    "p_better": 0.421
+   },
+   "decision": "revert (train fell)",
+   "test_now": 0.7703
+  }
+ ],
+ "incumbent": "v3",
+ "stall": 3,
+ "best": {
+  "round": 3,
+  "variant": "v3",
+  "test_score": 0.7703
+ }
+}

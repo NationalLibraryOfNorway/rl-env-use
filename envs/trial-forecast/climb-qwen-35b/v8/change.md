@@ -1,0 +1,1 @@
+Rewrote the p<0.05 bullet. In unblinded behavioral trials, self-report tends to inflate favorable effects, while objective behavior biomarkers are often null. The old rule pointed the wrong way. [round 3, Endpoint-type rule backwards: self-report in unblinded behavioral trials was lowered, objective adherence biomarker was raised]

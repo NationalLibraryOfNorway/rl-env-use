@@ -1,0 +1,11 @@
+{"prompt_id": "t_5980df9e", "rep": 0, "failure_class": "timeout", "error": "TimeoutError: Event handler browser_use.browser.watchdog_base.BrowserSession.on_BrowserStartEvent#6400(?\u25b6 BrowserStartEvent#42d0 \ud83c\udfc3) timed out after 30.0s and interrupted any processing of 3 child events", "at": "2026-09-30T22:05:48"}
+{"prompt_id": "t_2934ac5e", "rep": 1, "failure_class": "timeout", "error": "TimeoutError: ", "at": "2026-09-30T22:09:46"}
+{"prompt_id": "t_48d249d9", "rep": 0, "failure_class": "timeout", "error": "TimeoutError: ", "at": "2026-09-30T22:14:06"}
+{"prompt_id": "t_632f61f2", "rep": 1, "failure_class": "timeout", "error": "TimeoutError: ", "at": "2026-09-30T22:17:54"}
+{"prompt_id": "t_6db2b94f", "rep": 0, "failure_class": "timeout", "error": "TimeoutError: ", "at": "2026-09-30T22:19:01"}
+{"prompt_id": "t_6df49c9b", "rep": 0, "failure_class": "timeout", "error": "TimeoutError: ", "at": "2026-09-30T22:21:58"}
+{"prompt_id": "t_da8c21de", "rep": 1, "failure_class": "timeout", "error": "TimeoutError: Event handler browser_use.browser.watchdog_base.BrowserSession.on_BrowserStartEvent#9200(?\u25b6 BrowserStartEvent#b3c7 \ud83c\udfc3) timed out after 30.0s and interrupted any processing of 3 child events", "at": "2026-09-30T22:34:22"}
+{"prompt_id": "t_aeeebdea", "rep": 1, "failure_class": "harness_error", "error": "CancelledError: Event handler browser_use.browser.watchdog_base.DOMWatchdog.on_BrowserStateRequestEvent#6864(?\u25b6 BrowserStateRequestEvent#00cf \ud83c\udfc3) was interrupted because of a parent timeout", "at": "2026-09-30T22:34:28"}
+{"prompt_id": "t_b1640ce0", "rep": 0, "failure_class": "harness_error", "error": "CancelledError: Event handler browser_use.browser.watchdog_base.DOMWatchdog.on_BrowserStateRequestEvent#6304(?\u25b6 BrowserStateRequestEvent#421a \ud83c\udfc3) was interrupted because of a parent timeout", "at": "2026-09-30T22:34:46"}
+{"prompt_id": "t_aeeebdea", "rep": 0, "failure_class": "timeout", "error": "TimeoutError: ", "at": "2026-09-30T22:38:01"}
+{"prompt_id": "t_b1640ce0", "rep": 1, "failure_class": "timeout", "error": "TimeoutError: ", "at": "2026-09-30T22:39:12"}

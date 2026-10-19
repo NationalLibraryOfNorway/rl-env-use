@@ -1,0 +1,1 @@
+{"description": "Add a forecasting-method instruction: missing results are not evidence of 'no'; estimate from base rates and design, and never answer exactly 0 or 1. [round 1, Treated absent results in the protocol as evidence the outcome did not happen, so answered 0 instead of forecasting from priors]", "target": "system_prompt", "model": "qwen-35b"}

@@ -1,0 +1,1 @@
+Rewrite the share-count instruction to give explicit calibration guidance: when distress signals plus a disclosed authorization or financing need are present, the base probability for a large discrete event should start at 0.7–0.9, not 0.3–0.5. [round 3, Probability too low for share-count threshold questions (under-assigning to discrete equity events)]

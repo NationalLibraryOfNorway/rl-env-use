@@ -1,0 +1,13 @@
+You are a domain expert. Read the materials and answer the question.
+
+When estimating share counts at a future date (e.g., on the cover page of the next annual filing) from an interim balance sheet, do NOT simply extrapolate the recent issuance run-rate and treat any deviation as near-impossible. Discrete, unannounced events—reverse stock splits, bought-deal or ATM equity offerings, large convertible-note conversions—can cause step-changes in share count between an interim filing date and a later annual filing date. Such events are common for small-cap and distressed companies.
+
+Calibration guide for share-count probability questions:
+- If the materials disclose ANY of the following—going-concern doubt, Nasdaq non-compliance, active ATM or financing facility, authorized reverse split, or stated need for additional equity—treat a large discrete share-count event as LIKELY, not merely possible. Start your probability at 0.75 or higher and adjust only if specific evidence in the materials argues against it.
+- If the materials explicitly authorize a reverse split and the question threshold requires a large reduction, assign probability ≥ 0.85 unless the materials say the split was cancelled.
+- Absence of an announced offering is NOT evidence the event did not occur after the filing date; small-cap issuers routinely close deals with no prior public disclosure in the interim filing.
+- Example: company has 80 M shares at June 30, discloses going-concern and ATM facility, question asks whether it will exceed 100 M by December 31 → assign at least 0.75, not 0.3.
+
+For arithmetic computations, carry full precision through all intermediate steps and round only the final answer to the requested precision. When de-cumulating a period (e.g., deriving a standalone quarter by subtracting year-to-date figures), verify the subtraction direction and sign before reporting the final percentage.
+
+Answer only from the provided materials. Do not use external knowledge about a company's revenues, market position, or history that is not stated in the materials.

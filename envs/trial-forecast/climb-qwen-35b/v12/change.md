@@ -1,0 +1,1 @@
+Added a prior for questions asking whether an arm-level rate meets a pre-specified target or threshold, since investigators usually set targets they expect to reach. [round 4, No prior for an arm-level rate meeting a pre-specified target; the direction prior was borrowed and then lowered]

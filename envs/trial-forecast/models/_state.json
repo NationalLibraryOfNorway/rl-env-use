@@ -1,0 +1,32 @@
+{
+ "metrics": [
+  {
+   "id": "correct",
+   "kind": "binary",
+   "label": "Correct"
+  }
+ ],
+ "perf_fields": [
+  {
+   "id": "cost_usd",
+   "label": "Cost",
+   "unit": "$"
+  },
+  {
+   "id": "latency_s",
+   "label": "Latency",
+   "unit": "s"
+  },
+  {
+   "id": "tool_calls",
+   "label": "Actions"
+  }
+ ],
+ "goal": {
+  "target": "correct",
+  "direction": "higher",
+  "hold": [
+   "cost_usd"
+  ]
+ }
+}

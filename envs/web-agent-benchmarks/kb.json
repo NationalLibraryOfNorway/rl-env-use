@@ -1,0 +1,998 @@
+{
+ "topic": "benchmarks and evaluation suites for LLM web/browser agents (papers on arXiv, their task counts, websites, authors, leaderboards, GitHub repos)",
+ "created": "2026-09-30T21:22:27",
+ "facts": [
+  {
+   "id": "f0",
+   "claim": "AssistantBench scorer treats a thousands separator as a decimal point.",
+   "value": "3,080,000 scores 0 against gold 3080000",
+   "quote": "AssistantBench scorer treats a thousands separator as a decimal point: \\\"3,080,000\\\" scores 0 against gold 3080000",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues",
+   "angle": "users",
+   "at": "2026-09-30T21:23:29"
+  },
+  {
+   "id": "f1",
+   "claim": "Issue #319 is about CAPTCHA verification affecting agents' behaviors and is marked as 'wontfix'.",
+   "value": "wontfix",
+   "quote": "CAPTCHA verification affects agents' behaviors",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues?q=is%3Aissue%20state%3Aclosed",
+   "angle": "users",
+   "at": "2026-09-30T21:23:53"
+  },
+  {
+   "id": "f2",
+   "claim": "Issue #360 is about lxml 6.0.0 being incompatible with WorkArena L1",
+   "value": "ValueError: not enough values to unpack (expected 2, got 1)",
+   "quote": "ValueError: not enough values to unpack (expected 2, got 1)",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues/360",
+   "angle": "users",
+   "at": "2026-09-30T21:24:42"
+  },
+  {
+   "id": "f3",
+   "claim": "Mind2Web has over 2,000 open-ended tasks collected from 137 websites spanning 31 domains.",
+   "value": "over 2,000 open-ended tasks collected from 137 websites spanning 31 domains",
+   "quote": "With over 2,000 open-ended tasks collected from 137 websites spanning 31 domains",
+   "url": "https://arxiv.org/abs/2306.06070",
+   "angle": "longtail",
+   "at": "2026-09-30T21:24:54"
+  },
+  {
+   "id": "f4",
+   "claim": "The first submission date of Mind2Web (v1) was June 9, 2023.",
+   "value": "9 Jun 2023",
+   "quote": "Submitted on 9 Jun 2023 (v1)",
+   "url": "https://arxiv.org/abs/2306.06070",
+   "angle": "longtail",
+   "at": "2026-09-30T21:24:54"
+  },
+  {
+   "id": "f5",
+   "claim": "WebArena is a self-hostable web environment with websites from four popular categories.",
+   "value": "four popular categories",
+   "quote": "WebArena is a standalone, self-hostable web environment for building autonomous agents. WebArena creates websites from four popular categories with functionality and data mimicking their real-world equivalents.",
+   "url": "https://webarena.dev/og/",
+   "angle": "reference",
+   "at": "2026-09-30T21:25:09"
+  },
+  {
+   "id": "f6",
+   "claim": "Issue #335 is about automating the installation of MiniWoB for BrowserGym.",
+   "value": "MiniWoB automatic install",
+   "quote": "MiniWoB automatic install",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues?q=is%3Aissue%20state%3Aclosed",
+   "angle": "users",
+   "at": "2026-09-30T21:25:14"
+  },
+  {
+   "id": "f7",
+   "claim": "Issue #311 reports failures when loading certain start_urls in headless mode.",
+   "value": "Fails to load certain start_urls in headless mode",
+   "quote": "Fails to load certain start_urls in headless mode",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues?q=is%3Aissue%20state%3Aclosed",
+   "angle": "users",
+   "at": "2026-09-30T21:25:15"
+  },
+  {
+   "id": "f8",
+   "claim": "The first author of the Mind2Web paper is Xiang Deng.",
+   "value": "Xiang Deng",
+   "quote": "Xiang Deng",
+   "url": "https://arxiv.org/abs/2306.06070",
+   "angle": "longtail",
+   "at": "2026-09-30T21:25:38"
+  },
+  {
+   "id": "f9",
+   "claim": "The last author of the Mind2Web paper is Yu Su.",
+   "value": "Yu Su",
+   "quote": "Yu Su",
+   "url": "https://arxiv.org/abs/2306.06070",
+   "angle": "longtail",
+   "at": "2026-09-30T21:25:38"
+  },
+  {
+   "id": "f10",
+   "claim": "Mind2Web provides over 2,000 open-ended tasks.",
+   "value": "2,000",
+   "quote": "With over 2,000 open-ended tasks collected from 137 websites",
+   "url": "https://arxiv.org/html/2306.06070v3",
+   "angle": "longtail",
+   "at": "2026-09-30T21:25:53"
+  },
+  {
+   "id": "f11",
+   "claim": "Mind2Web covers 137 websites across 31 domains.",
+   "value": "137",
+   "quote": "collected from 137 websites spanning 31 domains",
+   "url": "https://arxiv.org/html/2306.06070v3",
+   "angle": "longtail",
+   "at": "2026-09-30T21:25:53"
+  },
+  {
+   "id": "f12",
+   "claim": "Issue #329 discusses local development support for BrowserGym-WorkArena.",
+   "value": "Browsergym-Workarena not supported for local development",
+   "quote": "Browsergym-Workarena not supported for local development",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues?q=is%3Aissue%20state%3Aclosed",
+   "angle": "users",
+   "at": "2026-09-30T21:25:57"
+  },
+  {
+   "id": "f13",
+   "claim": "Issue #309 explores the possibility of using BrowserGym in Google Colab.",
+   "value": "Possible to use browsergym in google colab ?",
+   "quote": "Possible to use browsergym in google colab ?",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues?q=is%3Aissue%20state%3Aclosed",
+   "angle": "users",
+   "at": "2026-09-30T21:25:57"
+  },
+  {
+   "id": "f14",
+   "claim": "Issue #311 involves a TimeoutError: Page.goto: Timeout 10000ms exceeded when loading certain sites in headless mode.",
+   "value": "TimeoutError: Page.goto: Timeout 10000ms exceeded.",
+   "quote": "playwright._impl._errors.TimeoutError: Page.goto: Timeout 10000ms exceeded.",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues/311",
+   "angle": "users",
+   "at": "2026-09-30T21:26:23"
+  },
+  {
+   "id": "f15",
+   "claim": "Issue #311 resolution suggested a cluster firewall issue as the cause for headless mode timeouts.",
+   "value": "Maybe this is a firewall issue on your cluster?",
+   "quote": "Maybe this is a firewall issue on your cluster?",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues/311",
+   "angle": "users",
+   "at": "2026-09-30T21:26:33"
+  },
+  {
+   "id": "f16",
+   "claim": "MiniWoB++ has 100 environments and 100 tasks with low-level instructions.",
+   "value": "100",
+   "quote": "MiniWoB++ [22] 100 Simplified mobile websites 28 100 Low-level 3.6",
+   "url": "https://arxiv.org/html/2306.06070v3",
+   "angle": "longtail",
+   "at": "2026-09-30T21:26:59"
+  },
+  {
+   "id": "f17",
+   "claim": "Issue #365 is about creating custom action sets without using the custom_actions parameter.",
+   "value": "How to create custom action sets without custom_actions parameter?",
+   "quote": "How to create custom action sets without custom_actions parameter?",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues?q=is%3Aissue+is%3Aclosed",
+   "angle": "users",
+   "at": "2026-09-30T21:27:08"
+  },
+  {
+   "id": "f18",
+   "claim": "Issue #327 reports an error where a message cannot be massaged in a thread.",
+   "value": "Can't massage in thread",
+   "quote": "Can't massage in thread",
+   "url": "https://github.com/ServiceNow/BrowserGym/issues?q=is%3Aissue+is%3Aclosed",
+   "angle": "users",
+   "at": "2026-09-30T21:27:09"
+  },
+  {
+   "id": "f19",
+   "claim": "OmniACT is a dataset and benchmark for assessing an agent's capability to generate executable programs for computer tasks.",
+   "value": "OmniACT",
+   "quote": "In this paper, we introduce OmniACT, the first-of-a-kind dataset and benchmark for assessing an agent's capability to generate executable programs to accomplish computer tasks.",
+   "url": "https://arxiv.org/abs/2402.17553",
+   "angle": "interaction",
+   "at": "2026-09-30T21:27:45"
+  },
+  {
+   "id": "f20",
+   "claim": "The submission date of v1 for OmniACT (arXiv:2402.17553) was February 27, 2024.",
+   "value": "27 Feb 2024",
+   "quote": "Submitted on 27 Feb 2024 (v1)",
+   "url": "https://arxiv.org/abs/2402.17553",
+   "angle": "interaction",
+   "at": "2026-09-30T21:27:45"
+  },
+  {
+   "id": "f21",
+   "claim": "WebShop contains 12,000 products.",
+   "value": "12,000",
+   "quote": "12,000 products",
+   "url": "https://arxiv.org/html/2306.06070v3",
+   "angle": "longtail",
+   "at": "2026-09-30T21:28:54"
+  },
+  {
+   "id": "f22",
+   "claim": "WebVoyager uses the Apache-2.0 license.",
+   "value": "Apache-2.0",
+   "quote": "Apache-2.0 license",
+   "url": "https://github.com/MinorJerry/WebVoyager",
+   "angle": "longtail",
+   "at": "2026-09-30T21:29:21"
+  },
+  {
+   "id": "f23",
+   "claim": "WebShop (v1) was first submitted on July 4, 2022.",
+   "value": "4 Jul 2022",
+   "quote": "[Submitted on 4 Jul 2022 (v1), last revised 8 Feb 2023 (this version, v4)]",
+   "url": "https://arxiv.org/abs/2207.01206",
+   "angle": "longtail",
+   "at": "2026-09-30T21:29:35"
+  },
+  {
+   "id": "f24",
+   "claim": "The first author of WebShop is Shunyu Yao.",
+   "value": "Shunyu Yao",
+   "quote": "Shunyu Yao",
+   "url": "https://arxiv.org/abs/2207.01206",
+   "angle": "longtail",
+   "at": "2026-09-30T21:29:35"
+  },
+  {
+   "id": "f25",
+   "claim": "The last author of WebShop is Karthik Narasimhan.",
+   "value": "Karthik Narasimhan",
+   "quote": "Karthik Narasimhan",
+   "url": "https://arxiv.org/abs/2207.01206",
+   "angle": "longtail",
+   "at": "2026-09-30T21:29:36"
+  },
+  {
+   "id": "f26",
+   "claim": "WebShop contains 1.18 million real-world products.",
+   "value": "1.18 million",
+   "quote": "we develop WebShop -- a simulated e-commerce website environment with 1.18 million real-world products",
+   "url": "https://arxiv.org/abs/2207.01206",
+   "angle": "longtail",
+   "at": "2026-09-30T21:29:36"
+  },
+  {
+   "id": "f27",
+   "claim": "WebShop contains 12,087 crowd-sourced text instructions.",
+   "value": "12,087",
+   "quote": "12,087 crowd-sourced text instructions",
+   "url": "https://arxiv.org/abs/2207.01206",
+   "angle": "longtail",
+   "at": "2026-09-30T21:29:36"
+  },
+  {
+   "id": "f28",
+   "claim": "WebVoyager includes 643 task queries across 15 websites, with each website having 40+ queries.",
+   "value": "643",
+   "quote": "generate and filter 643 task queries, covering 15 websites, with each website containing 40+ queries.",
+   "url": "https://github.com/MinorJerry/WebVoyager",
+   "angle": "longtail",
+   "at": "2026-09-30T21:29:37"
+  },
+  {
+   "id": "f29",
+   "claim": "WebVoyager includes tasks from Booking and Google Flights that are time-sensitive.",
+   "value": "Booking",
+   "quote": "Some tasks are time-sensitive and are primarily distributed in Booking and Google Flights.",
+   "url": "https://github.com/MinorJerry/WebVoyager",
+   "angle": "longtail",
+   "at": "2026-09-30T21:29:37"
+  },
+  {
+   "id": "f30",
+   "claim": "WebVoyager includes the Cambridge Dictionary website as one of its test environments.",
+   "value": "Cambridge Dictionary",
+   "quote": "\\\"web_name\\\": \\\"Cambridge Dictionary\\\"",
+   "url": "https://github.com/MinorJerry/WebVoyager/blob/main/data/tasks_test.jsonl",
+   "angle": "longtail",
+   "at": "2026-09-30T21:30:08"
+  },
+  {
+   "id": "f31",
+   "claim": "OSWorld supports Docker for hosting virtual machines on virtualized platforms.",
+   "value": "Docker",
+   "quote": "2024-10-22: We supported Docker\ud83d\udc33 for hosting virtual machines on virtualized platforms.",
+   "url": "https://github.com/xlang-ai/OSWorld",
+   "angle": "users",
+   "at": "2026-09-30T21:30:20"
+  },
+  {
+   "id": "f32",
+   "claim": "WebVoyager includes 45 tasks for Allrecipes and at least 24 tasks for Amazon.",
+   "value": "45",
+   "quote": "Allrecipes--44",
+   "url": "https://github.com/MinorJerry/WebVoyager/blob/main/data/WebVoyager_data.jsonl",
+   "angle": "longtail",
+   "at": "2026-09-30T21:30:32"
+  },
+  {
+   "id": "f33",
+   "claim": "WebVoyager's data file includes tasks for Allrecipes and Amazon.",
+   "value": "Amazon",
+   "quote": "\\\"web_name\\\": \\\"Amazon\\\"",
+   "url": "https://github.com/MinorJerry/WebVoyager/blob/main/data/WebVoyager_data.jsonl",
+   "angle": "longtail",
+   "at": "2026-09-30T21:30:32"
+  },
+  {
+   "id": "f34",
+   "claim": "WebVoyager achieves a 59.1% task success rate on its benchmark.",
+   "value": "59.1%",
+   "quote": "We show that WebVoyager achieves a 59.1% task success rate on our benchmark",
+   "url": "https://arxiv.org/abs/2401.13919",
+   "angle": "longtail",
+   "at": "2026-09-30T21:31:04"
+  },
+  {
+   "id": "f35",
+   "claim": "MiniWoB++ first author is Tianlin Shi.",
+   "value": "Tianlin Shi",
+   "quote": "Tianlin Shi, Andrej Karpathy, Linxi \\\"Jim\\\" Fan, Jonathan Hernandez, Percy Liang",
+   "url": "https://duckduckgo.com/?q=World+of+Bits%3A+An+Open-Domain+Platform+for+Web-Based+Agents+arXiv+1702.03484&ia=web",
+   "angle": "longtail",
+   "at": "2026-09-30T21:31:29"
+  },
+  {
+   "id": "f36",
+   "claim": "MiniWoB++ last author is Percy Liang.",
+   "value": "Percy Liang",
+   "quote": "Tianlin Shi, Andrej Karpathy, Linxi \\\"Jim\\\" Fan, Jonathan Hernandez, Percy Liang",
+   "url": "https://duckduckgo.com/?q=World+of+Bits%3A+An+Open-Domain+Platform+for+Web-Based+Agents+arXiv+1702.03484&ia=web",
+   "angle": "longtail",
+   "at": "2026-09-30T21:31:30"
+  },
+  {
+   "id": "f37",
+   "claim": "World of Bits: An Open-Domain Platform for Web-Based Agents was published at ICML 2017.",
+   "value": "2017",
+   "quote": "International Conference on Machine Learning (ICML), 2017",
+   "url": "https://duckduckgo.com/?q=World+of+Bits%3A+An+Open-Domain+Platform+for+Web-Based+Agents+arXiv+1702.03484&ia=web",
+   "angle": "longtail",
+   "at": "2026-09-30T21:31:30"
+  },
+  {
+   "id": "f38",
+   "claim": "OSWorld supports VMware Workstation Pro and VMware Fusion.",
+   "value": "VMware Workstation Pro",
+   "quote": "Install VMware Workstation Pro (for systems with Apple Chips, you should install VMware Fusion)",
+   "url": "https://github.com/xlang-ai/OSWorld",
+   "angle": "users",
+   "at": "2026-09-30T21:31:49"
+  },
+  {
+   "id": "f39",
+   "claim": "OSWorld supports VirtualBox as an alternative to VMware.",
+   "value": "VirtualBox",
+   "quote": "We also support using VirtualBox if you have issues with VMware Pro.",
+   "url": "https://github.com/xlang-ai/OSWorld",
+   "angle": "users",
+   "at": "2026-09-30T21:31:50"
+  },
+  {
+   "id": "f40",
+   "claim": "osunlp/Mind2Web is licensed under cc-by-4.0.",
+   "value": "cc-by-4.0",
+   "quote": "cc-by-4.0",
+   "url": "https://huggingface.co/datasets/osunlp/Mind2Web",
+   "angle": "interaction",
+   "at": "2026-09-30T21:32:07"
+  },
+  {
+   "id": "f41",
+   "claim": "The total file size of the osunlp/Mind2Web dataset is 6.74 GB.",
+   "value": "6.74 GB",
+   "quote": "6.74 GB",
+   "url": "https://huggingface.co/datasets/osunlp/Mind2Web",
+   "angle": "interaction",
+   "at": "2026-09-30T21:32:08"
+  },
+  {
+   "id": "f42",
+   "claim": "The Mind2Web dataset contains over 2,000 open-ended tasks from 137 websites.",
+   "value": "2,000",
+   "quote": "With over 2,000 open-ended tasks collected from 137 websites",
+   "url": "https://huggingface.co/datasets/osunlp/Mind2Web",
+   "angle": "interaction",
+   "at": "2026-09-30T21:32:08"
+  },
+  {
+   "id": "f43",
+   "claim": "OSWorld contains 369 real-world computer tasks.",
+   "value": "369",
+   "quote": "We also create a benchmark of 369 real-world computer tasks in OSWorld",
+   "url": "http://osworld-v1.xlang.ai/",
+   "angle": "users",
+   "at": "2026-09-30T21:33:03"
+  },
+  {
+   "id": "f44",
+   "claim": "The YWZBrandon/webshop-data dataset has a total file size of 5.74 GB.",
+   "value": "5.74 GB",
+   "quote": "5.74 GB",
+   "url": "https://huggingface.co/datasets/YWZBrandon/webshop-data",
+   "angle": "interaction",
+   "at": "2026-09-30T21:33:21"
+  },
+  {
+   "id": "f45",
+   "claim": "The YWZBrandon/webshop-data dataset has only one split named 'train' visible in the viewer.",
+   "value": "train",
+   "quote": "train",
+   "url": "https://huggingface.co/datasets/YWZBrandon/webshop-data",
+   "angle": "interaction",
+   "at": "2026-09-30T21:33:21"
+  },
+  {
+   "id": "f46",
+   "claim": "McGill-NLP/WebLINX is licensed under cc-by-nc-sa-4.0.",
+   "value": "cc-by-nc-sa-4.0",
+   "quote": "cc-by-nc-sa-4.0",
+   "url": "https://huggingface.co/datasets/McGill-NLP/WebLINX",
+   "angle": "interaction",
+   "at": "2026-09-30T21:33:55"
+  },
+  {
+   "id": "f47",
+   "claim": "The WebLINX dataset contains 24.4k rows in its train split.",
+   "value": "24.4k",
+   "quote": "train 24.4k rows",
+   "url": "https://huggingface.co/datasets/McGill-NLP/WebLINX",
+   "angle": "interaction",
+   "at": "2026-09-30T21:33:55"
+  },
+  {
+   "id": "f48",
+   "claim": "The WebLINX dataset has 8 splits including train, validation, and test sets.",
+   "value": "8",
+   "quote": "Split (8)",
+   "url": "https://huggingface.co/datasets/McGill-NLP/WebLINX",
+   "angle": "interaction",
+   "at": "2026-09-30T21:33:56"
+  },
+  {
+   "id": "f49",
+   "claim": "The total file size of McGill-NLP/WebLINX is 526 MB.",
+   "value": "526 MB",
+   "quote": "Total file size: 526 MB",
+   "url": "https://huggingface.co/datasets/McGill-NLP/WebLINX",
+   "angle": "interaction",
+   "at": "2026-09-30T21:33:56"
+  },
+  {
+   "id": "f50",
+   "claim": "The McGill-NLP/WebLINX dataset includes a 'chat' subset with 58.7k rows.",
+   "value": "58.7k rows",
+   "quote": "chat 58.7k rows",
+   "url": "https://huggingface.co/datasets/McGill-NLP/WebLINX",
+   "angle": "interaction",
+   "at": "2026-09-30T21:34:03"
+  },
+  {
+   "id": "f51",
+   "claim": "The McGill-NLP/WebLINX dataset is associated with arXiv paper 2402.05930.",
+   "value": "2402.05930",
+   "quote": "arxiv:2402.05930",
+   "url": "https://huggingface.co/datasets/McGill-NLP/WebLINX",
+   "angle": "interaction",
+   "at": "2026-09-30T21:34:04"
+  },
+  {
+   "id": "f52",
+   "claim": "WebArena's best GPT-4-based agent achieves an end-to-end task success rate of 14.41%",
+   "value": "14.41%",
+   "quote": "The results demonstrate that solving complex tasks is challenging: our best GPT-4-based agent only achieves an end-to-end task success rate of 14.41%, significantly lower than the human performance of 78.24%.",
+   "url": "https://arxiv.org/html/2307.13854",
+   "angle": "deep",
+   "at": "2026-09-30T22:39:02"
+  },
+  {
+   "id": "f53",
+   "claim": "GPT-4 with CoT and no UA hint achieves a 14.41% success rate on WebArena.",
+   "value": "14.41",
+   "quote": "eliminating this instruction led to a performance boost in achievable tasks, enhancing the overall task success rate of GPT-4 to 14.41%.",
+   "url": "https://arxiv.org/html/2307.13854#S5",
+   "angle": "deep",
+   "at": "2026-09-30T22:39:32"
+  },
+  {
+   "id": "f54",
+   "claim": "Table 2 in the WebArena paper displays the end-to-end task success rate (SR %) with different prompting strategies.",
+   "value": "Table 2",
+   "quote": "Table 2: The end-to-end task success rate (SR %) on WebArena with different prompting strategies.",
+   "url": "https://arxiv.org/html/2307.13854#S5",
+   "angle": "deep",
+   "at": "2026-09-30T22:39:33"
+  },
+  {
+   "id": "f55",
+   "claim": "Mind2Web contains over 2,000 tasks from 137 websites across 31 different domains.",
+   "value": "2,000 tasks curated from 137 websites that span 31 different domains",
+   "quote": "Mind2Web boasts a collection of over 2,000 tasks curated from 137 websites that span 31 different domains.",
+   "url": "https://arxiv.org/html/2306.06070#S2",
+   "angle": "deep",
+   "at": "2026-09-30T22:40:01"
+  },
+  {
+   "id": "f56",
+   "claim": "WorkArena covers common ways of interacting with the ServiceNow Platform and consists of 33 tasks and 19,912 unique instances.",
+   "value": "33 tasks and 19,912 unique instances",
+   "quote": "WorkArena is a benchmark of 33 web tasks and 19,912 unique instances that cover common ways of interacting with the ServiceNow Platform",
+   "url": "https://arxiv.org/html/2403.07718",
+   "angle": "deep",
+   "at": "2026-09-30T22:40:28"
+  },
+  {
+   "id": "f57",
+   "claim": "WebArena includes 95 subreddits, 127,390 posts, and 661,781 users in its Reddit-like environment.",
+   "value": "95 subreddits, 127390 posts, and 661781 users",
+   "quote": "In total, we have 95 subreddits, 127390 posts, and 661781 users.",
+   "url": "https://arxiv.org/html/2307.13854#A1",
+   "angle": "deep",
+   "at": "2026-09-30T22:40:51"
+  },
+  {
+   "id": "f58",
+   "claim": "GPT-4 achieved a 26.53% success rate in the Professional category of OSWorld using the A11y tree input.",
+   "value": "26.53%",
+   "quote": "GPT-4 | 20.83% | 3.58% | 25.64% | 26.53% | 2.97% | 12.24%",
+   "url": "https://arxiv.org/html/2404.07972#S4.SS2",
+   "angle": "deep",
+   "at": "2026-09-30T22:41:19"
+  },
+  {
+   "id": "f59",
+   "claim": "The success rate for GPT-4o in the OS category of OSWorld using A11y tree input is 20.83%.",
+   "value": "20.83%",
+   "quote": "GPT-4o | 20.83% | 6.99% | 16.81% | 16.33% | 7.56% | 11.36%",
+   "url": "https://arxiv.org/html/2404.07972#S4.SS2",
+   "angle": "deep",
+   "at": "2026-09-30T22:41:20"
+  }
+ ],
+ "ideas": [
+  {
+   "question": "How do I fix a 'ValueError: not enough values to unpack' when running BrowserGym with WorkArena?",
+   "why_hard": "Requires identifying a specific library version conflict (lxml 6.0.0) that is not immediately obvious from the traceback.",
+   "answer_url": "https://github.com/ServiceNow/BrowserGym/issues/360",
+   "angle": "users"
+  },
+  {
+   "question": "How can I prevent BrowserGym from hanging for hours when saving summary info for the last run?",
+   "why_hard": "Requires diagnosing intermittent performance or deadlocking issues during the cleanup/save phase of the environment lifecycle.",
+   "answer_url": "https://github.com/ServiceNow/BrowserGym/issues/287",
+   "angle": "users"
+  },
+  {
+   "question": "How do I resolve a 500 error when visiting GitLab within a BrowserGym task?",
+   "why_hard": "Involves distinguishing between benchmark environment issues and infrastructure/timeout errors.",
+   "answer_url": "https://github.com/ServiceNow/BrowserGym/issues/285",
+   "angle": "users"
+  },
+  {
+   "question": "How many distinct products does WebShop simulate and what is the success rate of the best model compared to humans?",
+   "why_hard": "Requires extracting specific numerical values (1.18 million, 29%, 59%) from a dense abstract with mathematical symbols and comparing entities.",
+   "answer_url": "https://arxiv.org/abs/2207.01206",
+   "angle": "longtail"
+  },
+  {
+   "question": "Which benchmark includes 137 websites across 31 domains and what is its first submission date?",
+   "why_hard": "Requires cross-referencing dataset statistics with metadata (v1 date) across different papers or comparison tables.",
+   "answer_url": "https://arxiv.org/abs/2306.06070",
+   "angle": "longtail"
+  },
+  {
+   "question": "What are the specific low-level instruction counts for MiniWoB++ as cited in the Mind2Web paper's comparison section?",
+   "why_hard": "Requires navigating to an experimental HTML view of a paper, finding a specific comparative table, and extracting data from a multi-column layout.",
+   "answer_url": "https://arxiv.org/html/2306.06070v3",
+   "angle": "longtail"
+  },
+  {
+   "question": "What are the specific split names for the WebShop dataset and how many rows does each contain?",
+   "why_hard": "The dataset viewer often fails to load for large datasets or lacks a dataset card, requiring the agent to check 'Files and versions' or external papers.",
+   "answer_url": "https://huggingface.co/datasets/YWZBrandon/webshop-data",
+   "angle": "interaction"
+  },
+  {
+   "question": "How to resolve Chrome DevTools port returning 400 error when running OSWorld in Docker with a proxy?",
+   "why_hard": "Requires debugging network configurations between Docker containers, host proxies, and browser automation ports.",
+   "answer_url": "https://github.com/xlang-ai/OSWorld/issues/495",
+   "angle": "users"
+  },
+  {
+   "question": "Which specific websites are included in the WebLINX validation and test splits to evaluate cross-domain generalization?",
+   "why_hard": "The user needs to navigate through the dataset viewer or read the dataset card/paper to identify specific domain coverage beyond the high-level metadata.",
+   "answer_url": "https://huggingface.co/datasets/McGill-NLP/WebLINX",
+   "angle": "interaction"
+  }
+ ],
+ "sources": [
+  {
+   "url": "https://github.com/ServiceNow/BrowserGym/issues",
+   "title": "Issues \u00b7 ServiceNow/BrowserGym \u00b7 GitHub",
+   "note": "Official GitHub Issues page for BrowserGym, containing bug reports and feature requests for various web agent benchmarks.",
+   "angle": "users"
+  },
+  {
+   "url": "https://arxiv.org/abs/2306.06070",
+   "title": "arxiv.org/abs/2306.06070",
+   "note": "arXiv abstract page for Mind2Web, providing metadata and summary of the generalist web agent dataset.",
+   "angle": "longtail"
+  },
+  {
+   "url": "https://webarena.dev/",
+   "title": "webarena.dev",
+   "note": "Landing page for WebArena-x project suite including WebArena and VisualWebArena.",
+   "angle": "reference"
+  },
+  {
+   "url": "https://arxiv.org/search/advanced?advanced=1&terms-0-term=web+agent+benchmark&terms-0-operator=AND&terms-0-field=title&classification-physics_archives=all&classification-include_cross_list=include&date-filter_by=date_range&date-year=&date-from_date=2024-01-01&date-to_date=2024-12-31&date-date_type=submitted_date&abstracts=show&size=50&order=submitted_date",
+   "title": "arxiv.org/search/advanced?advanced=1&terms-0-term=web+agent+benchmark&terms-0-operator=AND&terms-0-field=title&classification-physics_archives=all&classification-include_cross_list=include&date-filter_by=date_range&date-year=&date-from_date=2024-01-01&date-to_date=2024-12-31&date-date_type=submitted_date&abstracts=show&size=50&order=submitted_date",
+   "note": "arXiv search results for 'web agent benchmark' (2024), sorted by oldest submission first.",
+   "angle": "interaction"
+  },
+  {
+   "url": "https://huggingface.co/spaces/gaia-benchmark/leaderboard",
+   "title": "huggingface.co/spaces/gaia-benchmark/leaderboard",
+   "note": "GAIA Benchmark leaderboard and data description.",
+   "angle": "reference"
+  },
+  {
+   "url": "https://github.com/MinorJerry/WebVoyager",
+   "title": "GitHub - MinorJerry/WebVoyager: Code for \"WebVoyager: WebVoyager: Building an End-to-End Web Agent with Large Multimodal Models\" \u00b7 GitHub",
+   "note": "GitHub repository for WebVoyager, containing code, data, and implementation details.",
+   "angle": "longtail"
+  },
+  {
+   "url": "https://github.com/xlang-ai/OSWorld/issues",
+   "title": "Issues \u00b7 xlang-ai/OSWorld \u00b7 GitHub",
+   "note": "OSWorld GitHub repository issues page - a key source for user problems and technical challenges.",
+   "angle": "users"
+  },
+  {
+   "url": "https://github.com/xlang-ai/OSWorld",
+   "title": "Issues \u00b7 xlang-ai/OSWorld \u00b7 GitHub",
+   "note": "Main repository page for OSWorld containing README and setup information.",
+   "angle": "users"
+  },
+  {
+   "url": "https://github.com/xlang-ai/OSWorld",
+   "title": "Issues \u00b7 xlang-ai/OSWorld \u00b7 GitHub",
+   "note": "Main repository page for OSWorld with installation and general info",
+   "angle": "users"
+  },
+  {
+   "url": "https://huggingface.co/datasets/osunlp/Mind2Web",
+   "title": "osunlp/Mind2Web \u00b7 Datasets at Hugging Face",
+   "note": "Official Hugging Face dataset page for Mind2Web, containing task counts, license, and repository links.",
+   "angle": "interaction"
+  },
+  {
+   "url": "http://osworld-v1.xlang.ai/",
+   "title": "osworld-v1.xlang.ai",
+   "note": "Official project website for OSWorld benchmark containing papers, results, and documentation.",
+   "angle": "users"
+  },
+  {
+   "url": "https://huggingface.co/datasets/YWZBrandon/webshop-data",
+   "title": "YWZBrandon/webshop-data \u00b7 Datasets at Hugging Face",
+   "note": "Dataset repository for WebShop benchmark data on Hugging Face.",
+   "angle": "interaction"
+  },
+  {
+   "url": "https://huggingface.co/datasets/McGill-NLP/WebLINX",
+   "title": "McGill-NLP/WebLINX \u00b7 Datasets at Hugging Face",
+   "note": "McGill-NLP/WebLINX dataset page on Hugging Face including viewer for interactions.",
+   "angle": "interaction"
+  },
+  {
+   "url": "https://github.com/ServiceNow/BrowserGym/releases",
+   "title": "Releases \u00b7 ServiceNow/BrowserGym",
+   "note": "BrowserGym (ServiceNow) GitHub releases page. Contains version history and integration updates for LLM browser benchmarks.",
+   "angle": "deep"
+  },
+  {
+   "url": "https://arxiv.org/html/2308.03688",
+   "title": "arxiv.org/html/2308.03688",
+   "note": "Official GitHub repository for AgentBench evaluation framework.",
+   "angle": "deep"
+  },
+  {
+   "url": "https://arxiv.org/html/2403.07718",
+   "title": "arxiv.org/html/2403.07718",
+   "note": "WorkArena paper on arXiv (HTML version) covering the benchmark and BrowserGym.",
+   "angle": "deep"
+  },
+  {
+   "url": "https://github.com/ServiceNow/BrowserGym/releases",
+   "title": "Releases \u00b7 ServiceNow/BrowserGym",
+   "note": "BrowserGym releases page for tracking version history and benchmark additions.",
+   "angle": "deep"
+  },
+  {
+   "url": "https://arxiv.org/html/2404.07972",
+   "title": "arxiv.org/html/2404.07972",
+   "note": "The OSWorld paper provides a scalable real computer environment and benchmark for multimodal agents.",
+   "angle": "deep"
+  },
+  {
+   "url": "https://arxiv.org/html/2307.13854",
+   "title": "arxiv.org/html/2307.13854",
+   "note": "WebArena: A Realistic Web Environment for Building Autonomous Agents. Contains benchmark details, baseline results, and website categories.",
+   "angle": "deep"
+  },
+  {
+   "url": "https://arxiv.org/html/2306.06070",
+   "title": "arxiv.org/html/2306.06070",
+   "note": "Official project page for Mind2Web dataset and models.",
+   "angle": "deep"
+  }
+ ],
+ "missions": [
+  {
+   "angle": "reference",
+   "start_url": "https://webarena.dev/",
+   "instructions": "Start on the WebArena project site and navigate into its pages. Record: (1) the number of tasks in WebArena and the names of the self-hosted website categories/environments it includes (e.g., shopping, GitLab, Reddit-like forum, CMS); (2) the paper's author list and the GitHub repository link shown on the site. Then follow links to the VisualWebArena project page and record its task count, the paper authors, and the venue it was published at. Finally open the WebArena leaderboard or results page if linked and record the top reported success rate with the agent name and date. Entities: WebArena, VisualWebArena, WebArena leaderboard.",
+   "steps": 11,
+   "done": true,
+   "observations": [
+    "Navigation traps: Redirects or URL structures (like /og/) that display content but lack standard navigation menus can trap agents.",
+    "Data ambiguity: Specific task counts are often embedded in text or sub-pages rather than prominent headers, requiring deep parsing.",
+    "Interactive elements: Elements like video sliders or shadow DOM components can clutter the DOM and make finding primary links more difficult.",
+    "Verbatim extraction: Small variations in text or dynamic loading can cause 'record_fact' tools to fail if they require exact matches."
+   ],
+   "urls": [
+    "https://webarena.dev/",
+    "https://webarena.dev/og/"
+   ]
+  },
+  {
+   "angle": "users",
+   "start_url": "https://github.com/ServiceNow/BrowserGym/issues",
+   "instructions": "Go to the GitHub Issues page of the BrowserGym repository (ServiceNow/BrowserGym). Browse open and closed issues and record at least 5 concrete questions or problems users report (e.g., setup errors, Playwright/browser installation problems, environment registration, benchmark-specific failures for WorkArena, MiniWoB, WebArena, AssistantBench). For each, record the issue title, issue number, and the resolution or maintainer answer if one is given. Entities: BrowserGym, WorkArena, MiniWoB integration within BrowserGym.",
+   "steps": 15,
+   "done": true,
+   "observations": [
+    "The BrowserGym domain is challenging for agents due to dependencies on specific library versions (e.g., lxml 6.0.0 causing failures), which may not be immediately obvious without deep issue browsing.",
+    "Environmental factors like headless mode and cluster-specific firewalls introduce non-deterministic failures (TimeoutErrors) that are hard for agents to diagnose independently.",
+    "Web-based benchmarks often include security features like CAPTCHAs that are intentionally designed to block or alter agent behavior, leading to 'wontfix' resolutions by maintainers.",
+    "Integration complexity between different platforms (e.g., WorkArena, MiniWoB, Google Colab) creates a fragmented setup process where errors in one component can cascade into others.",
+    "The ambiguity in user-defined custom action sets vs. default parameters requires agents to understand the underlying framework logic beyond just the surface API."
+   ],
+   "urls": [
+    "https://github.com/ServiceNow/BrowserGym/issues",
+    "https://github.com/ServiceNow/BrowserGym/issues?q=is%3Aissue%20state%3Aclosed",
+    "https://github.com/ServiceNow/BrowserGym/issues/360",
+    "https://github.com/ServiceNow/BrowserGym/issues/335",
+    "https://github.com/ServiceNow/BrowserGym/issues/311",
+    "https://github.com/ServiceNow/BrowserGym/issues?q=is%3Aissue+is%3Aclosed",
+    "https://github.com/ServiceNow/BrowserGym/issues/365"
+   ]
+  },
+  {
+   "angle": "reference",
+   "start_url": "https://huggingface.co/spaces/gaia-benchmark/leaderboard",
+   "instructions": "Start on the GAIA benchmark dataset/leaderboard page on Hugging Face and navigate into it. Record: the number of questions in GAIA and the split between levels 1, 2, 3, the authors of the GAIA paper, and the top entries on the leaderboard (agent name and score) as visible. Then navigate to the AssistantBench project page or its Hugging Face dataset page and record its task count and authors. Then open the Online-Mind2Web or BrowseComp page (OpenAI BrowseComp announcement) and record the number of questions/tasks and the authors/organization. Entities: GAIA, AssistantBench, BrowseComp.",
+   "steps": 8,
+   "done": true,
+   "observations": [
+    "Navigating complex web environments for benchmarking is challenging due to the dynamic nature of leaderboard data and the nested structure of information (e.g., iframes and shadow DOMs).",
+    "Verification of facts is hindered by 'quote mismatch' errors when the agent attempts to capture verbatim text that might be rendered differently or split across multiple elements.",
+    "Identifying specific authors and precise task counts requires multiple navigation steps through repository files and external paper links, which increases the likelihood of losing state or encountering anti-bot measures.",
+    "The high density of interactive elements on platforms like Hugging Face can lead to ambiguity in action targets, resulting in repetitive actions without progress if the agent's internal model of the page state is slightly off."
+   ],
+   "urls": [
+    "https://huggingface.co/spaces/gaia-benchmark/leaderboard"
+   ]
+  },
+  {
+   "angle": "interaction",
+   "start_url": "https://arxiv.org/search/advanced",
+   "instructions": "Use the Hugging Face Papers/search interface or the arXiv listing search to explore benchmarks for web agents. On arXiv's advanced search page, search titles for 'web agent benchmark' with date filter 2024-01-01 to 2024-12-31 and sort by oldest first. Open at least 3 distinct result papers (e.g., WebVoyager, WebLINX, TravelPlanner or similar that appear) and record the exact title, arXiv ID, submission date of v1, number of authors, and the task count stated in each abstract. Do not reuse WebArena, Mind2Web, or WebShop.",
+   "steps": 23,
+   "done": true,
+   "observations": [
+    "Navigating arXiv and its experimental HTML views can be challenging for agents due to inconsistent element IDs and overlapping text containers.",
+    "Finding specific counts (like task counts) often requires searching deep within the text or tables of a paper's HTML version rather than just the abstract.",
+    "Identifying distinct authors from lists with affiliation markers or footnotes (like equal contribution symbols) requires careful parsing to avoid including affiliations as names.",
+    "The use of 'record_fact' and 'record_source' tools in this environment is prone to 'verbatim' errors if the agent's internal text representation doesn't perfectly match the page's rendered text."
+   ],
+   "urls": [
+    "https://arxiv.org/search/advanced",
+    "https://arxiv.org/search/advanced?advanced=1&terms-0-operator=AND&terms-0-term=web+agent+benchmark&terms-0-field=title&classification-physics_archives=all&classification-include_cross_list=include&date-year=&date-filter_by=date_range&date-from_date=2024-01-01&date-to_date=2024-12-31&date-date_type=submitted_date&abstracts=show&size=50&order=-announced_date_first",
+    "https://arxiv.org/search/advanced?advanced=1&terms-0-term=web+agent+benchmark&terms-0-operator=AND&terms-0-field=title&classification-physics_archives=all&classification-include_cross_list=include&date-filter_by=date_range&date-year=&date-from_date=2024-01-01&date-to_date=2024-12-31&date-date_type=submitted_date&abstracts=show&size=50&order=submitted_date",
+    "https://arxiv.org/abs/2402.17553",
+    "https://arxiv.org/html/2402.17553v3"
+   ]
+  },
+  {
+   "angle": "longtail",
+   "start_url": "https://arxiv.org/abs/2306.06070",
+   "instructions": "Use the arXiv abstract pages for Mind2Web (arXiv 2306.06070), WebShop (arXiv 2207.01206) and MiniWoB++/World of Bits-related work reachable from the WebShop/Mind2Web pages. For each, record: the exact number of tasks/instructions/demonstrations stated in the abstract or paper, the number of websites or domains covered, the first submission date (v1), and the first and last authors. Start with the Mind2Web abstract page, then navigate to the others by their arXiv IDs (WebShop 2207.01206) and the Mind2Web paper's HTML/PDF tables for dataset comparison values.",
+   "steps": 30,
+   "done": true,
+   "observations": [
+    "The domain of LLM web agents is characterized by a lack of standardization in task definitions, with some benchmarks using low-level instructions (MiniWoB++) while others focus on high-level, open-ended tasks (Mind2Web).",
+    "Data extraction from academic tables in HTML/PDF can be difficult due to complex layout structures and non-standardized terminology for 'tasks' vs 'environments' vs 'instructions'.",
+    "Navigating between different versions of papers (v1 vs final) and related work requires precise arXiv IDs, as title-based searches often return newer or adversarial research instead of the foundational benchmarks.",
+    "The scale of datasets (e.g., WebShop's 1.18M products vs Mind2Web's 2,000 tasks) makes manual verification of all 'tasks' impossible for a browser agent without structured comparison tables."
+   ],
+   "urls": [
+    "https://arxiv.org/abs/2306.06070",
+    "https://arxiv.org/html/2306.06070v3",
+    "https://arxiv.org/abs/2207.01206",
+    "https://duckduckgo.com/?q=arXiv+MiniWoB%2B%2B+World+of+Bits+1706.06083+authors+and+date&ia=web",
+    "https://arxiv.org/abs/1706.06083",
+    "https://duckduckgo.com/?q=World+of+Bits%3A+An+Open-Domain+Platform+for+Web-Based+Agents+arXiv&ia=web",
+    "https://duckduckgo.com/?q=World+of+Bits%3A+An+Open-Domain+Platform+for+Web-Based+Agents+arXiv+1702.03484&ia=web"
+   ]
+  },
+  {
+   "angle": "longtail",
+   "start_url": "https://github.com/MinorJerry/WebVoyager",
+   "instructions": "Open the WebVoyager GitHub repository (MinorJerry/WebVoyager) and read the README and data files. Record: the number of websites included and their names (at least 5, e.g., Allrecipes, Amazon, Apple, ArXiv, GitHub, Booking, ESPN, Coursera, Cambridge Dictionary, BBC News, Google Flights, Google Map, Google Search, Huggingface, Wolfram Alpha), the number of tasks per website, total tasks, and the license. Then open the paper's arXiv page (2401.13919) and record the reported success rate of WebVoyager and the authors. Then open the WebLINX project/repo and record its number of demonstrations and websites. Entities: WebVoyager, WebLINX, Allrecipes task subset.",
+   "steps": 13,
+   "done": true,
+   "observations": [
+    "The web agent domain is challenging due to the dynamic nature of websites (e.g., Booking, Google Flights) where data changes in real-time, making static evaluations difficult.",
+    "Navigation traps and the need for multi-modal understanding are significant hurdles, as agents must interpret visual elements and complex UI layouts to succeed.",
+    "Realistic tasks often involve long-horizon planning and handling of ambiguity in user instructions across diverse platforms like Amazon, ArXiv, and Cambridge Dictionary."
+   ],
+   "urls": [
+    "https://github.com/MinorJerry/WebVoyager",
+    "https://github.com/MinorJerry/WebVoyager/tree/main/data",
+    "https://github.com/MinorJerry/WebVoyager/blob/main/data/tasks_test.jsonl",
+    "https://github.com/MinorJerry/WebVoyager/blob/main/data/WebVoyager_data.jsonl",
+    "https://arxiv.org/abs/2401.13919"
+   ]
+  },
+  {
+   "angle": "interaction",
+   "start_url": "https://huggingface.co/datasets",
+   "instructions": "Open the Hugging Face datasets listing and use its search box and filters to find web-agent benchmark datasets. Search for 'Mind2Web', then 'WebShop', then 'WebLINX' using the search field and sort by most downloads or most likes. For three distinct datasets that appear (such as osunlp/Mind2Web, McGill-NLP/WebLINX, and a WebShop-related dataset), open each dataset card and record the owner/name, number of rows or size shown in the dataset viewer, license, and the dataset's splits names. Do not use WebArena, VisualWebArena, or GAIA.",
+   "steps": 16,
+   "done": true,
+   "observations": [
+    "Navigation traps: Searching for specific dataset names often lists models or unrelated versions first, requiring careful sorting by downloads or likes to find the canonical benchmark version.",
+    "Data structure ambiguity: Dataset split names and row counts are sometimes hidden within UI menus (like 'Subset' or 'Split' dropdowns) rather than displayed on the main landing page.",
+    "Dynamic UI: The dataset viewer often truncates content or requires horizontal scrolling to see all columns, which can obscure critical metadata like task descriptions or full action histories.",
+    "License variety: Benchmark datasets use a mix of permissive (CC-BY-4.0) and restrictive (CC-BY-NC-SA-4.0) licenses, which affects their suitability for commercial training vs. academic evaluation.",
+    "Non-static values: While most metadata is stable, download counts and 'likes' change daily, making it important to focus on atomic facts like paper IDs and split names for long-term records."
+   ],
+   "urls": [
+    "https://huggingface.co/datasets",
+    "https://huggingface.co/ShaunSpark/laya-mind2web-browser-agent",
+    "https://huggingface.co/datasets?search=Mind2Web",
+    "https://huggingface.co/datasets/osunlp/Mind2Web",
+    "https://huggingface.co/Lucian1115/DASH-OPD-Qwen3-1.7B-WebShop",
+    "https://huggingface.co/datasets?search=WebShop",
+    "https://huggingface.co/datasets?sort=downloads&search=WebShop",
+    "https://huggingface.co/datasets/YWZBrandon/webshop-data",
+    "https://huggingface.co/datasets/McGill-NLP/WebLINX"
+   ]
+  },
+  {
+   "angle": "users",
+   "start_url": "https://github.com/xlang-ai/OSWorld/issues",
+   "instructions": "Go to the OSWorld GitHub repository issues page (xlang-ai/OSWorld). Browse issues and record at least 5 concrete questions users ask (e.g., VM setup, Docker, VMware/VirtualBox, evaluation reproducibility, task counts, API keys). For each, note the issue title, number, and the answer given if any. Also on the repo README, record the number of tasks in OSWorld (369) and the list of supported apps if stated. Entities: OSWorld, OSWorld-Verified, and any referenced benchmark such as WindowsAgentArena.",
+   "steps": 25,
+   "done": true,
+   "observations": [
+    "Navigation traps: GitHub's long READMEs and pagination can cause agents to lose context or miss specific figures like task counts.",
+    "Ambiguity in 'Answers': Many user issues remain open or have partial community-driven answers that may not be officially verified.",
+    "Data volatility: Issue numbers and 'days ago' timestamps change frequently, though core benchmark facts like task count (369) remain stable.",
+    "Environment Complexity: The setup involves nested virtualization (Docker, VMware, VirtualBox), which leads to complex user queries regarding networking and port mapping."
+   ],
+   "urls": [
+    "https://github.com/xlang-ai/OSWorld/issues",
+    "https://github.com/xlang-ai/OSWorld",
+    "http://osworld-v1.xlang.ai/",
+    "https://github.com/xlang-ai/OSWorld/issues/495",
+    "https://github.com/xlang-ai/OSWorld/issues/466"
+   ]
+  },
+  {
+   "angle": "deep",
+   "start_url": "https://arxiv.org/html/2308.03688",
+   "instructions": "Start from the arXiv HTML version of the AgentBench paper (arXiv 2308.03688). Entities: AgentBench, WebArena-Lite or AgentBoard (arXiv 2401.13178), and GAIA (arXiv 2311.12983). Skip abstract-level claims. For AgentBench, locate the main results table and record a specific model's overall score and its score in a specific environment (e.g., Web Shopping, Web Browsing, Operating System), noting the table number. Also find the appendix with dataset statistics and record a specific number of samples or turns for one environment. For AgentBoard, find a per-task result table cell (e.g., progress rate for a named model in a named task such as WebShop or WebArena) with section context. For GAIA, find the table giving the number of questions per level or the human versus GPT-4 with plugins accuracy by level. Quote the context for each.",
+   "steps": 8,
+   "done": true,
+   "observations": [
+    "Navigation traps: The transition between main paper text and HTML-rendered tables/appendices can cause loss of context or difficulty in locating specific cell values within large datasets.",
+    "Ambiguity in 'Specific' Requests: The prompt requires finding a 'specific model' and 'specific environment' which requires the agent to make a selection from a dense table, increasing the risk of choosing mismatched data points.",
+    "Data Density: Complex tables (like Table 2 and Table 3 in AgentBench) contain multi-layered headers (SR, Reward, F1) that are difficult to parse without a clear visual or structural map.",
+    "Fragmented Information: Facts for a single entity (e.g., AgentBench) are spread across the main results section and multiple appendices, requiring frequent internal navigation.",
+    "Verbatim Requirement: The strict requirement for verbatim quotes with context is easily tripped up by minor HTML rendering artifacts or line breaks in the source text."
+   ],
+   "urls": [
+    "https://arxiv.org/html/2308.03688",
+    "https://arxiv.org/html/2308.03688#S4"
+   ]
+  },
+  {
+   "angle": "deep",
+   "start_url": "https://arxiv.org/html/2403.07718",
+   "instructions": "Start from the arXiv HTML version of the WorkArena paper (arXiv 2403.07718). Entities: WorkArena, BrowserGym, and WorkArena++ (arXiv 2407.05291). Skip abstract and README headline claims. For WorkArena, find the table of task categories and record the number of tasks in a specific category (e.g., list, form, knowledge base, service catalog, menu) and a specific agent's success rate row. For WorkArena++, find a results table or appendix describing task levels (L1, L2, L3) and record a specific count or success rate for a named model. For BrowserGym, find in its paper or ecosystem description the list of supported benchmarks and record a specific detail such as observation or action space options. Include table/section context in the quotes.",
+   "steps": 10,
+   "done": true,
+   "observations": [
+    "The domain of benchmarking browser agents is challenging due to complex navigation structures in enterprise platforms like ServiceNow (WorkArena), which include intricate menus and forms.",
+    "Data volatility and environment state management (setup/teardown) are critical for reproducibility in web tasks.",
+    "Ambiguity in task goals and the need for multi-step reasoning (chain-of-thought) are significant hurdles for current LLMs.",
+    "Observation spaces that combine HTML, accessibility trees, and visual coordinates increase the complexity of prompt engineering and token management."
+   ],
+   "urls": [
+    "https://arxiv.org/html/2403.07718"
+   ]
+  },
+  {
+   "angle": "deep",
+   "start_url": "https://arxiv.org/html/2307.13854",
+   "instructions": "Start from the arXiv HTML version of the WebArena paper. Entities for this mission: WebArena, VisualWebArena, and WebShop (cite their own papers if linked). Skip anything in the abstracts. For WebArena, find the results table comparing agents (e.g., GPT-4, GPT-3.5, text-bison) and record the exact success rate for a specific row, along with the table number and caption. Then find the appendix section listing the website categories or intent templates and record a specific count (e.g., number of templates or annotated intents per site). For VisualWebArena (arXiv 2401.13649), find a results-table row for a specific model (e.g., GPT-4V with SoM) and record the success rate per website (Classifieds, Reddit, Shopping). For WebShop (arXiv 2207.01206), find the row in the main results table for the IL+RL agent and record its score and success rate. Quote the table/section context for each fact.",
+   "steps": 13,
+   "done": true,
+   "observations": [
+    "The exploration of the WebArena paper was partially successful, but navigation to VisualWebArena and WebShop was not completed due to termination.",
+    "WebArena's GPT-4 agent (no UA hint, CoT) achieved a 14.41% success rate as per Table 2 'End-to-end task success rate (SR %) with different prompting strategies'.",
+    "WebArena's intent distribution (Figure 6) consists of: CMS (22.4%), GitLab (22.2%), E-commerce (23.0%), Reddit (13.1%), Map (13.4%), and Cross Site (5.9%).",
+    "WebArena's Reddit-like environment includes 95 subreddits, 127,390 posts, and 661,781 users.",
+    "What makes this domain hard for a browser agent includes: 1) High sensitivity to prompt variations (e.g., UA hints), 2) Complex multi-step reasoning across diverse domains (CMS, GitLab, Maps), 3) The need for domain-specific knowledge (e.g., git merges), and 4) Fragility in action execution where small errors lead to state repetition and failure."
+   ],
+   "urls": [
+    "https://arxiv.org/html/2307.13854",
+    "https://arxiv.org/html/2307.13854#S5",
+    "https://arxiv.org/html/2307.13854#A1"
+   ]
+  },
+  {
+   "angle": "deep",
+   "start_url": "https://github.com/ServiceNow/BrowserGym/releases",
+   "instructions": "Start from the GitHub releases page of the BrowserGym/AgentLab repository, or the ServiceNow/BrowserGym releases. Entities: BrowserGym (ServiceNow), WebArena GitHub repo (web-arena-x/webarena), and Browser Use (browser-use/browser-use). Skip README headline claims. For BrowserGym, find a specific version's release note entry and record the version number, date, and a particular change listed (e.g., added benchmark support such as WebLINX, AssistantBench, or VisualWebArena). For the WebArena repo, open the closed issues or release notes and find a specific comment inside a closed issue, such as a maintainer reply about evaluation, Docker setup, or task fixes, and record the issue number, author handle, and quote. For Browser Use, find a specific release's changelog entry (a version between v0.1.40 and v0.3) and record the version and a listed change. Include the issue/release context in each quote.",
+   "steps": 13,
+   "done": true,
+   "observations": [
+    "Browser agents face significant navigation traps on complex platforms like GitHub where AJAX-loaded content (like release sidebars) can lead to state desynchronization between the URL and the visible UI.",
+    "Blockers include the inability to reliably extract verbatim quotes when the page structure involves nested shadow DOMs or complex text wrapping.",
+    "Ambiguity arises when multiple versions or similar sounding benchmarks (WebArena vs VisualWebArena) are mentioned across different repositories, requiring precise cross-referencing.",
+    "Data such as 'days ago' or 'latest' tags change frequently, making it hard for agents to anchor their search on static facts without specific versioning info."
+   ],
+   "urls": [
+    "https://github.com/ServiceNow/BrowserGym/releases",
+    "https://github.com/ServiceNow/BrowserGym/releases#release-v0.12.0"
+   ]
+  },
+  {
+   "angle": "deep",
+   "start_url": "https://arxiv.org/html/2306.06070",
+   "instructions": "Start from the arXiv HTML version of the Mind2Web paper. Entities for this mission: Mind2Web, WebLINX, and MiniWoB++ (or the World of Bits paper). Skip abstract-level claims. For Mind2Web, find the results table (Cross-Task, Cross-Website, Cross-Domain splits) and record a specific cell, e.g., Element Accuracy, Step Success Rate, or Success Rate for a named baseline such as MindAct with Flan-T5-XL or GPT-4, with the table number. Also find the dataset statistics table and record the number of domains, websites, or average elements per page. For WebLINX (arXiv 2402.05930), find the appendix or dataset statistics and record a specific count such as number of demonstrations, websites, or test splits. For MiniWoB++ or World of Bits, locate a table row with a specific number of tasks or a human/baseline success rate. Include table/section context in each quote.",
+   "steps": 17,
+   "done": true,
+   "observations": [
+    "The arXiv HTML conversion process can lead to significant accessibility and rendering issues for browser agents, such as empty initial loads or missing verbatim text during search.",
+    "Dataset statistics are often presented in complex nested tables (e.g., Table 1 in Mind2Web) where headers and data rows are separated, making it difficult for agents to associate specific values like 'Avg. # Elements' with the correct entity without persistent context tracking.",
+    "Navigation within long academic papers in HTML format requires precise scrolling and element identification, as many critical facts (like cross-domain success rates) are buried in deep sub-sections or appendices.",
+    "The dynamic nature of web-based agents means that benchmarks must account for 'real-world' website volatility, as mentioned in the Mind2Web paper's transition from simplified to real-world environments.",
+    "Mind2Web dataset statistics from Table 1: 31 domains, 137 websites, 135 average elements per page, and 2,350 tasks (noted as over 2,000 in text).",
+    "MiniWoB++ comparison statistics from Table 1: 28 average elements per page and 100 tasks (simplified mobile environment).",
+    "Task Idea 1: Identify the Success Rate of the MindAct baseline with the Flan-T5-XL model on the 'Cross-Website' split in Mind2Web.",
+    "Task Idea 2: Compare the 'Avg. # Actions' required in WebShop vs. Mind2Web as reported in Table 1.",
+    "Task Idea 3: Locate the specific count of demonstrations and test splits in the WebLINX paper (arXiv 2402.05930) to compare its scale with Mind2Web."
+   ],
+   "urls": [
+    "https://arxiv.org/html/2306.06070",
+    "https://arxiv.org/html/2306.06070#S2"
+   ]
+  },
+  {
+   "angle": "deep",
+   "start_url": "https://arxiv.org/html/2404.07972",
+   "instructions": "Start from the arXiv HTML version of the OSWorld paper (arXiv 2404.07972). Entities: OSWorld, AssistantBench (arXiv 2407.15711), and BrowseComp (OpenAI paper, arXiv 2504.12516) or Online-Mind2Web (arXiv 2504.01382, 'An Illusion of Progress' paper). Skip abstract claims. For OSWorld, find the main results table and record a specific model row's success rate by category (e.g., OS, Office, Daily, Professional, Workflow) and the number of tasks in a specific application category from the appendix. For AssistantBench, find a results table row for a named system (e.g., SeeAct, SPA-ClaudeAgent) and record accuracy and answer rate. For Online-Mind2Web or BrowseComp, find a table cell for a named agent (e.g., Operator, Claude Computer Use, Browser Use) and record the score with the difficulty level or table context. Quote the table/section context each time.",
+   "steps": 17,
+   "done": true,
+   "observations": [
+    "The domain of benchmarking LLM web agents is challenging due to the high density of tabular data in scientific papers (arXiv HTML), which often requires precise scrolling and mapping of column headers to row values across large tables.",
+    "Navigation traps include the complexity of multi-section papers where appendices contain crucial statistics not found in the main text.",
+    "Data ambiguity arises from multiple baseline configurations (e.g., A11y tree vs. Screenshot), requiring the agent to strictly maintain context of the specific model and input modality being recorded."
+   ],
+   "urls": [
+    "https://arxiv.org/html/2404.07972",
+    "https://arxiv.org/html/2404.07972#S4.SS2",
+    "https://arxiv.org/html/2404.07972#A2"
+   ]
+  }
+ ],
+ "spend_usd": 0.3443
+}

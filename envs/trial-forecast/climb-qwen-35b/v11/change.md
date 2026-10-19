@@ -1,0 +1,1 @@
+Rewrote the completion bullet and its example so the required-retention arithmetic drives the forecast and design features only nudge it within a 0.45–0.7 band, because design-based moves were anticorrelated with the outcomes. [round 4, Completion forecasts moved too far by design features instead of enrollment-to-denominator arithmetic]

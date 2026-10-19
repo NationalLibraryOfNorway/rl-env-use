@@ -1,0 +1,1 @@
+Add an explicit instruction to avoid intermediate rounding: store each intermediate result to at least 6 significant figures before using it in the next step, and only round at the very last step. [round 3, Rounding/precision error in arithmetic]

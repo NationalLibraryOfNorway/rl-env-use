@@ -1,0 +1,32 @@
+{
+ "topic": "Completed interventional clinical trials registered on ClinicalTrials.gov whose results were first posted on or after 2026-07-01, covering small academic or small-sponsor phase 2\u20134 trials, behavioral interventions, and device trials with fewer than 500 enrolled participants. Cases are drawn from lesser-known trials to minimize memorization risk.",
+ "skill": "Given the registered protocol of a completed interventional trial (study design, arms and interventions, eligibility criteria, planned enrollment, primary and secondary outcome measures, endpoints, and key dates), the model must output calibrated probabilities for binary questions about the subsequently posted results: (1) did the primary outcome statistically favor the intervention arm over control, (2) did the between-arm difference on the primary outcome reach p<0.05, (3) did the trial meet its pre-specified completion rate threshold (\u226580% of planned enrollment completing the trial), and (4) did the serious adverse event (SAE) rate in the intervention arm exceed a specified threshold (e.g., >10% of participants). The results are published later on ClinicalTrials.gov and are not available at protocol-reading time.",
+ "sources": [
+  "https://clinicaltrials.gov/api/v2/studies?filter.advanced=AREA%5BResultsFirstPostDate%5DRANGE%5B2026-07-01,MAX%5D%20AND%20AREA%5BStudyType%5DINTERVENTIONAL%20AND%20AREA%5BEnrollmentCount%5DRANGE%5B20,500%5D&fields=NCTId,BriefTitle,Condition,LeadSponsorName,ResultsFirstPostDate&pageSize=50"
+ ],
+ "mix": "predict",
+ "conventions": "Primary outcome favors intervention: the direction of the primary endpoint result (mean difference, odds ratio, hazard ratio, or proportion difference) is in the pre-specified beneficial direction for the intervention arm as reported in the posted results table. p<0.05: the p-value reported for the primary between-arm comparison in the posted results is strictly less than 0.05 (two-sided unless protocol specifies one-sided). Completion rate: (number of participants who completed the trial as reported in the participant flow module) divided by (planned enrollment as registered), expressed as a percentage; threshold \u226580%. SAE rate: (number of participants with at least one serious adverse event in the intervention arm) divided by (number of participants in that arm who received at least one dose or session), expressed as a percentage; threshold >10%. Phase: as registered in the protocol (Phase 2, Phase 3, Phase 4, or combined). Small trial: planned enrollment <500 participants.",
+ "sampling": "Take trials from the ClinicalTrials.gov API list (first source: interventional, results first posted on or after 2026-07-01, 20-500 participants; add &query.cond=<area> or &pageToken to reach other trials) in list order, never by outcome; skip famous named pivotal trials. Case key = the NCT id. Material: https://clinicaltrials.gov/study/<NCT id> (the protocol: description, design, arms and interventions, eligibility, outcome measures, enrollment). Outcome: https://clinicaltrials.gov/study/<NCT id>?tab=results (participant flow, primary outcome results with statistical analysis, serious adverse events).",
+ "request": "Forecast the posted results of completed interventional clinical trials from their registered protocol alone. Cases: small, lesser-known trials (academic or small-sponsor phase 2-4, behavioral, device) whose results were first posted on ClinicalTrials.gov on or after 2026-07-01, after model training cutoffs; sample by results-first-posted date regardless of outcome. The model gets the protocol (design, arms, eligibility, planned enrollment, outcome measures, dates) and gives a probability for yes/no questions about the posted results: did the primary outcome favor the intervention, did the between-arm difference reach p<0.05, did completion or serious adverse event rates cross a threshold. Source: clinicaltrials.gov",
+ "auto": true,
+ "missions": 20,
+ "agent_model": "bu",
+ "max_steps": 60,
+ "concurrency": 10,
+ "tasks_per_case": 4,
+ "hard": true,
+ "closed_book": [
+  "haiku",
+  "sonnet46"
+ ],
+ "panel": [
+  "opus55",
+  "gpt-astra",
+  "gemini"
+ ],
+ "panel_reps": 2,
+ "budget_usd": 90.0,
+ "target_tasks": 70,
+ "live_check": false,
+ "spent_usd": 72.0509
+}

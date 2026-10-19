@@ -1,0 +1,1 @@
+Add an explicit instruction that when the materials do not contain the needed historical data, the model must state what is missing and reason only from what is present, never importing external knowledge about specific company financials. [round 4, Fabricated or hallucinated revenue data used for probability estimate]

@@ -1,0 +1,58 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>rl-env-use annotate</title>
+<style>
+:root{--bg:#fafaf8;--fg:#1c1c1a;--mut:#6b6b66;--line:#e2e1dc;--card:#fff;--acc:#2f5bd3;--ok:#1f7a4d;--bad:#b3261e;--code:#f3f2ee}
+@media (prefers-color-scheme:dark){:root{--bg:#171716;--fg:#e8e7e3;--mut:#9a9993;--line:#2e2d2a;--card:#1f1f1d;--acc:#7d9cf0;--ok:#5cc08e;--bad:#f0857c;--code:#262624}}
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--fg);display:grid;grid-template-columns:340px 1fr;height:100vh}
+aside{border-right:1px solid var(--line);overflow:auto}main{overflow:auto;padding:20px 28px}
+header{position:sticky;top:0;background:var(--bg);padding:12px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button,select{font:inherit;padding:5px 10px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;cursor:pointer}
+button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.it{padding:8px 12px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;gap:8px}.it:hover{background:var(--card)}.it.sel{background:var(--card);box-shadow:inset 3px 0 var(--acc)}
+.it .t{flex:1;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none;border:1px solid var(--mut)}.dot.pass,.dot.accept{background:var(--ok);border:0}.dot.fail,.dot.reject{background:var(--bad);border:0}
+.chip{display:inline-block;font-size:12px;padding:1px 7px;border-radius:9px;background:var(--code);color:var(--mut);margin-right:4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:10px 0}
+.k{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--code);padding:8px 10px;border-radius:6px;margin:4px 0;font:12.5px/1.45 ui-monospace,monospace}
+.turn{border-left:3px solid var(--line);padding:2px 0 2px 12px;margin:8px 0}.turn.tool_call{border-color:var(--acc)}.turn.tool_result{border-color:var(--mut)}.turn.assistant{border-color:var(--ok)}
+textarea,input[type=text]{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}
+.bar{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:12px 0;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.ok{color:var(--ok)}.bad{color:var(--bad)}.mut{color:var(--mut)}
+details summary{cursor:pointer;color:var(--mut)}
+@media (max-width:800px){body{grid-template-columns:1fr;grid-template-rows:40vh 1fr}aside{border-right:0;border-bottom:1px solid var(--line)}}
+</style>
+<aside><header><button id="m-data">Data</button><button id="m-tasks">Tasks</button><button id="m-traces">Traces</button><span id="prog" class="mut"></span></header><div id="list"></div></aside>
+<main id="main"><p class="mut">Pick an item. Keys: j/k move, p pass, f fail, a accept, r reject, s save. Look before you build evaluators.</p></main>
+<script>
+const $=(t,a={},...c)=>{const e=document.createElement(t);for(const[k,v]of Object.entries(a)){if(k==='class')e.className=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v)}for(const x of c.flat())if(x!=null)e.append(x instanceof Node?x:document.createTextNode(String(x)));return e};
+let mode='traces',items=[],cur=-1,state={};
+const api=(p,b)=>fetch(p,b?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}:{}).then(r=>r.json());
+async function load(m){mode=m;for(const x of['data','tasks','traces'])document.getElementById('m-'+x).classList.toggle('on',x===m);items=await api('/api/items?mode='+m);renderList();if(items.length)open(Math.max(0,items.findIndex(i=>!i.label)))}
+function renderList(){const L=document.getElementById('list');L.replaceChildren(...items.map((it,i)=>$('div',{class:'it'+(i===cur?' sel':''),onclick:()=>open(i)},$('span',{class:'dot '+(it.label||'')}),$('div',{class:'t'},it.title,$('div',{},...it.tags.filter(Boolean).map(t=>$('span',{class:'chip'},t)))))));const n=items.filter(i=>i.label).length;document.getElementById('prog').textContent=`${n}/${items.length} labeled`}
+async function open(i){cur=i;renderList();const d=await api(`/api/item?mode=${mode}&id=${encodeURIComponent(items[i].id)}`);state={verdict:d.label?.verdict||null,notes:d.label?.notes||'',modes:d.label?.modes||[],gold_fix:d.label?.gold_fix||'',revealed:!!d.label};(mode==='data'?renderFact:mode==='tasks'?renderTask:renderTrace)(d)}
+function kv(k,v){return $('div',{},$('div',{class:'k'},k),$('div',{},v))}
+function renderTask(d){const t=d.task,c=t.checks||{};const flag=(ok,txt)=>$('span',{class:ok?'ok':'bad'},(ok?'✓ ':'✗ ')+txt);
+document.getElementById('main').replaceChildren($('h2',{},t.prompt),$('div',{},$('span',{class:'chip'},t.category),$('span',{class:'chip'},t.difficulty),$('span',{class:'chip'},t.answer_type),t.kind?$('span',{class:'chip'},t.kind):null),
+$('div',{class:'card'},kv('Gold answer',$('pre',{},t.answer+(t.aliases?.length?'  (aliases: '+t.aliases.join(' | ')+')':''))),t.derivation?kv('Derivation',t.derivation):null,t.context?null:kv('Start URL',t.start_url),kv('Why hard (stated up front)',t.why_hard)),
+t.context?$('div',{class:'card'},$('details',{},$('summary',{},`Context given to the model (${t.context.length} chars, case ${t.case})`),$('pre',{},t.context))):null,
+$('div',{class:'card'},$('div',{class:'k'},t.context?'Outcome evidence (never shown to the model)':'Evidence'),...d.evidence.map(f=>$('div',{},$('pre',{},'"'+f.quote+'"'),$('div',{class:'mut'},f.url)))),
+$('div',{class:'card'},$('div',{class:'k'},'Automatic checks'),$('div',{class:'row'},flag(!(c.structural||[]).length,'structural '+(c.structural||[]).join('; ')),flag(!c.leakage,'no leakage'),c.live!=null?flag(c.live,'evidence live'):null,...Object.entries(typeof c.closed_book==='object'?c.closed_book:{}).map(([m,v])=>flag(v!==true,`not memorized (${m})`)),c.critic?flag(c.critic.unambiguous&&c.critic.gold_supported&&c.critic.agrees!==false&&!c.critic.answer_in_context&&c.critic.well_posed!==false,'critic: '+(c.critic.issues||'ok')):null),),
+bar([['accept','a'],['reject','r']],$('input',{type:'text',placeholder:'Corrected gold answer (optional)',value:state.gold_fix,oninput:e=>state.gold_fix=e.target.value})))}
+function renderFact(d){const f=d.fact;const http={visible:'a plain fetch sees this',in_raw_html:'only in raw HTML (a fetch-to-text tool misses it)',blocked:'plain fetch is blocked here',missing:'plain fetch never sees this - browser only'}[f.http]||'';
+document.getElementById('main').replaceChildren($('h2',{},f.claim),$('div',{},$('span',{class:'chip'},f.angle||''),http?$('span',{class:'chip'},http):null),
+$('div',{class:'card'},kv('Value',$('pre',{},f.value)),kv('Verbatim quote on the page',$('pre',{},'"'+f.quote+'"')),kv('Page',$('a',{href:f.url,target:'_blank',rel:'noopener'},f.url))),
+bar([['accept','a'],['reject','r']],null))}
+function renderTrace(d){const r=d.row;const grades=$('div',{class:'card'},$('div',{class:'k'},'Gold & automated grades'),kv('Gold',r.meta?.gold),kv('Grades',Object.entries(r.grade).map(([k,v])=>`${k}=${v}`).join('  ')),...Object.entries(r.explanation||{}).map(([k,v])=>$('details',{},$('summary',{},k),$('pre',{},v))));
+const hidden=$('button',{onclick:e=>{e.target.replaceWith(grades);state.revealed=true}},'Reveal gold & grades (after you judge)');
+document.getElementById('main').replaceChildren($('h2',{},r.prompt),$('div',{},...r.tags.map(t=>$('span',{class:'chip'},t)),$('span',{class:'chip'},r.model),$('span',{class:'chip'},r.steps+' steps'),$('span',{class:'chip'},'$'+r.cost_usd),$('span',{class:'chip'},r.latency_s+'s')),
+$('div',{class:'card'},kv('Final answer',$('pre',{},String(r.meta?.answer))),kv('Agent claimed success',String(r.meta?.agent_claimed_success))),state.revealed?grades:hidden,
+$('div',{},...d.trace.slice(1).map(t=>$('div',{class:'turn '+t.role},$('div',{class:'k'},t.role+(t.name?' · '+t.name:'')),t.thinking?$('details',{},$('summary',{},'thinking'),$('pre',{},t.thinking)):null,$('pre',{},t.content)))),
+bar([['pass','p'],['fail','f']],d.modes.length?$('div',{class:'row'},$('span',{class:'k'},'Failure modes'),...d.modes.map(m=>{const b=$('button',{title:m.definition,onclick:()=>{const i=state.modes.indexOf(m.id);i<0?state.modes.push(m.id):state.modes.splice(i,1);b.classList.toggle('on')}},m.name);if(state.modes.includes(m.id))b.classList.add('on');return b})):null))}
+function bar(opts,extra){const btns=opts.map(([v,k])=>{const b=$('button',{class:'verdict',onclick:()=>{state.verdict=v;btns.forEach(x=>x.classList.toggle('on',x===b))}},`${v} (${k})`);if(state.verdict===v)b.classList.add('on');return b});
+return $('div',{class:'bar'},$('textarea',{rows:3,placeholder:mode==='traces'?'Open coding: what is the FIRST thing that went wrong? Be specific.':'Notes: ambiguous? wrong gold? unrealistic?',oninput:e=>state.notes=e.target.value},state.notes),extra,$('div',{class:'row'},...btns,$('button',{class:'on',onclick:save},'Save & next (s)'),$('span',{id:'msg',class:'mut'})))}
+async function save(){if(!state.verdict){document.getElementById('msg').textContent='pick a verdict';return}await api('/api/label',{mode,id:items[cur].id,verdict:state.verdict,notes:state.notes,modes:state.modes,gold_fix:state.gold_fix});items[cur].label=state.verdict;const nxt=items.findIndex((it,i)=>i>cur&&!it.label);open(nxt<0?Math.min(cur+1,items.length-1):nxt)}
+document.addEventListener('keydown',e=>{if(e.target.matches('textarea,input'))return;const m={j:()=>open(Math.min(cur+1,items.length-1)),k:()=>open(Math.max(cur-1,0)),s:save};const v={p:'pass',f:'fail',a:'accept',r:'reject'}[e.key];if(v){const b=[...document.querySelectorAll('.bar button.verdict')].find(b=>b.textContent.startsWith(v));b?.click()}else m[e.key]?.()});
+document.getElementById('m-data').onclick=()=>load('data');document.getElementById('m-tasks').onclick=()=>load('tasks');document.getElementById('m-traces').onclick=()=>load('traces');load('traces').then(()=>{if(!items.length)load('tasks')});
+</script>

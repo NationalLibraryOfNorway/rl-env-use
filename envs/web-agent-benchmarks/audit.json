@@ -1,0 +1,319 @@
+[
+ {
+  "severity": "medium",
+  "check": "signoff",
+  "message": "2/50 kept tasks have no human review yet (open `review`)"
+ },
+ {
+  "severity": "medium",
+  "check": "shortcut",
+  "message": "baseline: 23/90 correct answers were never read at their source (search snippets / third-party copies) - train on `supported`, not `correct`",
+  "ids": [
+   "t_1af8c876",
+   "t_2d394f11",
+   "t_48d249d9",
+   "t_6a07a05d",
+   "t_7684b669",
+   "t_8d113ef3",
+   "t_8f23098b",
+   "t_aae32a9c",
+   "t_b1640ce0",
+   "t_c0ddb20e",
+   "t_c2c26b30",
+   "t_d47aefed",
+   "t_da8c21de",
+   "t_e62707e8"
+  ]
+ },
+ {
+  "severity": "medium",
+  "check": "infra",
+  "message": "baseline: 2 attempts failed in the harness (timeouts/crashes) and are excluded from the score",
+  "classes": {
+   "timeout": 2
+  }
+ },
+ {
+  "severity": "medium",
+  "check": "shortcut",
+  "message": "v1: 12/37 correct answers were never read at their source (search snippets / third-party copies) - train on `supported`, not `correct`",
+  "ids": [
+   "t_2806fe45",
+   "t_2d394f11",
+   "t_6a07a05d",
+   "t_6db2b94f",
+   "t_7684b669",
+   "t_8d113ef3",
+   "t_8f23098b",
+   "t_9e28679e",
+   "t_b1640ce0",
+   "t_c0ddb20e",
+   "t_c2c26b30",
+   "t_d47aefed"
+  ]
+ },
+ {
+  "severity": "medium",
+  "check": "infra",
+  "message": "v1: 1 attempts failed in the harness (timeouts/crashes) and are excluded from the score",
+  "classes": {
+   "timeout": 1
+  }
+ },
+ {
+  "severity": "medium",
+  "check": "shortcut",
+  "message": "v2: 7/42 correct answers were never read at their source (search snippets / third-party copies) - train on `supported`, not `correct`",
+  "ids": [
+   "t_2d394f11",
+   "t_7684b669",
+   "t_8d113ef3",
+   "t_c2c26b30",
+   "t_ce7908fe",
+   "t_d47aefed",
+   "t_e62707e8"
+  ]
+ },
+ {
+  "severity": "medium",
+  "check": "inverted",
+  "message": "2 cases where bu-2-0-mini-preview beats anthropic/claude-sonnet-4-6 - inspect these first, usually a task or grader bug",
+  "ids": [
+   "t_7f61acf5",
+   "t_aae32a9c"
+  ]
+ },
+ {
+  "severity": "medium",
+  "check": "never_solved",
+  "message": "1 cases fail for every model - check for broken gold before calling them hard",
+  "ids": [
+   "t_c2c26b30"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "tasks",
+  "message": "50/110 tasks pass all filters; categories {'lookup': 14, 'list': 2, 'multi_hop': 6, 'temporal': 6, 'comparison': 3, 'temporal_numeric_comparison': 1, 'cross_paper_comparison': 2, 'multi_hop_arithmetic': 2, 'deep_table_arithmetic': 5, 'cross_site_arithmetic': 7, 'list_multi_source': 1, 'deep_table_lookup': 1}"
+ },
+ {
+  "severity": "info",
+  "check": "leakage",
+  "message": "3 tasks: gold leaks into prompt (filtered out)",
+  "ids": [
+   "t_aac2065e",
+   "t_01af99da",
+   "t_00022269"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "structural",
+  "message": "17 tasks: structural problems (filtered out)",
+  "ids": [
+   "t_2b4c95aa",
+   "t_be1388aa",
+   "t_ce5acea3",
+   "t_e8688e24",
+   "t_3f583028",
+   "t_8bea3205",
+   "t_1678b682",
+   "t_96c3b623",
+   "t_daeea56a",
+   "t_75f7b425",
+   "t_f7f55c57",
+   "t_6df49c9b",
+   "t_2934ac5e",
+   "t_3ce24ba4",
+   "t_eb20d3f0",
+   "t_79eaf5fc",
+   "t_2b41b95a"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "memorizable",
+  "message": "29/110 tasks answerable closed-book - they test recall, not the skill (filtered out)",
+  "ids": [
+   "t_86021b21",
+   "t_cf43b40d",
+   "t_beba059f",
+   "t_ea1d8c23",
+   "t_6725c0c8",
+   "t_a32f3b0b",
+   "t_66b5b8c2",
+   "t_4d8a9bf9",
+   "t_34a19ecf",
+   "t_bfdbd380",
+   "t_023db395",
+   "t_b5de4e0c",
+   "t_4886ba04",
+   "t_a926b51e",
+   "t_2b4c95aa",
+   "t_be1388aa",
+   "t_ce5acea3",
+   "t_0e4c3365",
+   "t_53dec56b",
+   "t_41affc8f",
+   "t_96c3b623",
+   "t_daeea56a",
+   "t_75f7b425",
+   "t_51e31508",
+   "t_b00ecc1a",
+   "t_10049a05",
+   "t_9a583a08",
+   "t_b0cb8763",
+   "t_2b41b95a"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "stale",
+  "message": "5 tasks cite evidence no longer on the live page (filtered out); re-run verify periodically",
+  "ids": [
+   "t_2b4c95aa",
+   "t_be1388aa",
+   "t_ce5acea3",
+   "t_79eaf5fc",
+   "t_2b41b95a"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "ambiguous",
+  "message": "18 tasks flagged by critic: ambiguous, unsupported, or its independent recomputation disagrees with gold (filtered out)",
+  "ids": [
+   "t_83e2de11",
+   "t_4d8a9bf9",
+   "t_65eb4a8d",
+   "t_be826435",
+   "t_cc0d4a37",
+   "t_facd5403",
+   "t_32081125",
+   "t_303bd37e",
+   "t_660de05d",
+   "t_b4b76d7e",
+   "t_9a583a08",
+   "t_83be2b06",
+   "t_b0cb8763",
+   "t_90538706",
+   "t_958eeebd",
+   "t_abc2071e",
+   "t_872229da",
+   "t_79e13bf1"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "grader",
+  "message": "grader self-test clean on 50 tasks (oracle passes; null, foreign gold, perturbed gold fail)"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "baseline (bu-2-0): 73% supported [59%, 84%] on 46 cases x 2 reps; noise floor ~\u00b110%; $2.09; 2 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "overclaim",
+  "message": "baseline: agent claimed success on 2/92 attempts it got wrong - self-reported success is not a reward signal",
+  "ids": [
+   "t_7f61acf5",
+   "t_7f61acf5"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "baseline: failure classes {'wrong_answer': 2}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "v1 (bu-2-0-mini-preview): 54% supported [40%, 68%] on 46 cases x 1 reps; noise floor ~\u00b115%; $0.38; 1 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "overclaim",
+  "message": "v1: agent claimed success on 9/46 attempts it got wrong - self-reported success is not a reward signal",
+  "ids": [
+   "t_8225d6de",
+   "t_935bf41c",
+   "t_a2764cfc",
+   "t_aeeebdea",
+   "t_ac14868f",
+   "t_b9e905f8",
+   "t_da8c21de",
+   "t_e3ccecf1",
+   "t_1af8c876"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "v1: failure classes {'wrong_answer': 9}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "v2 (anthropic/claude-haiku-4-5): 70% supported [56%, 81%] on 50 cases x 1 reps; noise floor ~\u00b114%; $7.09; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "overclaim",
+  "message": "v2: agent claimed success on 8/50 attempts it got wrong - self-reported success is not a reward signal",
+  "ids": [
+   "t_1af8c876",
+   "t_45ea5c0f",
+   "t_7f61acf5",
+   "t_aae32a9c",
+   "t_c0ddb20e",
+   "t_da8c21de",
+   "t_e3ccecf1",
+   "t_d1ea7bad"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "v2: failure classes {'wrong_answer': 7}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "v3 (anthropic/claude-sonnet-4-6): 92% supported [81%, 97%] on 50 cases x 1 reps; noise floor ~\u00b114%; $8.28; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "overclaim",
+  "message": "v3: agent claimed success on 1/50 attempts it got wrong - self-reported success is not a reward signal",
+  "ids": [
+   "t_7f61acf5"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "shortcut",
+  "message": "v3: 3/49 correct answers were never read at their source (search snippets / third-party copies) - train on `supported`, not `correct`",
+  "ids": [
+   "t_aae32a9c",
+   "t_c2c26b30",
+   "t_ce7908fe"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "v3: failure classes {'wrong_answer': 1}"
+ },
+ {
+  "severity": "info",
+  "check": "gradient",
+  "message": "capability gradient on supported: bu-2-0-mini-preview 54% -> anthropic/claude-sonnet-4-6 93% on 46 shared cases"
+ },
+ {
+  "severity": "info",
+  "check": "discrimination",
+  "message": "21/46 cases give the same all-pass/all-fail result across every variant - they cannot discriminate between models"
+ }
+]

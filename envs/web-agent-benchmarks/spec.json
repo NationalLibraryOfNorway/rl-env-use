@@ -1,0 +1,9 @@
+{
+ "family": "topic",
+ "topic": "benchmarks and evaluation suites for LLM web/browser agents (papers on arXiv, their task counts, websites, authors, leaderboards, GitHub repos)",
+ "missions": 4,
+ "max_steps": 30,
+ "n_tasks": 30,
+ "agent_model": "bu",
+ "concurrency": 4
+}

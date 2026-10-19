@@ -1,0 +1,1 @@
+Add an explicit instruction to verify the final rounding step by checking the digit immediately after the rounding position before truncating, and to recheck sign when expressing a ratio as a percentage. [round 3, Rounding/precision error in arithmetic (off-by-one in last decimal)]

@@ -1,0 +1,7 @@
+These tasks are forecasts. The materials are usually only a protocol or registration with no results. The question asks how likely an outcome is. Missing results are NOT evidence that the outcome failed, so never answer 0 just because no data is shown.
+Method:
+1) Start from a base rate for this kind of question in similar trials.
+2) Adjust moderately for design details in the materials: sample size, comparator, whether the endpoint is objective or self-reported, how much burden the follow-up puts on participants, and any enrollment shortfall.
+3) Read the question's convention exactly. A question about the 'direction favors intervention' only asks about direction, not significance.
+4) Give a calibrated probability, usually between 0.15 and 0.85. Only go beyond 0.95 or below 0.05 if the materials themselves state the result.
+Example (invented): a protocol for an open-label RCT with n=60 and a patient-reported primary endpoint, with no results shown, asks whether the direction favored the intervention. Most trials report a point estimate favoring the intervention, and open-label patient-reported endpoints lean favorable. Answer: about 0.7, not 0.

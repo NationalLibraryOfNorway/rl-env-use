@@ -1,0 +1,651 @@
+{
+ "train_ids": [
+  "t_026f7dbb",
+  "t_04e9005f",
+  "t_07178210",
+  "t_0ad8ddbb",
+  "t_0b60b713",
+  "t_0b6eaf05",
+  "t_107994d4",
+  "t_13375890",
+  "t_136f7a0f",
+  "t_13939706",
+  "t_16774e19",
+  "t_181b9ebd",
+  "t_1c5c11f3",
+  "t_1e784c92",
+  "t_1fc6b1c3",
+  "t_2639ed24",
+  "t_28eb78b0",
+  "t_32888c8b",
+  "t_37d8c20a",
+  "t_3b656edc",
+  "t_3bd6ad64",
+  "t_3cb2e204",
+  "t_42699213",
+  "t_47f1b7d4",
+  "t_496503ce",
+  "t_49a18df2",
+  "t_4c11c8ef",
+  "t_4e7acb52",
+  "t_4f36b8d2",
+  "t_4f462826",
+  "t_4ff69d40",
+  "t_541e402a",
+  "t_5906fda4",
+  "t_61280f2b",
+  "t_658f2e17",
+  "t_686b244c",
+  "t_68c249c7",
+  "t_6a2a742e",
+  "t_6d3c78ac",
+  "t_6df915be",
+  "t_6fbf6d8d",
+  "t_72a2950f",
+  "t_73e57de1",
+  "t_78216fa7",
+  "t_7a9ff583",
+  "t_7c34eb2a",
+  "t_7ca7a168",
+  "t_7e4f14c3",
+  "t_82912fb4",
+  "t_82a40426",
+  "t_853649c1",
+  "t_8f633426",
+  "t_92cf2f1d",
+  "t_980a3c0a",
+  "t_9904fa6a",
+  "t_9bb1c6f9",
+  "t_a11d1496",
+  "t_a4b93595",
+  "t_a56f6d88",
+  "t_a6024631",
+  "t_a7b79b30",
+  "t_ae0d4499",
+  "t_aedfcd4a",
+  "t_b7ad84ce",
+  "t_bb6c96fa",
+  "t_bd5f4f1b",
+  "t_c51e7560",
+  "t_c8a225b5",
+  "t_cb9c9873",
+  "t_d0348e04",
+  "t_d172096a",
+  "t_d213d0cc",
+  "t_d7aaeb10",
+  "t_d97d8ea1",
+  "t_dd45ad7f",
+  "t_ddf3d3fc",
+  "t_de8242c9",
+  "t_deb02f87",
+  "t_deedef10",
+  "t_e76e3108",
+  "t_e835164d",
+  "t_e841ff44",
+  "t_ea1b17f3",
+  "t_f176b7e9",
+  "t_f2b8632d",
+  "t_f8b13b66",
+  "t_fa1cafb6",
+  "t_fbd517fe"
+ ],
+ "test_ids": [
+  "t_008bdf3a",
+  "t_067c7e0b",
+  "t_06fbb208",
+  "t_098adf82",
+  "t_0eb06817",
+  "t_0ef6fb5a",
+  "t_1090406b",
+  "t_117478b7",
+  "t_124cfa6e",
+  "t_177cab2c",
+  "t_18fcc715",
+  "t_1d4d382a",
+  "t_20e8099b",
+  "t_2280aa35",
+  "t_26e6e0f8",
+  "t_2c421781",
+  "t_2c5c2667",
+  "t_31924413",
+  "t_3710a64f",
+  "t_3798b415",
+  "t_47d77d81",
+  "t_49254b81",
+  "t_4983483c",
+  "t_4ba6fb0c",
+  "t_4c620291",
+  "t_53c0c894",
+  "t_55689c96",
+  "t_56af245d",
+  "t_593b2255",
+  "t_594810ee",
+  "t_5c4815df",
+  "t_63a30266",
+  "t_67b0d2fb",
+  "t_6991c46f",
+  "t_6b911713",
+  "t_6cf80b44",
+  "t_6e9419ec",
+  "t_6f1b384c",
+  "t_6f51f4d8",
+  "t_70431d79",
+  "t_735ec22f",
+  "t_7ff0533b",
+  "t_82549351",
+  "t_84dba627",
+  "t_8529f30c",
+  "t_88d89913",
+  "t_88e6988e",
+  "t_8b012a43",
+  "t_8c1f03d3",
+  "t_918b96df",
+  "t_96f2b3c2",
+  "t_a3c346a1",
+  "t_a49b3e0e",
+  "t_a67c10c2",
+  "t_a76441ab",
+  "t_a7fc8511",
+  "t_a9c1d5e4",
+  "t_aa3918d9",
+  "t_ae8943a8",
+  "t_b549095b",
+  "t_b5e0d53f",
+  "t_b7759852",
+  "t_ba6c8ecc",
+  "t_bd9c420c",
+  "t_be52b684",
+  "t_c64aac73",
+  "t_c874e9b4",
+  "t_c9acf783",
+  "t_ca081cf3",
+  "t_d03d9db2",
+  "t_d5647b93",
+  "t_d5a4057a",
+  "t_d85bfc8b",
+  "t_d937d46c",
+  "t_d98a00f1",
+  "t_db497e32",
+  "t_de53402c",
+  "t_de7eedd7",
+  "t_dec3c3ea",
+  "t_e132165a",
+  "t_e31bdc1e",
+  "t_e3716546",
+  "t_e684a873",
+  "t_e716b799",
+  "t_e930581f",
+  "t_ea859afc",
+  "t_eac1e103",
+  "t_efcff408",
+  "t_fbdbf2ef",
+  "t_ff9e84a0"
+ ],
+ "policy": "qwen-35b",
+ "surface": "system prompt (CASE_SYS + extension)",
+ "proposer": "sonnet46",
+ "reps": 3,
+ "confidence": 0.95,
+ "split_seed": 0,
+ "approve_each_round": false,
+ "quarantined": [],
+ "usd": 17.6839,
+ "baseline": {
+  "train": 0.912,
+  "test": 0.8728,
+  "noise": 0.029,
+  "mde": 0.0415,
+  "mixed_train": 0.125
+ },
+ "rounds": [
+  {
+   "round": 1,
+   "candidates": [
+    {
+     "variant": "v1",
+     "change": "Add instruction teaching the model to reason probabilistically about future share counts by weighting both the base-rate of equity issuance for distressed/growth companies and the specific signals in the materials, rather than anchoring solely on the most recent reported figure and extrapolating linearly.",
+     "train_screen": {
+      "n": 88,
+      "cases": 13,
+      "diff": -0.0232,
+      "lo": -0.0602,
+      "hi": 0.0142,
+      "p_better": 0.1015
+     }
+    },
+    {
+     "variant": "v2",
+     "change": "Add a clarifying instruction that financial distress signals (going-concern, losses, cash burn) are evidence about solvency and financing, not direct evidence that revenues will be low, and the model should not conflate the two when estimating revenue probabilities.",
+     "train_screen": {
+      "n": 88,
+      "cases": 13,
+      "diff": -0.0029,
+      "lo": -0.0557,
+      "hi": 0.043,
+      "p_better": 0.445
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Over-anchoring on current data, ignoring likely future equity events (share count forecasting)",
+     "task_ids": [
+      "t_4c11c8ef",
+      "t_4f36b8d2",
+      "t_61280f2b",
+      "t_853649c1",
+      "t_b7ad84ce",
+      "t_d172096a",
+      "t_fbd517fe",
+      "t_cb9c9873",
+      "t_7a9ff583",
+      "t_deedef10"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Over-confidence in directional forecast based on disclosed intent (treating possibility as certainty)",
+     "task_ids": [
+      "t_4c11c8ef",
+      "t_61280f2b"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Rounding / arithmetic precision error in per-share calculation",
+     "task_ids": [
+      "t_6df915be"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Sign / format mismatch (negative vs positive percentage)",
+     "task_ids": [
+      "t_a56f6d88"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Going-concern / distress treated as evidence AGAINST revenue (over-penalizing)",
+     "task_ids": [
+      "t_496503ce"
+     ],
+     "fixable": true
+    }
+   ],
+   "change": "Add a clarifying instruction that financial distress signals (going-concern, losses, cash burn) are evidence about solvency and financing, not direct evidence that revenues will be low, and the model should not conflate the two when estimating revenue probabilities.",
+   "decision": "revert (no train gain)"
+  },
+  {
+   "round": 2,
+   "candidates": [
+    {
+     "variant": "v3",
+     "change": "Add instruction that when estimating future share counts, linear extrapolation from recent issuance rates is unreliable because discrete unannounced events (reverse splits, bought-deal offerings, ATM surges, convertible-note conversions) can cause step-changes; the model must assign meaningful probability mass to such events and avoid anchoring solely on the most recent run-rate.",
+     "train_screen": {
+      "n": 88,
+      "cases": 13,
+      "diff": 0.0255,
+      "lo": -0.0261,
+      "hi": 0.0686,
+      "p_better": 0.8518
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Share-count extrapolation too conservative: ignores unannounced equity events (reverse splits, large offerings, ATM acceleration) that could drastically change share count between interim and annual filing",
+     "task_ids": [
+      "t_4c11c8ef",
+      "t_61280f2b",
+      "t_b7ad84ce",
+      "t_d172096a",
+      "t_fbd517fe",
+      "t_cb9c9873",
+      "t_7a9ff583",
+      "t_deedef10",
+      "t_853649c1",
+      "t_4f36b8d2"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Rounding error in arithmetic: off-by-one-cent due to intermediate truncation",
+     "task_ids": [
+      "t_6df915be"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Sign/format mismatch: answer expressed with negative sign or % symbol when gold expects a positive number",
+     "task_ids": [
+      "t_a56f6d88"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Going-concern conflated with low revenue: financial distress signals used to lower revenue probability",
+     "task_ids": [
+      "t_496503ce"
+     ],
+     "fixable": false
+    }
+   ],
+   "variant": "v3",
+   "change": "Add instruction that when estimating future share counts, linear extrapolation from recent issuance rates is unreliable because discrete unannounced events (reverse splits, bought-deal offerings, ATM surges, convertible-note conversions) can cause step-changes; the model must assign meaningful probability mass to such events and avoid anchoring solely on the most recent run-rate.",
+   "train": {
+    "n": 88,
+    "cases": 13,
+    "diff": 0.0178,
+    "lo": -0.0352,
+    "hi": 0.0722,
+    "p_better": 0.752
+   },
+   "test": {
+    "n": 90,
+    "cases": 13,
+    "diff": 0.0449,
+    "lo": 0.0178,
+    "hi": 0.0701,
+    "p_better": 0.9998
+   },
+   "decision": "keep"
+  },
+  {
+   "round": 3,
+   "candidates": [
+    {
+     "variant": "v9",
+     "change": "Rewrite the share-count instruction to give concrete calibration anchors: when strong signals (authorized reverse split, active ATM, explicit dilution warning) are present, assign \u22650.75 rather than hedging toward 0.5; when the required share change is within normal run-rate range, assign \u22650.8.",
+     "train_screen": {
+      "n": 88,
+      "cases": 13,
+      "diff": -0.0362,
+      "lo": -0.0981,
+      "hi": 0.0086,
+      "p_better": 0.0655
+     }
+    },
+    {
+     "variant": "v10",
+     "change": "Add an explicit instruction to avoid intermediate rounding: store each intermediate result to at least 6 significant figures before using it in the next step, and only round at the very last step.",
+     "train_screen": {
+      "n": 88,
+      "cases": 13,
+      "diff": -0.0034,
+      "lo": -0.0483,
+      "hi": 0.0252,
+      "p_better": 0.4477
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Probability calibration too low for likely share-count events",
+     "task_ids": [
+      "t_4c11c8ef",
+      "t_61280f2b",
+      "t_853649c1",
+      "t_4f36b8d2",
+      "t_fbd517fe",
+      "t_deedef10",
+      "t_107994d4",
+      "t_d172096a",
+      "t_7a9ff583",
+      "t_b7ad84ce",
+      "t_cb9c9873"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Rounding/precision error in arithmetic",
+     "task_ids": [
+      "t_47f1b7d4",
+      "t_5906fda4",
+      "t_6df915be",
+      "t_a56f6d88",
+      "t_fa1cafb6"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Hallucinated revenue baseline leading to wrong probability",
+     "task_ids": [
+      "t_496503ce"
+     ],
+     "fixable": false
+    },
+    {
+     "name": "Incorrect balance sheet value used in ratio calculation",
+     "task_ids": [
+      "t_9bb1c6f9"
+     ],
+     "fixable": false
+    }
+   ],
+   "change": "Add an explicit instruction to avoid intermediate rounding: store each intermediate result to at least 6 significant figures before using it in the next step, and only round at the very last step.",
+   "decision": "revert (no train gain)"
+  },
+  {
+   "round": 4,
+   "candidates": [
+    {
+     "variant": "v11",
+     "change": "Rewrite the share-count instruction to give explicit calibration anchors: for distressed/small-cap companies with active financing risk, assign base probability \u22650.7 for plausible share-count increases unless materials rule them out, and \u22650.85 when an authorized reverse split or ATM is already disclosed.",
+     "train_screen": {
+      "n": 88,
+      "cases": 13,
+      "diff": -0.0162,
+      "lo": -0.0488,
+      "hi": 0.0225,
+      "p_better": 0.197
+     }
+    },
+    {
+     "variant": "v12",
+     "change": "Add an explicit instruction that when the materials do not contain the needed historical data, the model must state what is missing and reason only from what is present, never importing external knowledge about specific company financials.",
+     "train_screen": {
+      "n": 88,
+      "cases": 13,
+      "diff": -0.0194,
+      "lo": -0.0628,
+      "hi": 0.0287,
+      "p_better": 0.2018
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Probability too low for share-count-exceeds-threshold questions (underweights discrete equity events)",
+     "task_ids": [
+      "t_4c11c8ef",
+      "t_61280f2b",
+      "t_853649c1",
+      "t_4f36b8d2",
+      "t_fbd517fe",
+      "t_deedef10",
+      "t_d172096a",
+      "t_7a9ff583",
+      "t_b7ad84ce",
+      "t_cb9c9873",
+      "t_107994d4"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Arithmetic rounding error in intermediate steps causes off-by-one in final decimal",
+     "task_ids": [
+      "t_47f1b7d4",
+      "t_5906fda4",
+      "t_6df915be",
+      "t_fa1cafb6"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Fabricated or hallucinated revenue data used for probability estimate",
+     "task_ids": [
+      "t_496503ce"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Misread or misapplied balance sheet line items in custom ratio calculation",
+     "task_ids": [
+      "t_9bb1c6f9"
+     ],
+     "fixable": false
+    },
+    {
+     "name": "Sign/direction error in final answer (negative vs positive)",
+     "task_ids": [
+      "t_a56f6d88"
+     ],
+     "fixable": true
+    }
+   ],
+   "change": "Rewrite the share-count instruction to give explicit calibration anchors: for distressed/small-cap companies with active financing risk, assign base probability \u22650.7 for plausible share-count increases unless materials rule them out, and \u22650.85 when an authorized reverse split or ATM is already disclosed.",
+   "decision": "revert (no train gain)",
+   "quarantined": []
+  },
+  {
+   "round": 5,
+   "candidates": [
+    {
+     "variant": "v14",
+     "change": "Rewrite the share-count instruction to give concrete probability guidance tied to the size of the required move and disclosed triggers, replacing vague 'meaningful probability mass' language with calibrated examples.",
+     "train_screen": {
+      "n": 88,
+      "cases": 13,
+      "diff": -0.0046,
+      "lo": -0.0391,
+      "hi": 0.0303,
+      "p_better": 0.3895
+     }
+    },
+    {
+     "variant": "v15",
+     "change": "Rewrote the worked example using invented numbers that do not appear in any training case, preserving the same instructional point about carrying intermediates to 6+ significant figures.",
+     "train_screen": {
+      "n": 88,
+      "cases": 13,
+      "diff": 0.0025,
+      "lo": -0.0229,
+      "hi": 0.0298,
+      "p_better": 0.5745
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Share-count probability too low or too high: model under- or over-weights discrete step-change events",
+     "task_ids": [
+      "t_4c11c8ef",
+      "t_61280f2b",
+      "t_853649c1",
+      "t_4f36b8d2",
+      "t_fbd517fe",
+      "t_deedef10",
+      "t_107994d4",
+      "t_d172096a",
+      "t_7a9ff583",
+      "t_b7ad84ce",
+      "t_cb9c9873"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Off-by-one rounding in arithmetic (final answer rounds to wrong last digit)",
+     "task_ids": [
+      "t_47f1b7d4",
+      "t_5906fda4",
+      "t_6df915be",
+      "t_fa1cafb6"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Wrong gold or incorrect question interpretation (sign, definition mismatch, or hallucinated revenue)",
+     "task_ids": [
+      "t_a56f6d88",
+      "t_496503ce",
+      "t_9bb1c6f9"
+     ],
+     "fixable": false
+    }
+   ],
+   "variant": "v15",
+   "change": "Rewrote the worked example using invented numbers that do not appear in any training case, preserving the same instructional point about carrying intermediates to 6+ significant figures.",
+   "train": {
+    "n": 88,
+    "cases": 13,
+    "diff": 0.0022,
+    "lo": -0.0362,
+    "hi": 0.0375,
+    "p_better": 0.5527
+   },
+   "test": {
+    "n": 90,
+    "cases": 13,
+    "diff": 0.0233,
+    "lo": -0.0057,
+    "hi": 0.0529,
+    "p_better": 0.9245
+   },
+   "decision": "revert (test flat or down)"
+  }
+ ],
+ "incumbent": "v3",
+ "stall": 3,
+ "best": {
+  "round": 3,
+  "variant": "v3",
+  "test_score": 0.9177
+ },
+ "final": {
+  "variant": "v3",
+  "test": {
+   "n": 90,
+   "cases": 13,
+   "diff": 0.0306,
+   "lo": -0.0221,
+   "hi": 0.0669,
+   "p_better": 0.8872
+  },
+  "baseline_test": 0.8807,
+  "best_test": 0.9112,
+  "reps": 3,
+  "test_looks": 2,
+  "decision": "within noise - do not merge"
+ },
+ "metrics": [
+  {
+   "id": "correct",
+   "kind": "binary",
+   "label": "Correct"
+  }
+ ],
+ "perf_fields": [
+  {
+   "id": "cost_usd",
+   "label": "Cost",
+   "unit": "$"
+  },
+  {
+   "id": "latency_s",
+   "label": "Latency",
+   "unit": "s"
+  },
+  {
+   "id": "tool_calls",
+   "label": "Actions"
+  }
+ ],
+ "goal": {
+  "target": "correct",
+  "direction": "higher",
+  "hold": [
+   "cost_usd"
+  ]
+ }
+}

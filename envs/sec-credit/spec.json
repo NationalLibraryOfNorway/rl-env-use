@@ -1,0 +1,32 @@
+{
+ "topic": "credit and financial statement analysis of small and mid-size US public companies from their SEC filings (prefer filings from 2025-2026, which models are unlikely to have memorized)",
+ "sources": [
+  "https://www.sec.gov/edgar/search/",
+  "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent"
+ ],
+ "missions": 14,
+ "agent_model": "bu",
+ "max_steps": 60,
+ "concurrency": 6,
+ "skill": "Given excerpts of a company's 10-Q or 10-K (financial statements, MD&A, liquidity section), act as a credit analyst: compute the metrics the statements imply, and forecast figures (revenue, cash, net loss, shares outstanding) that the company's NEXT periodic filing reports",
+ "tasks_per_case": 16,
+ "hard": true,
+ "mix": "predict",
+ "panel": [
+  "opus55",
+  "gpt-astra",
+  "gemini"
+ ],
+ "panel_reps": 2,
+ "rebuilt_from": "sec-credit",
+ "auto": true,
+ "budget_usd": 40.0,
+ "target_tasks": 150,
+ "live_check": false,
+ "harden_levels": 3,
+ "adjudicators": [
+  "gpt-astra",
+  "opus55",
+  "gemini"
+ ]
+}

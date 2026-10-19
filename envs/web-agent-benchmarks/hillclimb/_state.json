@@ -1,0 +1,106 @@
+{
+ "metrics": [
+  {
+   "id": "supported",
+   "kind": "binary",
+   "label": "Supported"
+  },
+  {
+   "id": "correct",
+   "kind": "binary",
+   "label": "Correct"
+  },
+  {
+   "id": "grounded",
+   "kind": "binary",
+   "label": "Grounded"
+  },
+  {
+   "id": "no_loop",
+   "kind": "binary",
+   "label": "No loop"
+  }
+ ],
+ "perf_fields": [
+  {
+   "id": "cost_usd",
+   "label": "Cost",
+   "unit": "$"
+  },
+  {
+   "id": "latency_s",
+   "label": "Latency",
+   "unit": "s"
+  },
+  {
+   "id": "steps",
+   "label": "Steps"
+  },
+  {
+   "id": "tool_calls",
+   "label": "Actions"
+  }
+ ],
+ "goal": {
+  "target": "correct",
+  "direction": "higher",
+  "hold": [
+   "cost_usd"
+  ]
+ },
+ "train_ids": [
+  "t_10df1f5a",
+  "t_185c1575",
+  "t_24db1119",
+  "t_2821497e",
+  "t_2a724a8f",
+  "t_5980df9e",
+  "t_632f61f2",
+  "t_7f61acf5",
+  "t_8225d6de",
+  "t_8d113ef3",
+  "t_935fdaa6",
+  "t_94f0cc03",
+  "t_a2764cfc",
+  "t_a4d69723",
+  "t_aae32a9c",
+  "t_ac14868f",
+  "t_aeeebdea",
+  "t_b1640ce0",
+  "t_b9e905f8",
+  "t_c0ddb20e",
+  "t_c2c26b30",
+  "t_d1ea7bad",
+  "t_e3ccecf1",
+  "t_e62707e8",
+  "t_eedb7b3d"
+ ],
+ "test_ids": [
+  "t_0480441a",
+  "t_1af8c876",
+  "t_2806fe45",
+  "t_2d394f11",
+  "t_3a492250",
+  "t_45ea5c0f",
+  "t_485cbdf4",
+  "t_48d249d9",
+  "t_6a07a05d",
+  "t_6db2b94f",
+  "t_74449eb5",
+  "t_7684b669",
+  "t_8017b959",
+  "t_827cd55a",
+  "t_82f440cf",
+  "t_8a01a768",
+  "t_8f23098b",
+  "t_935bf41c",
+  "t_9e28679e",
+  "t_b401f6a2",
+  "t_c0051443",
+  "t_ce7908fe",
+  "t_d47aefed",
+  "t_da8c21de",
+  "t_da9035a2"
+ ],
+ "split_seed": 0
+}

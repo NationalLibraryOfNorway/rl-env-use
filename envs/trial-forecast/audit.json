@@ -1,0 +1,283 @@
+[
+ {
+  "severity": "medium",
+  "check": "base_rate",
+  "message": "25/39 verified forecasts resolve yes: 4 majority-outcome ones are left out so at most 60% resolve one way - more cases, or thresholds on the other side, bring them back"
+ },
+ {
+  "severity": "medium",
+  "check": "infra",
+  "message": "climb-qwen-35b/v8: 2 attempts failed in the harness (timeouts/crashes) and are excluded from the score",
+  "classes": {
+   "harness_error": 2
+  }
+ },
+ {
+  "severity": "info",
+  "check": "tasks",
+  "message": "35/355 tasks pass all filters; categories {'completion_rate': 10, 'statistical_significance': 4, 'endpoint_outcome': 20, 'primary_outcome_p_value': 1}"
+ },
+ {
+  "severity": "info",
+  "check": "edge",
+  "message": "35/35 kept tasks rest on evidence a plain HTTP fetch of the same page does not show (browser-only data)"
+ },
+ {
+  "severity": "info",
+  "check": "cases",
+  "message": "29 cases; kinds {'predict': 35}; 35 few-choice tasks skip the memorization check (a closed-book hit there is chance)"
+ },
+ {
+  "severity": "info",
+  "check": "structural",
+  "message": "4 tasks: structural problems (filtered out)",
+  "ids": [
+   "t_bfe3d461",
+   "t_58c64b7a",
+   "t_51c8033b",
+   "t_fab78ac9"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "ambiguous",
+  "message": "100 tasks flagged by critic: ambiguous, unsupported, or its independent recomputation disagrees with gold (filtered out)",
+  "ids": [
+   "t_34780fb4",
+   "t_b34d79c2",
+   "t_95d78440",
+   "t_5b65fbc9",
+   "t_ff85e818",
+   "t_5f2d9d5c",
+   "t_7145ccff",
+   "t_05d7add5",
+   "t_da688e66",
+   "t_61947dce",
+   "t_8ac0de70",
+   "t_01ea9ca5",
+   "t_d8e3eca7",
+   "t_7652cea5",
+   "t_ae0b7624",
+   "t_d00dd960",
+   "t_afcde9d3",
+   "t_db9139bf",
+   "t_51b93906",
+   "t_ea90c98f",
+   "t_d81efe92",
+   "t_0983247d",
+   "t_595d585e",
+   "t_a60f86eb",
+   "t_94a70d0e",
+   "t_6b6b436e",
+   "t_fa359d8e",
+   "t_4d166e4b",
+   "t_2d4d1e01",
+   "t_7a15ccdd",
+   "t_d2ee7e53",
+   "t_2aa297bd",
+   "t_a90089e0",
+   "t_f9835c34",
+   "t_d4e04b80",
+   "t_e9bfcec2",
+   "t_5ce4da70",
+   "t_1db8db72",
+   "t_6c415113",
+   "t_bbe9c198",
+   "t_6e59d10f",
+   "t_964bce00",
+   "t_abb64721",
+   "t_7cc96b4f",
+   "t_660f7188",
+   "t_ff475c75",
+   "t_eb7aacf5",
+   "t_e9db7338",
+   "t_2d352660",
+   "t_8d289063",
+   "t_b42c5751",
+   "t_b8c93990",
+   "t_93e483b7",
+   "t_0419f541",
+   "t_0efa78ae",
+   "t_ab24d927",
+   "t_80dbfaf7",
+   "t_db848bfa",
+   "t_4a3e04fb",
+   "t_471db54f",
+   "t_24534a02",
+   "t_6f016bb4",
+   "t_b7a3823b",
+   "t_756815dc",
+   "t_dc3410bf",
+   "t_930f4684",
+   "t_8976df44",
+   "t_3c29b6d7",
+   "t_34999153",
+   "t_8ad7f122",
+   "t_bb03cae8",
+   "t_53ee83a7",
+   "t_dd09f738",
+   "t_051928d7",
+   "t_25b7bad1",
+   "t_40b7b689",
+   "t_36aafcb2",
+   "t_9dbc67e0",
+   "t_7812bf0f",
+   "t_72b882ec",
+   "t_727e6a4c",
+   "t_38a70afa",
+   "t_65fa87e6",
+   "t_afcf01ff",
+   "t_e3f63480",
+   "t_edc5ab0f",
+   "t_6f632588",
+   "t_79ed36d5",
+   "t_2534ba78",
+   "t_9753b22a",
+   "t_d38c522a",
+   "t_0d42c0b9",
+   "t_720a3c44",
+   "t_3ec14211",
+   "t_0550f6af",
+   "t_9c1787a5",
+   "t_3d2baed1",
+   "t_8b4f6543",
+   "t_24ab618e",
+   "t_6a01aa3d"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "signoff",
+  "message": "35/35 kept tasks have no human review (autonomous env: automated gates only)"
+ },
+ {
+  "severity": "info",
+  "check": "grader",
+  "message": "grader self-test clean on 35 tasks (oracle passes; null, foreign gold, perturbed gold fail)"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/baseline (qwen/qwen3.6-35b-a3b): 0.55 mean score (1 - Brier where a forecast) [0.38, 0.70] on 35 cases x 8 reps; noise floor ~\u00b16%; $0.80; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b/baseline: failure classes {'wrong_answer': 88}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v1 (qwen/qwen3.6-35b-a3b): 0.79 mean score (1 - Brier where a forecast) [0.57, 0.91] on 19 cases x 3 reps; noise floor ~\u00b113%; $0.21; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v10 (qwen/qwen3.6-35b-a3b): 0.80 mean score (1 - Brier where a forecast) [0.63, 0.89] on 35 cases x 7 reps; noise floor ~\u00b16%; $0.84; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v11 (qwen/qwen3.6-35b-a3b): 0.80 mean score (1 - Brier where a forecast) [0.58, 0.92] on 19 cases x 3 reps; noise floor ~\u00b113%; $0.23; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v12 (qwen/qwen3.6-35b-a3b): 0.81 mean score (1 - Brier where a forecast) [0.59, 0.93] on 19 cases x 3 reps; noise floor ~\u00b113%; $0.23; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v2 (qwen/qwen3.6-35b-a3b): 0.79 mean score (1 - Brier where a forecast) [0.57, 0.92] on 19 cases x 3 reps; noise floor ~\u00b113%; $0.25; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v3 (qwen/qwen3.6-35b-a3b): 0.79 mean score (1 - Brier where a forecast) [0.63, 0.89] on 35 cases x 8 reps; noise floor ~\u00b16%; $1.00; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v4 (qwen/qwen3.6-35b-a3b): 0.79 mean score (1 - Brier where a forecast) [0.62, 0.89] on 35 cases x 7 reps; noise floor ~\u00b16%; $0.81; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v5 (qwen/qwen3.6-35b-a3b): 0.79 mean score (1 - Brier where a forecast) [0.57, 0.91] on 19 cases x 3 reps; noise floor ~\u00b113%; $0.24; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v6 (qwen/qwen3.6-35b-a3b): 0.80 mean score (1 - Brier where a forecast) [0.58, 0.92] on 19 cases x 3 reps; noise floor ~\u00b113%; $0.24; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v7 (qwen/qwen3.6-35b-a3b): 0.81 mean score (1 - Brier where a forecast) [0.59, 0.93] on 19 cases x 3 reps; noise floor ~\u00b113%; $0.24; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v8 (qwen/qwen3.6-35b-a3b): 0.81 mean score (1 - Brier where a forecast) [0.64, 0.90] on 35 cases x 7 reps; noise floor ~\u00b16%; $0.75; 2 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b/v9 (qwen/qwen3.6-35b-a3b): 0.80 mean score (1 - Brier where a forecast) [0.58, 0.92] on 19 cases x 3 reps; noise floor ~\u00b113%; $0.25; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "discrimination",
+  "message": "0/19 cases give the same all-pass/all-fail result across every variant - they cannot discriminate between models"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/baseline (qwen/qwen3.6-35b-a3b): 0.60 mean score (1 - Brier where a forecast) [0.43, 0.74] on 35 cases x 2 reps; noise floor ~\u00b112%; $0.29; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/baseline: failure classes {'wrong_answer': 27}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v1 (qwen/qwen3.8-27b): 0.75 mean score (1 - Brier where a forecast) [0.59, 0.86] on 35 cases x 2 reps; noise floor ~\u00b112%; $1.77; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/v1: failure classes {'wrong_answer': 10}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v2 (anthropic/claude-opus-5.5): 0.76 mean score (1 - Brier where a forecast) [0.60, 0.87] on 35 cases x 2 reps; noise floor ~\u00b112%; $1.46; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v3 (openai/gpt-6-astra): 0.82 mean score (1 - Brier where a forecast) [0.66, 0.91] on 35 cases x 2 reps; noise floor ~\u00b112%; $3.73; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v4 (google/gemini-3.1-pro-preview): 0.60 mean score (1 - Brier where a forecast) [0.44, 0.74] on 35 cases x 2 reps; noise floor ~\u00b112%; $1.45; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/v4: failure classes {'wrong_answer': 23}"
+ },
+ {
+  "severity": "info",
+  "check": "gradient",
+  "message": "capability gradient on correct: qwen/qwen3.6-35b-a3b 60% -> openai/gpt-6-astra 82% on 35 shared cases"
+ },
+ {
+  "severity": "info",
+  "check": "discrimination",
+  "message": "0/35 cases give the same all-pass/all-fail result across every variant - they cannot discriminate between models"
+ }
+]

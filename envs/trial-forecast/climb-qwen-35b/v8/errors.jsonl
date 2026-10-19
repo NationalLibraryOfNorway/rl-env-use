@@ -1,0 +1,2 @@
+{"prompt_id": "t_ece918cf", "rep": 2, "failure_class": "harness_error", "error": "ValueError: no JSON object in: ", "at": "2026-10-16T05:02:55"}
+{"prompt_id": "t_ece918cf", "rep": 3, "failure_class": "harness_error", "error": "ValueError: no JSON object in: ", "at": "2026-10-16T05:02:57"}

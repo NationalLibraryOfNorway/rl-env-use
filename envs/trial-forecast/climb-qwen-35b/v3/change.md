@@ -1,0 +1,1 @@
+Add worked base-rate priors per question type (direction, p<0.05, completion threshold), including that completers are not the same as enrollment. [round 1, Assumed completers equal actual enrollment, or inferred high retention from a reached completion date, and answered with certainty]

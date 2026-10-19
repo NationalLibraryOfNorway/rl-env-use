@@ -1,0 +1,1 @@
+{"description": "Add an instruction to treat recalled publications as weak evidence and keep probabilities hedged unless the results appear in the materials. [round 1, Relied on recalled or hallucinated published results with full certainty (0 or 1), and confused 'direction favors' with 'statistically significant']", "target": "system_prompt", "model": "qwen-35b"}

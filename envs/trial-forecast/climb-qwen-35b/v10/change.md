@@ -1,0 +1,1 @@
+Rewrote the adjustment line so the model makes one net adjustment of at most ±0.15 and stops stacking penalties for population, history or mechanism stories, which drove the large misses. [round 4, Several narrative penalties stacked (hard population, prior failures, side effects, noise), pushing far below the prior]

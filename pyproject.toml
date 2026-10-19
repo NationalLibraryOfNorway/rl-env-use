@@ -1,0 +1,40 @@
+[project]
+name = "rl-env-use"
+version = "0.1.0"
+description = "Build RL environments for any domain from real cases that Browser Use agents mine from the web"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+dependencies = ["browser-use==0.13.10", "httpx", "pydantic>=2", "rich"]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-asyncio"]
+
+[project.scripts]
+rl-env-use = "rl_env_use.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["rl_env_use"]
+
+[tool.setuptools.package-data]
+rl_env_use = ["annotate.html", "report/*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = ["live: hits the network / paid LLM APIs (run with -m live)"]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 180
+indent-width = 4
+
+[tool.ruff.format]
+indent-style = "tab"
+quote-style = "single"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501", "E731", "B905"]  # long strings and comments stay on one line; the formatter wraps code

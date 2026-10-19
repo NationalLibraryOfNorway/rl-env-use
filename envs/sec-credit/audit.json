@@ -1,0 +1,701 @@
+[
+ {
+  "severity": "high",
+  "check": "saturated",
+  "message": "climb-qwen-35b-verified/v8 scores 100% on correct: no headroom - add harder tasks before hillclimbing"
+ },
+ {
+  "severity": "medium",
+  "check": "base_rate",
+  "message": "14/20 verified forecasts resolve yes: 5 majority-outcome ones are left out so at most 60% resolve one way - more cases, or thresholds on the other side, bring them back"
+ },
+ {
+  "severity": "medium",
+  "check": "split",
+  "message": "baseline train 40% vs test 49% differ beyond noise - re-draw the split"
+ },
+ {
+  "severity": "medium",
+  "check": "infra",
+  "message": "climb-qwen-35b-verified/v1: 1 attempts failed in the harness (timeouts/crashes) and are excluded from the score",
+  "classes": {
+   "timeout": 1
+  }
+ },
+ {
+  "severity": "medium",
+  "check": "infra",
+  "message": "climb-qwen-35b-verified/v14: 1 attempts failed in the harness (timeouts/crashes) and are excluded from the score",
+  "classes": {
+   "timeout": 1
+  }
+ },
+ {
+  "severity": "medium",
+  "check": "infra",
+  "message": "climb-qwen-35b-verified/v5: 1 attempts failed in the harness (timeouts/crashes) and are excluded from the score",
+  "classes": {
+   "timeout": 1
+  }
+ },
+ {
+  "severity": "medium",
+  "check": "infra",
+  "message": "climb-qwen-35b-verified/v9: 9 attempts failed in the harness (timeouts/crashes) and are excluded from the score",
+  "classes": {
+   "harness_error": 9
+  }
+ },
+ {
+  "severity": "medium",
+  "check": "infra",
+  "message": "models/v2: 6 attempts failed in the harness (timeouts/crashes) and are excluded from the score",
+  "classes": {
+   "timeout": 6
+  }
+ },
+ {
+  "severity": "medium",
+  "check": "inverted",
+  "message": "1 cases where bu-2-0-mini-preview beats openai/gpt-6.1-sol - inspect these first, usually a task or grader bug",
+  "ids": [
+   "t_4c620291"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "tasks",
+  "message": "18/458 tasks pass all filters; categories {'equity_dilution_forecast': 1, 'shares_outstanding_forecast': 1, 'equity_forecast': 1, 'liquidity_forecast': 2, 'share_count_forecast': 2, 'revenue_forecast': 1, 'cash_runway_forecast': 1, 'ratio_analysis': 1, 'forecast': 1, 'share_dilution_forecast': 5, 'cash_flow_analysis': 1, 'leverage_change_analysis': 1}"
+ },
+ {
+  "severity": "info",
+  "check": "edge",
+  "message": "13/18 kept tasks rest on evidence a plain HTTP fetch of the same page does not show (browser-only data)"
+ },
+ {
+  "severity": "info",
+  "check": "cases",
+  "message": "14 cases; kinds {'predict': 15, 'derive': 3}; 15 few-choice tasks skip the memorization check (a closed-book hit there is chance)"
+ },
+ {
+  "severity": "info",
+  "check": "leakage",
+  "message": "2 tasks: gold leaks into prompt (filtered out)",
+  "ids": [
+   "t_c44e8b9c",
+   "t_7f9c2c5d"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "structural",
+  "message": "126 tasks: structural problems (filtered out)",
+  "ids": [
+   "t_ede2b955",
+   "t_fa7d96e0",
+   "t_64dbee02",
+   "t_eccae943",
+   "t_014967c2",
+   "t_5eb365c6",
+   "t_14f96592",
+   "t_1035591b",
+   "t_4ecc8b39",
+   "t_46b8f899",
+   "t_e4a97d7a",
+   "t_63459592",
+   "t_78ee2ad9",
+   "t_c00064f0",
+   "t_06fdbf69",
+   "t_85d39065",
+   "t_81d50d92",
+   "t_71a494fc",
+   "t_8a93310b",
+   "t_236c792b",
+   "t_67da140b",
+   "t_666a7baf",
+   "t_c14351f9",
+   "t_0e5df3ef",
+   "t_f52bce1a",
+   "t_79bb8c02",
+   "t_a0b13c05",
+   "t_edca6c7c",
+   "t_a9cc0a31",
+   "t_5c80b14e",
+   "t_96f1bd5d",
+   "t_3374affe",
+   "t_e0eabe69",
+   "t_00a7c3ff",
+   "t_706bc8b1",
+   "t_bbf398fe",
+   "t_697c7eb2",
+   "t_5b4bd890",
+   "t_61c6a714",
+   "t_eb46fa03",
+   "t_d786d386",
+   "t_be150fa8",
+   "t_8ad3fd54",
+   "t_8fcbca50",
+   "t_13859acc",
+   "t_98b558ef",
+   "t_4a62fd86",
+   "t_f3a237ae",
+   "t_b6ff8856",
+   "t_0e63a4ab",
+   "t_8c0c0351",
+   "t_c9463e5d",
+   "t_0f9c36de",
+   "t_f0e1f8a2",
+   "t_1d216e25",
+   "t_c6c1097e",
+   "t_e1722ef5",
+   "t_af421148",
+   "t_10d8ce16",
+   "t_d7cacf1a",
+   "t_81f65075",
+   "t_71ce3cde",
+   "t_ef6a7f6a",
+   "t_14c6524c",
+   "t_96e568fc",
+   "t_08ea8498",
+   "t_7b621947",
+   "t_9037de84",
+   "t_afdae7ca",
+   "t_7609dcbc",
+   "t_b40dc3be",
+   "t_44453434",
+   "t_fdc89d68",
+   "t_8bd6c35e",
+   "t_8b35a2f8",
+   "t_c52ed957",
+   "t_27c7fc8c",
+   "t_74c6e8e4",
+   "t_fec41e92",
+   "t_04a0ecff",
+   "t_e65cfe5f",
+   "t_a247bea0",
+   "t_af9a5e51",
+   "t_52a9c94c",
+   "t_6779e615",
+   "t_941172dd",
+   "t_d06e3cf5",
+   "t_a3c948db",
+   "t_f1591ffb",
+   "t_652e84b9",
+   "t_97745ae6",
+   "t_52b547a5",
+   "t_1a2831d2",
+   "t_197baf75",
+   "t_47167b2a",
+   "t_5ecc0848",
+   "t_f8510707",
+   "t_be889f6f",
+   "t_8c17892b",
+   "t_d43a26ed",
+   "t_b9669e10",
+   "t_bc817115",
+   "t_2c880d2b",
+   "t_455dfaa1",
+   "t_b85ede7a",
+   "t_197bd356",
+   "t_6dfbda09",
+   "t_88d84f39",
+   "t_b2b46e6f",
+   "t_4d4a37e9",
+   "t_e9599a7e",
+   "t_46d9fa5b",
+   "t_ab304377",
+   "t_55e04160",
+   "t_76a00f40",
+   "t_7a573f21",
+   "t_4815f2a7",
+   "t_1f3a36d2",
+   "t_44805399",
+   "t_b04d7564",
+   "t_9780a709",
+   "t_50006c00",
+   "t_585041c5",
+   "t_a4339d49",
+   "t_4ebaede0",
+   "t_45f98061"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "memorizable",
+  "message": "7/458 tasks answerable closed-book - they test recall, not the skill (filtered out)",
+  "ids": [
+   "t_4ec07d35",
+   "t_92af9d21",
+   "t_f45ff035",
+   "t_72752739",
+   "t_68d9e80d",
+   "t_b6ab8176",
+   "t_533ef902"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "stale",
+  "message": "4 tasks cite evidence no longer on the live page (filtered out); re-run verify periodically",
+  "ids": [
+   "t_00575798",
+   "t_7eb2f4db",
+   "t_c3ab284f",
+   "t_750163dd"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "ambiguous",
+  "message": "82 tasks flagged by critic: ambiguous, unsupported, or its independent recomputation disagrees with gold (filtered out)",
+  "ids": [
+   "t_9ca5f9d5",
+   "t_a70eaf82",
+   "t_38c60ccd",
+   "t_83cc0b4e",
+   "t_ba7e7c97",
+   "t_e3e7fadc",
+   "t_81fadd38",
+   "t_5d3b5d83",
+   "t_006a1d05",
+   "t_052d7aec",
+   "t_9ac43a3d",
+   "t_8a4efaaa",
+   "t_96ec02e5",
+   "t_00575798",
+   "t_c459ed78",
+   "t_47e0d8b2",
+   "t_f2b8632d",
+   "t_1afdd915",
+   "t_56857c71",
+   "t_05f86963",
+   "t_ff4e161a",
+   "t_0bd255a0",
+   "t_62e4f169",
+   "t_543237f7",
+   "t_3710a64f",
+   "t_c18cf14a",
+   "t_11565a4d",
+   "t_bd37d7fd",
+   "t_5b4c7e15",
+   "t_de643626",
+   "t_729685c7",
+   "t_d4d185c0",
+   "t_9900884d",
+   "t_42f8209e",
+   "t_ba25f339",
+   "t_df1038df",
+   "t_4364ef17",
+   "t_a321c0a5",
+   "t_7a2a1b62",
+   "t_9b1c0121",
+   "t_59005e5e",
+   "t_f3564c99",
+   "t_639a8a8f",
+   "t_8700167b",
+   "t_f15278dd",
+   "t_b7417882",
+   "t_b06e8b38",
+   "t_e4a48d59",
+   "t_ba358a15",
+   "t_6c05eb7d",
+   "t_9db14a5e",
+   "t_a56cfdb9",
+   "t_a965ca56",
+   "t_e841ff44",
+   "t_5343940b",
+   "t_ab4bbd6f",
+   "t_6a4ae601",
+   "t_68d9e80d",
+   "t_136f7a0f",
+   "t_d26f949c",
+   "t_97c8184a",
+   "t_c2271dfe",
+   "t_a56f6d88",
+   "t_3a19b58d",
+   "t_ca575919",
+   "t_27f81e86",
+   "t_f65732da",
+   "t_0e1d082e",
+   "t_782fdae6",
+   "t_47f1b7d4",
+   "t_21e3be36",
+   "t_0558c70f",
+   "t_6865399d",
+   "t_22e5d269",
+   "t_a82abfec",
+   "t_7935bf53",
+   "t_37fedbbe",
+   "t_2ea8dac9",
+   "t_d7bfc98f",
+   "t_8b9a1c65",
+   "t_d0875875",
+   "t_ec074197"
+  ]
+ },
+ {
+  "severity": "info",
+  "check": "signoff",
+  "message": "18/18 kept tasks have no human review (autonomous env: automated gates only)"
+ },
+ {
+  "severity": "info",
+  "check": "grader",
+  "message": "grader self-test clean on 18 tasks (oracle passes; null, foreign gold, perturbed gold fail)"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-haiku/baseline (anthropic/claude-haiku-4.5): 47% correct [30%, 61%] on 36 cases x 8 reps; noise floor ~\u00b16%; $1.52; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-haiku/baseline: failure classes {'wrong_answer': 75}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-haiku/v1 (anthropic/claude-haiku-4.5): 51% correct [36%, 67%] on 36 cases x 7 reps; noise floor ~\u00b16%; $1.42; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-haiku/v1: failure classes {'wrong_answer': 70}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-haiku/v2 (anthropic/claude-haiku-4.5): 43% correct [23%, 67%] on 16 cases x 3 reps; noise floor ~\u00b114%; $0.34; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-haiku/v2: failure classes {'wrong_answer': 19}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-haiku/v3 (anthropic/claude-haiku-4.5): 47% correct [26%, 70%] on 16 cases x 3 reps; noise floor ~\u00b114%; $0.34; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-haiku/v3: failure classes {'wrong_answer': 17}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-haiku/v4 (anthropic/claude-haiku-4.5): 52% correct [36%, 67%] on 36 cases x 8 reps; noise floor ~\u00b16%; $2.07; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-haiku/v4: failure classes {'wrong_answer': 90}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-haiku/v5 (anthropic/claude-haiku-4.5): 45% correct [24%, 68%] on 16 cases x 3 reps; noise floor ~\u00b114%; $0.37; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-haiku/v5: failure classes {'wrong_answer': 22}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-haiku/v6 (anthropic/claude-haiku-4.5): 54% correct [40%, 71%] on 36 cases x 7 reps; noise floor ~\u00b16%; $1.51; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-haiku/v6: failure classes {'wrong_answer': 66}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-haiku/v7 (anthropic/claude-haiku-4.5): 55% correct [39%, 70%] on 36 cases x 7 reps; noise floor ~\u00b16%; $1.47; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-haiku/v7: failure classes {'wrong_answer': 67}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-haiku/v8 (anthropic/claude-haiku-4.5): 52% correct [37%, 68%] on 36 cases x 7 reps; noise floor ~\u00b16%; $1.57; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-haiku/v8: failure classes {'wrong_answer': 70}"
+ },
+ {
+  "severity": "info",
+  "check": "discrimination",
+  "message": "0/16 cases give the same all-pass/all-fail result across every variant - they cannot discriminate between models"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/baseline (qwen/qwen3.6-35b-a3b): 89% correct [84%, 93%] on 178 cases x 6 reps; noise floor ~\u00b13%; $3.57; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/baseline: failure classes {'wrong_answer': 63}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v1 (qwen/qwen3.6-35b-a3b): 89% correct [81%, 94%] on 88 cases x 2 reps; noise floor ~\u00b18%; $0.94; 1 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v1: failure classes {'wrong_answer': 8}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v10 (qwen/qwen3.6-35b-a3b): 93% correct [85%, 96%] on 88 cases x 2 reps; noise floor ~\u00b18%; $0.93; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v10: failure classes {'wrong_answer': 5}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v11 (qwen/qwen3.6-35b-a3b): 91% correct [84%, 96%] on 88 cases x 2 reps; noise floor ~\u00b18%; $0.56; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v11: failure classes {'wrong_answer': 9}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v12 (qwen/qwen3.6-35b-a3b): 91% correct [83%, 95%] on 88 cases x 2 reps; noise floor ~\u00b18%; $0.53; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v12: failure classes {'wrong_answer': 9}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v13 (qwen/qwen3.6-35b-a3b): 93% correct [86%, 97%] on 88 cases x 2 reps; noise floor ~\u00b18%; $0.55; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v13: failure classes {'wrong_answer': 4}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v14 (qwen/qwen3.6-35b-a3b): 93% correct [86%, 97%] on 88 cases x 2 reps; noise floor ~\u00b18%; $0.76; 1 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v14: failure classes {'wrong_answer': 6}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v15 (qwen/qwen3.6-35b-a3b): 94% correct [89%, 96%] on 178 cases x 5 reps; noise floor ~\u00b13%; $3.57; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v15: failure classes {'wrong_answer': 23}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v2 (qwen/qwen3.6-35b-a3b): 91% correct [83%, 95%] on 88 cases x 2 reps; noise floor ~\u00b18%; $0.98; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v2: failure classes {'wrong_answer': 5}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v3 (qwen/qwen3.6-35b-a3b): 92% correct [87%, 95%] on 178 cases x 6 reps; noise floor ~\u00b13%; $5.06; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v3: failure classes {'wrong_answer': 49}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v4 (qwen/qwen3.6-35b-a3b): 93% correct [86%, 97%] on 88 cases x 2 reps; noise floor ~\u00b18%; $0.85; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v4: failure classes {'wrong_answer': 5}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v5 (qwen/qwen3.6-35b-a3b): 93% correct [88%, 96%] on 147 cases x 5 reps; noise floor ~\u00b14%; $2.92; 1 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v5: failure classes {'wrong_answer': 17}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v6 (qwen/qwen3.6-35b-a3b): 92% correct [85%, 96%] on 88 cases x 2 reps; noise floor ~\u00b18%; $0.79; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v6: failure classes {'wrong_answer': 11}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v7 (qwen/qwen3.6-35b-a3b): 90% correct [78%, 96%] on 44 cases x 2 reps; noise floor ~\u00b111%; $0.23; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v7: failure classes {'wrong_answer': 3}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v8 (qwen/qwen3.6-35b-a3b): 100% correct [68%, 100%] on 8 cases x 2 reps; noise floor ~\u00b125%; $0.03; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "climb-qwen-35b-verified/v9 (qwen/qwen3.6-35b-a3b): 94% correct [87%, 98%] on 85 cases x 2 reps; noise floor ~\u00b18%; $0.56; 9 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "climb-qwen-35b-verified/v9: failure classes {'wrong_answer': 4}"
+ },
+ {
+  "severity": "info",
+  "check": "discrimination",
+  "message": "6/8 cases give the same all-pass/all-fail result across every variant - they cannot discriminate between models"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/baseline (anthropic/claude-sonnet-5.5): 94% correct [89%, 96%] on 178 cases x 2 reps; noise floor ~\u00b15%; $4.67; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/baseline: failure classes {'wrong_answer': 5}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v1 (openai/gpt-6.1-sol): 95% correct [91%, 97%] on 178 cases x 2 reps; noise floor ~\u00b15%; $2.38; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/v1: failure classes {'wrong_answer': 4}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v2 (qwen/qwen3.8-27b): 94% correct [89%, 96%] on 177 cases x 2 reps; noise floor ~\u00b15%; $2.20; 6 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/v2: failure classes {'wrong_answer': 6}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v3 (qwen/qwen3.6-35b-a3b): 89% correct [84%, 93%] on 178 cases x 2 reps; noise floor ~\u00b15%; $1.84; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/v3: failure classes {'wrong_answer': 28}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v4 (anthropic/claude-haiku-4.5): 78% correct [72%, 84%] on 178 cases x 2 reps; noise floor ~\u00b15%; $2.03; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/v4: failure classes {'wrong_answer': 56}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v5 (deepseek/deepseek-v4-pro): 92% correct [87%, 95%] on 178 cases x 2 reps; noise floor ~\u00b15%; $0.33; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/v5: failure classes {'wrong_answer': 12}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v6 (google/gemini-3.8-flash): 93% correct [88%, 96%] on 178 cases x 2 reps; noise floor ~\u00b15%; $3.27; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/v6: failure classes {'wrong_answer': 16}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v7 (bu-2-0): 93% correct [88%, 96%] on 178 cases x 2 reps; noise floor ~\u00b15%; $1.25; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/v7: failure classes {'wrong_answer': 13}"
+ },
+ {
+  "severity": "info",
+  "check": "score",
+  "message": "models/v8 (bu-2-0-mini-preview): 36% correct [29%, 43%] on 178 cases x 2 reps; noise floor ~\u00b15%; $0.00; 0 infra errors"
+ },
+ {
+  "severity": "info",
+  "check": "failures",
+  "message": "models/v8: failure classes {'wrong_answer': 226}"
+ },
+ {
+  "severity": "info",
+  "check": "gradient",
+  "message": "capability gradient on correct: bu-2-0-mini-preview 36% -> openai/gpt-6.1-sol 95% on 178 shared cases"
+ },
+ {
+  "severity": "info",
+  "check": "discrimination",
+  "message": "34/177 cases give the same all-pass/all-fail result across every variant - they cannot discriminate between models"
+ }
+]

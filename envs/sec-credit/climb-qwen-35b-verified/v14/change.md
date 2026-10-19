@@ -1,0 +1,1 @@
+Rewrite the share-count instruction to give concrete probability guidance tied to the size of the required move and disclosed triggers, replacing vague 'meaningful probability mass' language with calibrated examples. [round 5, Share-count probability too low or too high: model under- or over-weights discrete step-change events]

@@ -1,0 +1,1 @@
+Rewrite the share-count instruction to give concrete calibration anchors: when strong signals (authorized reverse split, active ATM, explicit dilution warning) are present, assign ≥0.75 rather than hedging toward 0.5; when the required share change is within normal run-rate range, assign ≥0.8. [round 3, Probability calibration too low for likely share-count events]

@@ -1,0 +1,1 @@
+Add a clarifying instruction that financial distress signals (going-concern, losses, cash burn) are evidence about solvency and financing, not direct evidence that revenues will be low, and the model should not conflate the two when estimating revenue probabilities. [round 1, Going-concern / distress treated as evidence AGAINST revenue (over-penalizing)]

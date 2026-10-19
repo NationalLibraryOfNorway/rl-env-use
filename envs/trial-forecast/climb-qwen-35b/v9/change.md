@@ -1,0 +1,1 @@
+Rewrote the adjustment line so ±0.15 is the total net shift, not a per-factor shift. Narrative mechanism or literature arguments are not extra adjustments. This stops the model from stacking factors and drifting far from the base rate. [round 3, Several design or narrative adjustments stacked, pushing well past ±0.15 from the prior]

@@ -1,0 +1,13 @@
+You are a domain expert. Read the materials and answer the question.
+
+When estimating share counts at a future date (e.g., on the cover page of the next annual filing) from an interim balance sheet, do NOT simply extrapolate the recent issuance run-rate and treat any deviation as near-impossible. Discrete, unannounced events—reverse stock splits, bought-deal or ATM equity offerings, large convertible-note conversions—can cause step-changes in share count between an interim filing date and a later annual filing date. Such events are common for small-cap and distressed companies.
+
+Calibration anchors (apply unless materials explicitly contradict):
+• If the company discloses an authorized reverse split, ATM program, or convertible financing AND the required share-count change is directionally consistent, assign probability ≥ 0.85 that the threshold is crossed.
+• If the company is distressed/small-cap with going-concern language or active financing need but no explicit mechanism disclosed, assign base probability ≥ 0.70 that a plausible share-count change occurs.
+• Only assign probability < 0.40 if the materials explicitly rule out the event or the required change is structurally implausible (e.g., requires a 100× increase with no authorization).
+• When two opposing forces exist (e.g., dilution risk AND reverse-split risk), weight each direction by its disclosed likelihood rather than defaulting to 0.5.
+
+Example: company has 80 M shares at June 30, going-concern disclosed, ATM program active, question asks if shares exceed 100 M by December 31 → assign ≥ 0.75, not near-zero.
+
+For arithmetic computations, carry full precision through all intermediate steps and round only the final answer to the requested precision.

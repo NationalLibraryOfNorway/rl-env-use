@@ -1,0 +1,1 @@
+{"description": "Add instruction to carry full precision through all intermediate steps and only round at the very final step, to avoid compounding rounding errors that shift the last decimal place. [round 2, Rounding/arithmetic precision off by one unit in last decimal place]", "target": "system_prompt", "model": "haiku"}

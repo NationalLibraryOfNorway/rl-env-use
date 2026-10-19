@@ -1,0 +1,535 @@
+{
+ "train_ids": [
+  "t_098adf82",
+  "t_13939706",
+  "t_36dbb60d",
+  "t_53c0c894",
+  "t_56af245d",
+  "t_593b2255",
+  "t_594810ee",
+  "t_8529f30c",
+  "t_aab3ff75",
+  "t_d5a4057a",
+  "t_d7aaeb10",
+  "t_de1bfbef",
+  "t_deb02f87",
+  "t_deedef10",
+  "t_e29228d6",
+  "t_e3716546",
+  "t_e684a873",
+  "t_e716b799",
+  "t_e841ff44",
+  "t_fbd517fe"
+ ],
+ "test_ids": [
+  "t_026f7dbb",
+  "t_1062dfa0",
+  "t_23e83b26",
+  "t_243fddab",
+  "t_32888c8b",
+  "t_3710a64f",
+  "t_3cbf32c9",
+  "t_42699213",
+  "t_47d77d81",
+  "t_49254b81",
+  "t_496503ce",
+  "t_4c620291",
+  "t_4f36b8d2",
+  "t_61280f2b",
+  "t_6b911713",
+  "t_7a9ff583",
+  "t_84dba627",
+  "t_853649c1",
+  "t_a4b93595",
+  "t_a73983bc",
+  "t_a7b79b30",
+  "t_b5e0d53f",
+  "t_d172096a",
+  "t_ea1b17f3",
+  "t_f2b8632d"
+ ],
+ "policy": "haiku",
+ "surface": "system prompt (CASE_SYS + extension)",
+ "proposer": "sonnet46",
+ "reps": 4,
+ "confidence": 0.95,
+ "split_seed": 0,
+ "approve_each_round": false,
+ "quarantined": [],
+ "usd": 13.7287,
+ "baseline": {
+  "train": 0.4522,
+  "test": 0.547,
+  "noise": 0.0433,
+  "mde": 0.0619,
+  "mixed_train": 0.8
+ },
+ "rounds": [
+  {
+   "round": 1,
+   "candidates": [
+    {
+     "variant": "v1",
+     "change": "Add explicit instruction that small-cap biotech/growth companies with going-concern risk, active equity programs, or capital needs almost always issue more shares or raise cash within any 3-6 month window, so the prior probability of exceeding a share/cash threshold should be calibrated upward (0.7-0.9) unless the materials contain strong contrary evidence.",
+     "train_screen": {
+      "n": 20,
+      "cases": 12,
+      "diff": 0.1049,
+      "lo": -0.0049,
+      "hi": 0.2194,
+      "p_better": 0.9663
+     }
+    },
+    {
+     "variant": "v2",
+     "change": "Add instruction to carry full precision through all intermediate steps and round only the final answer, with a note that premature rounding of intermediate values is the most common source of off-by-one errors in the last decimal place.",
+     "train_screen": {
+      "n": 20,
+      "cases": 12,
+      "diff": 0.0173,
+      "lo": -0.0372,
+      "hi": 0.0797,
+      "p_better": 0.7368
+     }
+    },
+    {
+     "variant": "v3",
+     "change": "Add a verification step: after computing the final answer, recompute using the unrounded numerator and denominator directly to confirm the rounded result is correct.",
+     "train_screen": {
+      "n": 20,
+      "cases": 12,
+      "diff": 0.0476,
+      "lo": 0.0025,
+      "hi": 0.0877,
+      "p_better": 0.9802
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Rounding error causing off-by-one in final decimal place",
+     "task_ids": [
+      "t_13939706",
+      "t_56af245d",
+      "t_593b2255",
+      "t_d7aaeb10",
+      "t_deb02f87",
+      "t_e3716546",
+      "t_e684a873",
+      "t_e841ff44",
+      "t_d5a4057a"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Underestimating probability of future share issuance / capital raises for cash-constrained small-cap companies",
+     "task_ids": [
+      "t_36dbb60d",
+      "t_e716b799",
+      "t_fbd517fe",
+      "t_deedef10",
+      "t_594810ee",
+      "t_8529f30c",
+      "t_aab3ff75",
+      "t_53c0c894",
+      "t_de1bfbef"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Correct reasoning and answer, gold may differ by rounding convention",
+     "task_ids": [
+      "t_e29228d6"
+     ],
+     "fixable": false
+    }
+   ],
+   "variant": "v1",
+   "change": "Add explicit instruction that small-cap biotech/growth companies with going-concern risk, active equity programs, or capital needs almost always issue more shares or raise cash within any 3-6 month window, so the prior probability of exceeding a share/cash threshold should be calibrated upward (0.7-0.9) unless the materials contain strong contrary evidence.",
+   "train": {
+    "n": 20,
+    "cases": 12,
+    "diff": 0.0654,
+    "lo": -0.0724,
+    "hi": 0.2284,
+    "p_better": 0.8223
+   },
+   "test": {
+    "n": 25,
+    "cases": 11,
+    "diff": 0.0169,
+    "lo": -0.0355,
+    "hi": 0.0596,
+    "p_better": 0.7485
+   },
+   "decision": "revert (test flat or down)"
+  },
+  {
+   "round": 2,
+   "candidates": [
+    {
+     "variant": "v4",
+     "change": "Add calibration instruction: for small-cap public companies with active equity programs, going-concern language, or capital needs, the default probability that share counts or cash balances cross a modest threshold within 3-6 months should be 0.75-0.90 unless materials contain strong contrary evidence, because equity issuances, warrant exercises, and financing events are routine and frequent.",
+     "train_screen": {
+      "n": 20,
+      "cases": 12,
+      "diff": 0.0706,
+      "lo": -0.038,
+      "hi": 0.2051,
+      "p_better": 0.8918
+     }
+    },
+    {
+     "variant": "v5",
+     "change": "Add instruction to carry full precision through all intermediate steps and only round at the very final step, to avoid compounding rounding errors that shift the last decimal place.",
+     "train_screen": {
+      "n": 20,
+      "cases": 12,
+      "diff": 0.0565,
+      "lo": -0.0486,
+      "hi": 0.1774,
+      "p_better": 0.8478
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Probability questions underestimated for small-cap equity/cash threshold crossing",
+     "task_ids": [
+      "t_36dbb60d",
+      "t_e716b799",
+      "t_fbd517fe",
+      "t_deedef10",
+      "t_594810ee",
+      "t_8529f30c",
+      "t_aab3ff75",
+      "t_53c0c894",
+      "t_de1bfbef"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Rounding/arithmetic precision off by one unit in last decimal place",
+     "task_ids": [
+      "t_13939706",
+      "t_56af245d",
+      "t_593b2255",
+      "t_d7aaeb10",
+      "t_deb02f87",
+      "t_e3716546",
+      "t_e684a873",
+      "t_e841ff44",
+      "t_d5a4057a"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Probability correctly assessed as high (control case)",
+     "task_ids": [
+      "t_e29228d6"
+     ],
+     "fixable": false
+    }
+   ],
+   "variant": "v4",
+   "change": "Add calibration instruction: for small-cap public companies with active equity programs, going-concern language, or capital needs, the default probability that share counts or cash balances cross a modest threshold within 3-6 months should be 0.75-0.90 unless materials contain strong contrary evidence, because equity issuances, warrant exercises, and financing events are routine and frequent.",
+   "train": {
+    "n": 20,
+    "cases": 12,
+    "diff": 0.0826,
+    "lo": -0.0075,
+    "hi": 0.1993,
+    "p_better": 0.961
+   },
+   "test": {
+    "n": 25,
+    "cases": 11,
+    "diff": 0.0634,
+    "lo": 0.0013,
+    "hi": 0.1332,
+    "p_better": 0.978
+   },
+   "decision": "keep"
+  },
+  {
+   "round": 3,
+   "candidates": [
+    {
+     "variant": "v6",
+     "change": "Strengthen the calibration instruction by explicitly stating that when the model's linear projection falls short of the threshold, it should still assign high probability (0.75+) if distress/equity-program signals are present, because accelerated issuances and capital raises are the norm, not the exception, for such companies.",
+     "train_screen": {
+      "n": 20,
+      "cases": 12,
+      "diff": 0.0053,
+      "lo": -0.0981,
+      "hi": 0.1331,
+      "p_better": 0.5325
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Rounding error by 0.1 in arithmetic computations",
+     "task_ids": [
+      "t_098adf82",
+      "t_13939706",
+      "t_56af245d",
+      "t_593b2255",
+      "t_d7aaeb10",
+      "t_deb02f87",
+      "t_e3716546",
+      "t_e684a873",
+      "t_e841ff44"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Unit/scale mismatch in per-share derivation",
+     "task_ids": [
+      "t_d5a4057a"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Probability too low for threshold-crossing questions",
+     "task_ids": [
+      "t_36dbb60d",
+      "t_aab3ff75",
+      "t_fbd517fe",
+      "t_53c0c894",
+      "t_594810ee",
+      "t_deedef10",
+      "t_e716b799",
+      "t_de1bfbef",
+      "t_8529f30c",
+      "t_e29228d6"
+     ],
+     "fixable": true
+    }
+   ],
+   "variant": "v6",
+   "change": "Strengthen the calibration instruction by explicitly stating that when the model's linear projection falls short of the threshold, it should still assign high probability (0.75+) if distress/equity-program signals are present, because accelerated issuances and capital raises are the norm, not the exception, for such companies.",
+   "train": {
+    "n": 20,
+    "cases": 12,
+    "diff": -0.0077,
+    "lo": -0.0732,
+    "hi": 0.0638,
+    "p_better": 0.44
+   },
+   "test": {
+    "n": 25,
+    "cases": 11,
+    "diff": 0.0351,
+    "lo": -0.0215,
+    "hi": 0.0894,
+    "p_better": 0.8925
+   },
+   "decision": "revert (train fell)"
+  },
+  {
+   "round": 4,
+   "candidates": [
+    {
+     "variant": "v7",
+     "change": "Rewrite the calibration instruction to make explicit that a large gap between current count and threshold does NOT justify lowering below 0.75 when distress signals are present, because capital raises and accelerated issuances routinely close large gaps in a single quarter.",
+     "train_screen": {
+      "n": 20,
+      "cases": 12,
+      "diff": 0.0142,
+      "lo": -0.0599,
+      "hi": 0.099,
+      "p_better": 0.6352
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Off-by-one rounding in arithmetic calculations",
+     "task_ids": [
+      "t_098adf82",
+      "t_13939706",
+      "t_56af245d",
+      "t_593b2255",
+      "t_d7aaeb10",
+      "t_deb02f87",
+      "t_e3716546",
+      "t_e684a873",
+      "t_e841ff44"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Wrong unit scale when deriving share count from EPS (divides loss in thousands by per-share figure without scaling)",
+     "task_ids": [
+      "t_d5a4057a"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Probability too low for distressed small-cap crossing share/cash threshold",
+     "task_ids": [
+      "t_36dbb60d",
+      "t_aab3ff75",
+      "t_fbd517fe",
+      "t_53c0c894",
+      "t_594810ee",
+      "t_deedef10",
+      "t_e716b799",
+      "t_de1bfbef"
+     ],
+     "fixable": true
+    }
+   ],
+   "variant": "v7",
+   "change": "Rewrite the calibration instruction to make explicit that a large gap between current count and threshold does NOT justify lowering below 0.75 when distress signals are present, because capital raises and accelerated issuances routinely close large gaps in a single quarter.",
+   "train": {
+    "n": 20,
+    "cases": 12,
+    "diff": 0.0555,
+    "lo": -0.0197,
+    "hi": 0.1515,
+    "p_better": 0.9163
+   },
+   "test": {
+    "n": 25,
+    "cases": 11,
+    "diff": -0.0042,
+    "lo": -0.0958,
+    "hi": 0.0826,
+    "p_better": 0.4682
+   },
+   "decision": "revert (test flat or down)",
+   "quarantined": []
+  },
+  {
+   "round": 5,
+   "candidates": [
+    {
+     "variant": "v8",
+     "change": "Rewrite the calibration instruction to explicitly address the 'large gap' failure mode: when distress signals are present, even a gap requiring 2-5x the recent quarterly issuance rate does not justify going below 0.75, because a single capital raise or warrant exercise event routinely closes such gaps in one quarter.",
+     "train_screen": {
+      "n": 20,
+      "cases": 12,
+      "diff": 0.0113,
+      "lo": -0.0621,
+      "hi": 0.0879,
+      "p_better": 0.6145
+     }
+    }
+   ],
+   "buckets": [
+    {
+     "name": "Rounding error by one digit in arithmetic calculations",
+     "task_ids": [
+      "t_098adf82",
+      "t_13939706",
+      "t_56af245d",
+      "t_593b2255",
+      "t_d7aaeb10",
+      "t_deb02f87",
+      "t_e3716546",
+      "t_e684a873",
+      "t_e841ff44"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Unit/scale mismatch when deriving share count from EPS (loss in thousands vs per-share in dollars)",
+     "task_ids": [
+      "t_d5a4057a"
+     ],
+     "fixable": true
+    },
+    {
+     "name": "Probability too low for distressed small-cap crossing share/cash threshold",
+     "task_ids": [
+      "t_36dbb60d",
+      "t_aab3ff75",
+      "t_fbd517fe",
+      "t_53c0c894",
+      "t_594810ee",
+      "t_deedef10",
+      "t_e716b799",
+      "t_de1bfbef",
+      "t_8529f30c",
+      "t_e29228d6"
+     ],
+     "fixable": true
+    }
+   ],
+   "variant": "v8",
+   "change": "Rewrite the calibration instruction to explicitly address the 'large gap' failure mode: when distress signals are present, even a gap requiring 2-5x the recent quarterly issuance rate does not justify going below 0.75, because a single capital raise or warrant exercise event routinely closes such gaps in one quarter.",
+   "train": {
+    "n": 20,
+    "cases": 12,
+    "diff": 0.0095,
+    "lo": -0.0638,
+    "hi": 0.0864,
+    "p_better": 0.6355
+   },
+   "test": {
+    "n": 25,
+    "cases": 11,
+    "diff": -0.0186,
+    "lo": -0.1102,
+    "hi": 0.0381,
+    "p_better": 0.3545
+   },
+   "decision": "revert (test flat or down)"
+  }
+ ],
+ "incumbent": "v4",
+ "stall": 3,
+ "best": {
+  "round": 4,
+  "variant": "v4",
+  "test_score": 0.6104
+ },
+ "final": {
+  "variant": "v4",
+  "test": {
+   "n": 25,
+   "cases": 11,
+   "diff": 0.0477,
+   "lo": -0.067,
+   "hi": 0.1802,
+   "p_better": 0.7805
+  },
+  "baseline_test": 0.5222,
+  "best_test": 0.5698,
+  "reps": 4,
+  "test_looks": 5,
+  "decision": "within noise - do not merge"
+ },
+ "metrics": [
+  {
+   "id": "correct",
+   "kind": "binary",
+   "label": "Correct"
+  }
+ ],
+ "perf_fields": [
+  {
+   "id": "cost_usd",
+   "label": "Cost",
+   "unit": "$"
+  },
+  {
+   "id": "latency_s",
+   "label": "Latency",
+   "unit": "s"
+  },
+  {
+   "id": "tool_calls",
+   "label": "Actions"
+  }
+ ],
+ "goal": {
+  "target": "correct",
+  "direction": "higher",
+  "hold": [
+   "cost_usd"
+  ]
+ }
+}

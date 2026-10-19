@@ -1,0 +1,1 @@
+Add a verification step: after computing the final answer, recompute using the unrounded numerator and denominator directly to confirm the rounded result is correct. [round 1, Rounding error causing off-by-one in final decimal place]

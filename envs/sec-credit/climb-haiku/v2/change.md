@@ -1,0 +1,1 @@
+Add instruction to carry full precision through all intermediate steps and round only the final answer, with a note that premature rounding of intermediate values is the most common source of off-by-one errors in the last decimal place. [round 1, Rounding error causing off-by-one in final decimal place]

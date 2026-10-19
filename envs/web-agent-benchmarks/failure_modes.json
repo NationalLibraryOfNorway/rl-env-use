@@ -1,0 +1,54 @@
+{
+ "modes": [
+  {
+   "id": "snippet_only_evidence",
+   "name": "Answer relies on search snippets without opening the source page",
+   "definition": "The agent takes a key figure from a search-engine result snippet and never opens or reads the primary source page that contains it.",
+   "fail_if": [
+    "A figure used in the final answer appears only in a search-results snippet and the page it came from was never visited",
+    "The agent cites a source URL in its final answer that it never navigated to",
+    "A page or tab was opened but its content was never viewed or read before the answer relied on it"
+   ],
+   "pass_if": "Every number in the final answer was read directly from a primary or task-specified page that the agent actually opened and viewed.",
+   "example_ids": [
+    "baseline/t_2d394f11_rep0",
+    "baseline/t_d47aefed_rep0",
+    "baseline/t_c0ddb20e_rep0",
+    "baseline/t_872229da_rep0"
+   ],
+   "count": 4
+  },
+  {
+   "id": "wrong_source_substitution",
+   "name": "Uses a non-specified third-party source instead of the one the task names",
+   "definition": "The agent gets a required value from a third-party site such as a blog when the task specifies a particular source like the GitHub repo.",
+   "fail_if": [
+    "The task names a specific source and the agent takes the value from a different, secondary site",
+    "The agent treats a re-run of a search-engine query as verification instead of visiting the specified source"
+   ],
+   "pass_if": "Values are taken from the source the task specifies, or any deviation is explicitly justified and cross-checked against that source.",
+   "example_ids": [
+    "baseline/t_872229da_rep0"
+   ],
+   "count": 1
+  },
+  {
+   "id": "repeated_redundant_action_loop",
+   "name": "Repeats the same action or computation after the result is already known",
+   "definition": "The agent re-executes an identical or near-identical tool call many times, getting the same result, instead of using the output and moving on.",
+   "fail_if": [
+    "The same computation or tool call is repeated 3 or more times with an identical or equivalent result and no change in approach",
+    "The agent claims it has not seen information that was already present in an earlier tool output, then repeats the call",
+    "Many steps pass between having the needed information and calling done, with no new progress"
+   ],
+   "pass_if": "Each tool call yields new information or a changed approach, and the agent finishes promptly once it has the answer.",
+   "example_ids": [
+    "baseline/t_7684b669_rep0",
+    "baseline/t_eedb7b3d_rep0"
+   ],
+   "count": 2
+  }
+ ],
+ "n_annotated": 32,
+ "n_failed": 6
+}

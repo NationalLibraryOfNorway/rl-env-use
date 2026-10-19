@@ -1,0 +1,1 @@
+Rewrote the worked example using invented numbers that do not appear in any training case, preserving the same instructional point about carrying intermediates to 6+ significant figures. [round 5, Off-by-one rounding in arithmetic (final answer rounds to wrong last digit)]

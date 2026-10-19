@@ -1,0 +1,754 @@
+{
+ "note": "rl-env-use measurements, Oct 2026. Small samples - read as demonstrations. mining_ab and solving_ab ran on earlier envs (clinical trial stats, human variants) that are not shipped; the numbers are kept here.",
+ "sec-credit": {
+  "what": "same 18 mined SEC cases as sec-credit (+8 mined later), rebuilt with the hard-by-design pipeline: code-computed golds, operands must be in the materials, distractors must fail, multi-lab panel, harden loop, forecasts Brier-scored",
+  "cases": 26,
+  "drafted": 458,
+  "verified_pool": 178,
+  "frontier_hard_kept": 18,
+  "frontier_panel": [
+   "opus55",
+   "gpt-astra",
+   "gemini"
+  ],
+  "frontier_verdicts_by_kind": {
+   "derive": {
+    "gold_disputed": 3,
+    "saturated": 153,
+    "multi_value": 32,
+    "keep": 3
+   },
+   "predict": {
+    "keep": 20,
+    "memorized": 14,
+    "no_shift": 8,
+    "saturated": 2
+   }
+  },
+  "finding": "the frontier solves nearly every computation from a 10-Q excerpt (derive: 153 saturated vs 3 kept); its headroom is in forecasts (kept forecasts: Opus 5.5 0.73, GPT-6 Astra 0.71, Gemini 0.50 on 1-Brier)",
+  "model_ab_verified_pool": {
+   "opus55": {
+    "pool": 0.967,
+    "derive": 1.0,
+    "forecast": 0.73,
+    "hard": 0.744,
+    "n": 356,
+    "usd": 0,
+    "errors": 0,
+    "on_panel": true
+   },
+   "gpt-astra": {
+    "pool": 0.956,
+    "derive": 0.99,
+    "forecast": 0.709,
+    "hard": 0.658,
+    "n": 356,
+    "usd": 0,
+    "errors": 0,
+    "on_panel": true
+   },
+   "gemini": {
+    "pool": 0.927,
+    "derive": 0.996,
+    "forecast": 0.504,
+    "hard": 0.504,
+    "n": 279,
+    "usd": 0,
+    "errors": 77,
+    "on_panel": true
+   },
+   "sonnet55": {
+    "pool": 0.935,
+    "derive": 0.984,
+    "forecast": 0.589,
+    "hard": 0.629,
+    "n": 356,
+    "usd": 4.67,
+    "errors": 5,
+    "on_panel": false
+   },
+   "gpt6": {
+    "pool": 0.949,
+    "derive": 0.987,
+    "forecast": 0.676,
+    "hard": 0.648,
+    "n": 356,
+    "usd": 2.38,
+    "errors": 0,
+    "on_panel": false
+   },
+   "qwen-27b": {
+    "pool": 0.937,
+    "derive": 0.981,
+    "forecast": 0.58,
+    "hard": 0.601,
+    "n": 350,
+    "usd": 2.2,
+    "errors": 6,
+    "on_panel": false
+   },
+   "qwen-35b": {
+    "pool": 0.892,
+    "derive": 0.955,
+    "forecast": 0.445,
+    "hard": 0.513,
+    "n": 356,
+    "usd": 1.84,
+    "errors": 0,
+    "on_panel": false
+   },
+   "haiku": {
+    "pool": 0.778,
+    "derive": 0.814,
+    "forecast": 0.525,
+    "hard": 0.548,
+    "n": 356,
+    "usd": 2.03,
+    "errors": 0,
+    "on_panel": false
+   },
+   "deepseek": {
+    "pool": 0.917,
+    "derive": 0.971,
+    "forecast": 0.536,
+    "hard": 0.589,
+    "n": 356,
+    "usd": 0.33,
+    "errors": 0,
+    "on_panel": false
+   },
+   "gemini-flash": {
+    "pool": 0.925,
+    "derive": 0.994,
+    "forecast": 0.439,
+    "hard": 0.487,
+    "n": 356,
+    "usd": 3.27,
+    "errors": 0,
+    "on_panel": false
+   },
+   "bu": {
+    "pool": 0.93,
+    "derive": 0.978,
+    "forecast": 0.595,
+    "hard": 0.614,
+    "n": 356,
+    "usd": 1.25,
+    "errors": 0,
+    "on_panel": false
+   },
+   "bu-mini": {
+    "pool": 0.361,
+    "derive": 0.397,
+    "forecast": 0.102,
+    "hard": 0.141,
+    "n": 356,
+    "usd": 0,
+    "errors": 0,
+    "on_panel": false
+   }
+  },
+  "model_ab_note": "2 reps per task; * panel models scored from their stored panel answers; forecast score = 1 - Brier (0.75 = always 50%)",
+  "climb_haiku": {
+   "baseline": {
+    "train": 0.4522,
+    "test": 0.547,
+    "noise": 0.0433,
+    "mde": 0.0619,
+    "mixed_train": 0.8
+   },
+   "rounds": [
+    {
+     "round": 1,
+     "change": "Add explicit instruction that small-cap biotech/growth companies with going-concern risk, active equity programs, or capital needs almost always issue more shares or raise cash within any 3-6 month window, so the prior probability of exceeding a share/cash threshold should be calibrated upward (0.7-0.9) unless the materials contain strong contrary evidence.",
+     "decision": "revert (test flat or down)",
+     "test": {
+      "n": 25,
+      "cases": 11,
+      "diff": 0.0169,
+      "lo": -0.0355,
+      "hi": 0.0596,
+      "p_better": 0.7485
+     }
+    },
+    {
+     "round": 2,
+     "change": "Add calibration instruction: for small-cap public companies with active equity programs, going-concern language, or capital needs, the default probability that share counts or cash balances cross a modest threshold within 3-6 months should be 0.75-0.90 unless materials contain strong contrary evidence, because equity issuances, warrant exercises, and financing events are routine and frequent.",
+     "decision": "keep",
+     "test": {
+      "n": 25,
+      "cases": 11,
+      "diff": 0.0634,
+      "lo": 0.0013,
+      "hi": 0.1332,
+      "p_better": 0.978
+     }
+    },
+    {
+     "round": 3,
+     "change": "Strengthen the calibration instruction by explicitly stating that when the model's linear projection falls short of the threshold, it should still assign high probability (0.75+) if distress/equity-program signals are present, because accelerated issuances and capital raises are the norm, not the exception, for such companies.",
+     "decision": "revert (train fell)",
+     "test": {
+      "n": 25,
+      "cases": 11,
+      "diff": 0.0351,
+      "lo": -0.0215,
+      "hi": 0.0894,
+      "p_better": 0.8925
+     }
+    },
+    {
+     "round": 4,
+     "change": "Rewrite the calibration instruction to make explicit that a large gap between current count and threshold does NOT justify lowering below 0.75 when distress signals are present, because capital raises and accelerated issuances routinely close large gaps in a single quarter.",
+     "decision": "revert (test flat or down)",
+     "test": {
+      "n": 25,
+      "cases": 11,
+      "diff": -0.0042,
+      "lo": -0.0958,
+      "hi": 0.0826,
+      "p_better": 0.4682
+     }
+    },
+    {
+     "round": 5,
+     "change": "Rewrite the calibration instruction to explicitly address the 'large gap' failure mode: when distress signals are present, even a gap requiring 2-5x the recent quarterly issuance rate does not justify going below 0.75, because a single capital raise or warrant exercise event routinely closes such gaps in one quarter.",
+     "decision": "revert (test flat or down)",
+     "test": {
+      "n": 25,
+      "cases": 11,
+      "diff": -0.0186,
+      "lo": -0.1102,
+      "hi": 0.0381,
+      "p_better": 0.3545
+     }
+    }
+   ],
+   "final": {
+    "variant": "v4",
+    "test": {
+     "n": 25,
+     "cases": 11,
+     "diff": 0.0477,
+     "lo": -0.067,
+     "hi": 0.1802,
+     "p_better": 0.7805
+    },
+    "baseline_test": 0.5222,
+    "best_test": 0.5698,
+    "reps": 4,
+    "test_looks": 5,
+    "decision": "within noise - do not merge"
+   },
+   "usd": 13.7287
+  },
+  "bugs_found_by_the_framework": [
+   "multi-value prompts kept as hard because strong models answered both values (24 tasks)",
+   "-$4.50 parsed as +4.50",
+   "answers with working in parentheses graded as hedges",
+   "drafter used outcome-fact numbers in derive expressions (rejected by operand check)",
+   "forecast train split was 10/10 yes (now stratified by outcome)"
+  ],
+  "climb_qwen35b_verified_pool": {
+   "policy": "qwen/qwen3.6-35b-a3b",
+   "tasks": "178 verified (88 train / 90 test, split by case and forecast outcome)",
+   "reps": 3,
+   "baseline": {
+    "train": 0.912,
+    "test": 0.8728,
+    "noise": 0.029,
+    "mde": 0.0415,
+    "mixed_train": 0.125
+   },
+   "rounds": [
+    {
+     "round": 1,
+     "change": "Add a clarifying instruction that financial distress signals (going-concern, losses, cash burn) are evidence about solvency and financing, not direct evidence that revenues will be low, and the model should not conflate the two when estimating revenue probabilities.",
+     "decision": "revert (no train gain)"
+    },
+    {
+     "round": 2,
+     "change": "Add instruction that when estimating future share counts, linear extrapolation from recent issuance rates is unreliable because discrete unannounced events (reverse splits, bought-deal offerings, ATM surges, convertible-note conversions) can cause step-changes; the model must assign meaningful probability mass to such events and avoid anchoring solely on the most recent run-rate.",
+     "decision": "keep",
+     "test": {
+      "n": 90,
+      "cases": 13,
+      "diff": 0.0449,
+      "lo": 0.0178,
+      "hi": 0.0701,
+      "p_better": 0.9998
+     }
+    },
+    {
+     "round": 3,
+     "change": "Add an explicit instruction to avoid intermediate rounding: store each intermediate result to at least 6 significant figures before using it in the next step, and only round at the very last step.",
+     "decision": "revert (no train gain)"
+    },
+    {
+     "round": 4,
+     "change": "Rewrite the share-count instruction to give explicit calibration anchors: for distressed/small-cap companies with active financing risk, assign base probability ≥0.7 for plausible share-count increases unless materials rule them out, and ≥0.85 when an authorized reverse split or ATM is already disclosed.",
+     "decision": "revert (no train gain)"
+    },
+    {
+     "round": 5,
+     "change": "Rewrote the worked example using invented numbers that do not appear in any training case, preserving the same instructional point about carrying intermediates to 6+ significant figures.",
+     "decision": "revert (test flat or down)",
+     "test": {
+      "n": 90,
+      "cases": 13,
+      "diff": 0.0233,
+      "lo": -0.0057,
+      "hi": 0.0529,
+      "p_better": 0.9245
+     }
+    }
+   ],
+   "final": {
+    "variant": "v3",
+    "test": {
+     "n": 90,
+     "cases": 13,
+     "diff": 0.0306,
+     "lo": -0.0221,
+     "hi": 0.0669,
+     "p_better": 0.8872
+    },
+    "baseline_test": 0.8807,
+    "best_test": 0.9112,
+    "reps": 3,
+    "test_looks": 2,
+    "decision": "within noise - do not merge"
+   },
+   "usd": 17.6839,
+   "subgroup_after_the_fact": {
+    "forecasts_test_10": "0.459 -> 0.801, paired +0.342 [+0.100, +0.562]",
+    "derive_test_80": "0.933 -> 0.925",
+    "why_not_skill": "test forecasts were 8 yes / 2 no; mean P(yes) on yes-outcomes 0.35 -> 0.70, on no-outcomes 0.77 -> 0.65: the edit mostly shifts toward the majority class (balanced thresholds and the base-rate audit now guard this)"
+   },
+   "infra_bug_found": "climbs stalled for 20+ min: a cancelled httpx request closes its TLS stream in a shielded section and hung forever; OpenRouter calls now run in worker threads"
+  },
+  "frontier_hard_note": "23 pass every check; 18 are served after the 60/40 forecast-outcome balance"
+ },
+ "trial-forecast": {
+  "note": "ClinicalTrials.gov protocol -> later posted result, yes/no forecasts scored 1-Brier; always 0.5 scores 0.75; 5 of the 40 tasks first kept were later dropped by a stricter critic (a prompt that stated the result, a wrong gold, ambiguity) and every score here is regraded on the 35",
+  "cases": 29,
+  "missions": 115,
+  "tasks_drafted": 355,
+  "tasks_kept": 35,
+  "yes_no": [
+   21,
+   14
+  ],
+  "build_usd": 72.0509,
+  "browser_use_usd": 17.44,
+  "models": {
+   "baseline": {
+    "model": "qwen/qwen3.6-35b-a3b",
+    "score_1_minus_brier": 0.599,
+    "rows": 70,
+    "usd": 0.289
+   },
+   "v1": {
+    "model": "qwen/qwen3.8-27b",
+    "score_1_minus_brier": 0.749,
+    "rows": 70,
+    "usd": 1.771
+   },
+   "v2": {
+    "model": "anthropic/claude-opus-5.5",
+    "score_1_minus_brier": 0.758,
+    "rows": 70,
+    "usd": 1.461
+   },
+   "v3": {
+    "model": "openai/gpt-6-astra",
+    "score_1_minus_brier": 0.819,
+    "rows": 70,
+    "usd": 3.731
+   },
+   "v4": {
+    "model": "google/gemini-3.1-pro-preview",
+    "score_1_minus_brier": 0.599,
+    "rows": 70,
+    "usd": 1.452
+   }
+  },
+  "hillclimb": {
+   "policy": "qwen-35b",
+   "proposer": "opus55",
+   "reps": 4,
+   "train_test": [
+    19,
+    16
+   ],
+   "forced": "MDE 0.20 > 0.08",
+   "kept": "v3: base-rate priors per question type",
+   "final": "test 0.532 -> 0.777, paired +0.245 [+0.066, +0.451] on 4 fresh reps (the 16 test tasks still served; at climb time, with 19: 0.568 -> 0.777, +0.209 [+0.065, +0.391])",
+   "usd": 8.19
+  }
+ },
+ "mining_ab": {
+  "trial-stats": {
+   "claude_code": {
+    "missions": 8,
+    "verified_facts": 0,
+    "returned": 86,
+    "browser_only": 0,
+    "sites": [],
+    "usd": 3.795,
+    "minutes": 16.1,
+    "complete_cases": 0,
+    "materials": 0,
+    "tasks_drafted": 0,
+    "tasks_kept": 0
+   },
+   "browser_use": {
+    "missions": 8,
+    "verified_facts": 17,
+    "returned": null,
+    "browser_only": 17,
+    "sites": [
+     "clinicaltrials.gov"
+    ],
+    "usd": 1.189,
+    "minutes": 28.8,
+    "complete_cases": 4,
+    "materials": 25,
+    "tasks_drafted": 24,
+    "tasks_kept": 3
+   }
+  },
+  "trial-stats (same model)": {
+   "claude_code": {
+    "missions": 6,
+    "verified_facts": 0,
+    "returned": 43,
+    "browser_only": 0,
+    "sites": [],
+    "usd": 2.999,
+    "minutes": 12.2,
+    "complete_cases": 0,
+    "materials": 0,
+    "tasks_drafted": 0,
+    "tasks_kept": 0,
+    "facts_returned": 43,
+    "values_found_on_cited_page": 1,
+    "verbatim_quotes": 0
+   },
+   "browser_use": {
+    "missions": 6,
+    "verified_facts": 3,
+    "returned": null,
+    "browser_only": 3,
+    "sites": [
+     "clinicaltrials.gov"
+    ],
+    "usd": 3.213,
+    "minutes": 14.2,
+    "complete_cases": 2,
+    "materials": 3,
+    "tasks_drafted": 6,
+    "tasks_kept": 1
+   },
+   "note": "same model (claude-sonnet-4-6) and mission instructions in both arms; Claude Code read ClinicalTrials.gov mostly through its JSON API via WebFetch, which returns model-processed summaries, so quotes and passage markers were paraphrases"
+  },
+  "human-variants": {
+   "claude_code": {
+    "missions": 8,
+    "verified_facts": 6,
+    "returned": 82,
+    "browser_only": 0,
+    "sites": [
+     "rest.uniprot.org",
+     "www.ncbi.nlm.nih.gov"
+    ],
+    "usd": 10.981,
+    "minutes": 13.7
+   },
+   "browser_use": {
+    "missions": 8,
+    "verified_facts": 40,
+    "returned": null,
+    "browser_only": 25,
+    "sites": [
+     "gnomad.broadinstitute.org",
+     "gtexportal.org",
+     "www.ncbi.nlm.nih.gov",
+     "www.uniprot.org"
+    ],
+    "usd": 10.432,
+    "minutes": 31.6
+   }
+  }
+ },
+ "solving_ab_browse_tasks": {
+  "model": "claude-sonnet-4-6 in both arms",
+  "browser_use": {
+   "tasks": 43,
+   "correct_strict": 39.0,
+   "correct_format_tolerant": 39.0,
+   "format_only_misses": [],
+   "usd": 6.32,
+   "tool_calls_total": 230,
+   "tool_calls_median": 3,
+   "tool_calls_max": 26,
+   "latency_s_median": 117.0
+  },
+  "claude_code": {
+   "tasks": 43,
+   "correct_strict": 36.0,
+   "correct_format_tolerant": 40.0,
+   "format_only_misses": [
+    "t_24198648",
+    "t_5cce8712",
+    "t_ca194939",
+    "t_f66f43ac"
+   ],
+   "usd": 15.61,
+   "tool_calls_total": 492,
+   "tool_calls_median": 4,
+   "tool_calls_max": 73,
+   "latency_s_median": 30.0
+  },
+  "by_site": {
+   "GTEx": {
+    "browser_use": 32,
+    "claude_code": 224
+   },
+   "gnomAD": {
+    "browser_use": 50,
+    "claude_code": 135
+   },
+   "UniProt": {
+    "browser_use": 144,
+    "claude_code": 132
+   }
+  },
+  "examples": [
+   {
+    "task": "Which EGFR variant (identified by a VAR number) involves a large deletion spanning positions 30-297 and is found in lung cancer samples according to UniProt?",
+    "gold": "VAR_066493",
+    "browser_use": [
+     "VAR_066493",
+     1.0,
+     3
+    ],
+    "claude_code": [
+     "VAR_010687",
+     0.0,
+     7
+    ]
+   },
+   {
+    "task": "What is the molecular consequence for the ClinVar variant NM_000218.3(KCNQ1):c.200del?",
+    "gold": "frameshift",
+    "browser_use": [
+     "frameshift",
+     1.0,
+     4
+    ],
+    "claude_code": [
+     "frameshift variant (p.Pro67fs; p.Pro67Argfs*19)",
+     0.0,
+     1
+    ]
+   },
+   {
+    "task": "According to GTEx Analysis Release V10, how many more significant single-tissue eQTLs does SCN5A have compared to RYR2?",
+    "gold": "344",
+    "browser_use": [
+     "344",
+     1.0,
+     5
+    ],
+    "claude_code": [
+     "344",
+     1.0,
+     25
+    ]
+   },
+   {
+    "task": "In gnomAD v4, what is the observed number of pLoF SNVs for the TP53 gene?",
+    "gold": "12",
+    "browser_use": [
+     "12",
+     1.0,
+     10
+    ],
+    "claude_code": [
+     "12",
+     1.0,
+     45
+    ]
+   },
+   {
+    "task": "What is the missense o/e ratio for the TP53 gene in gnomAD v4?",
+    "gold": "0.89",
+    "browser_use": [
+     "0.89",
+     1.0,
+     5
+    ],
+    "claude_code": [
+     "0.89 (90% CI: 0.82–0.96)",
+     0.0,
+     1
+    ]
+   },
+   {
+    "task": "What are the positions of the Protein kinase domain in the EGFR protein according to UniProt?",
+    "gold": "712-979",
+    "browser_use": [
+     "712 – 979",
+     1.0,
+     23
+    ],
+    "claude_code": [
+     "712–979",
+     1.0,
+     3
+    ]
+   },
+   {
+    "task": "In gnomAD v4, what is the observed/expected (o/e) ratio for pLoF variants in the VHL gene?",
+    "gold": "0.52",
+    "browser_use": [
+     "0.52",
+     1.0,
+     2
+    ],
+    "claude_code": [
+     "0.36",
+     0.0,
+     21
+    ]
+   },
+   {
+    "task": "What is the UniProt variant identifier (VAR_XXXXXX) for the TP53 variant at position 175 that is associated with Li-Fraumeni syndrome?",
+    "gold": "VAR_005932",
+    "browser_use": [
+     "VAR_005929",
+     0.0,
+     3
+    ],
+    "claude_code": [
+     "VAR_005932",
+     1.0,
+     2
+    ]
+   },
+   {
+    "task": "According to UniProt, how many amino acids separate the end of the Inhibitor I9 domain and the start of the Peptidase S8 domain in PCSK9?",
+    "gold": "5",
+    "browser_use": [
+     "3",
+     0.0,
+     26
+    ],
+    "claude_code": [
+     "5",
+     1.0,
+     4
+    ]
+   },
+   {
+    "task": "According to GTEx Analysis Release V10, among MYH7, HBB, and LDLR, which gene has the most significant single-tissue eQTLs?",
+    "gold": "LDLR",
+    "browser_use": [
+     "MYH7",
+     0.0,
+     6
+    ],
+    "claude_code": [
+     "LDLR",
+     1.0,
+     26
+    ]
+   },
+   {
+    "task": "According to GTEx Analysis Release V10, what is the sum of significant single-tissue eQTLs for LDLR and RYR2 combined?",
+    "gold": "622",
+    "browser_use": [
+     "622",
+     1.0,
+     5
+    ],
+    "claude_code": [
+     "622",
+     1.0,
+     53
+    ]
+   },
+   {
+    "task": "According to GTEx Analysis Release V10, which of the following genes has the most significant single-tissue eQTLs: SCN5A, RYR2, MYH7, HBB, or LDLR?",
+    "gold": "SCN5A",
+    "browser_use": [
+     "SCN5A",
+     1.0,
+     8
+    ],
+    "claude_code": [
+     "SCN5A",
+     1.0,
+     73
+    ]
+   },
+   {
+    "task": "In GTEx Analysis Release V10, what is the p-value for the BRCA1 eQTL variant rs2017481 in Liver tissue?",
+    "gold": "5.2e-22",
+    "browser_use": [
+     "5.2e-22",
+     1.0,
+     3
+    ],
+    "claude_code": [
+     "5.16e-22",
+     0.0,
+     26
+    ]
+   },
+   {
+    "task": "According to UniProt, which EGFR variant (identified by a VAR number) involves a large deletion spanning positions 30-297 and is found in lung cancer samples?",
+    "gold": "VAR_066493",
+    "browser_use": [
+     "VAR_066493",
+     1.0,
+     3
+    ],
+    "claude_code": [
+     "VAR_066493",
+     1.0,
+     37
+    ]
+   },
+   {
+    "task": "What is the name of the familial disease that PCSK9 is associated with in UniProt?",
+    "gold": "Hypercholesterolemia, familial, 3",
+    "browser_use": [
+     "Hypercholesterolemia, familial, 3",
+     1.0,
+     3
+    ],
+    "claude_code": [
+     "Familial hypercholesterolemia 3 (FHCL3)",
+     0.0,
+     4
+    ]
+   },
+   {
+    "task": "What are the positions of CFTR transmembrane region 5 in UniProt?",
+    "gold": "299-319",
+    "browser_use": [
+     "299-319",
+     1.0,
+     25
+    ],
+    "claude_code": [
+     "299–319",
+     1.0,
+     4
+    ]
+   }
+  ]
+ }
+}
