@@ -4,19 +4,12 @@
 
 # rl-env-use
 
-Introducing **rl-env-use**: RL environments for any domain, built by browser agents from real cases. 100% open source.
+Introducing **rl-env-use**: RL environments for anyone and any domain.
 
 Describe a skill in one line. Get a verified environment that frontier models do not saturate, and a hillclimbed prompt
-for the model you train. It runs Anthropic's [Automating eval design and hillclimbing](https://claude.dev/blog/automating-eval-design-and-hillclimbing/)
+for the model you train. Built on Anthropic's [Automating eval design and hillclimbing](https://claude.dev/blog/automating-eval-design-and-hillclimbing/)
 workflow end to end, with one change: the tasks are real cases that [Browser Use](https://browser-use.com) agents mine
-from the web, not synthesized ones.
-
-Get a Browser Use API key at [Browser Use Cloud](https://cloud.browser-use.com/?utm_campaign=rl-env-use&utm_source=github).
-
-## Browser Use vs vanilla Claude Code
-
-The same mining missions, run by Claude Code (WebSearch + WebFetch) and by Browser Use agents. A fact counts only if its
-quote is found verbatim on the cited page.
+from the web. Get a Browser Use API key at [Browser Use Cloud](https://cloud.browser-use.com/?utm_campaign=rl-env-use&utm_source=github).
 
 | Missions | Claude Code | Browser Use |
 |----------|-------------|-------------|
@@ -24,11 +17,9 @@ quote is found verbatim on the cited page.
 | 6 x clinical trial results, same model both sides | 0 of 43 | **3 verified**, 2 complete cases |
 | 8 x human genetic variants (UniProt, gnomAD, GTEx) | 6 of 82 | **40 verified** |
 
-Results tables sit behind tabs and search forms that a plain fetch never sees.
-
 ## What it does
 
-- **Mines real cases**: the materials a model gets (a trial protocol, a 10-Q) and the outcome published later
+- **Mines real cases**: the model finds real material (a trial protocol, a 10-Q) and the outcome published later
 - **Writes hard tasks**: gold answers computed by code, forecasts scored by Brier, anything a frontier panel solves gets rewritten harder
 - **Rejects bad tasks**: leaked answers, memorized outcomes, ambiguous prompts
 - **Hillclimbs** a model's system prompt with a train/test split, a noise floor and paired confidence intervals
@@ -36,7 +27,7 @@ Results tables sit behind tabs and search forms that a plain fetch never sees.
 
 ## Setup prompt
 
-Paste into Claude Code, Codex, or any agent with shell access:
+For Claude Code / Codex / OpenCode:
 
 ```text
 Set up https://github.com/browser-use/rl-env-use for me.
@@ -48,7 +39,7 @@ Then ask:
 
 > build me an RL environment for predicting whether a clinical trial met its primary endpoint, from its ClinicalTrials.gov registration
 
-Or run the two commands yourself:
+For humans:
 
 ```bash
 rl-env-use create "predict whether a completed trial met its primary endpoint from its registered protocol; ClinicalTrials.gov" --budget 40
