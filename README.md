@@ -8,7 +8,7 @@ Introducing **rl-env-use**: RL environments for anyone and any domain.
 
 Describe a skill in one line. Get a verified environment that frontier models do not saturate, and a hillclimbed prompt
 for the model you train. Built on Anthropic's [Automating eval design and hillclimbing](https://claude.dev/blog/automating-eval-design-and-hillclimbing/)
-workflow end to end, with one change: the tasks are real cases that [Browser Use](https://browser-use.com) agents mine
+workflow, with one change: the tasks are real cases that [Browser Use](https://browser-use.com) agents mine
 from the web.
 
 | Missions | Claude Code | Browser Use |
@@ -21,7 +21,7 @@ Get a Browser Use API key at [Browser Use Cloud](https://cloud.browser-use.com/?
 
 ## What it does
 
-- **Mines real cases**: the model finds real material (a trial protocol, a 10-Q) and the outcome published later
+- **Mines real cases**: Browser Use agents find the materials (a trial protocol, a 10-Q) and the outcome published later
 - **Writes hard tasks**: gold answers computed by code, anything a frontier panel solves gets rewritten harder
 - **Rejects bad tasks**: leaked answers, memorized outcomes, ambiguous prompts
 - **Hillclimbs** a model's system prompt with a train/test split, a noise floor and paired confidence intervals
