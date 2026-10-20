@@ -13,6 +13,19 @@ from the web, not synthesized ones.
 
 Get a Browser Use API key at [Browser Use Cloud](https://cloud.browser-use.com/?utm_campaign=rl-env-use&utm_source=github).
 
+## Browser Use vs vanilla Claude Code
+
+The same mining missions, run by Claude Code (WebSearch + WebFetch) and by Browser Use agents. A fact counts only if its
+quote is found verbatim on the cited page.
+
+| Missions | Claude Code | Browser Use |
+|----------|-------------|-------------|
+| 8 x clinical trial results | 0 of 86 facts verified | **17 verified**, 4 complete cases |
+| 6 x clinical trial results, same model both sides | 0 of 43 | **3 verified**, 2 complete cases |
+| 8 x human genetic variants (UniProt, gnomAD, GTEx) | 6 of 82 | **40 verified** |
+
+Results tables sit behind tabs and search forms that a plain fetch never sees.
+
 ## What it does
 
 - **Mines real cases**: the materials a model gets (a trial protocol, a 10-Q) and the outcome published later
@@ -51,27 +64,8 @@ results were posted since July 2026, after the models' training data. Built for 
 
 A climbed Qwen 3.6 35B-A3B goes from 0.53 to 0.78 on tasks it never trained on (+0.25, 95% CI +0.07 to +0.45), level
 with Opus 5.5. Always answering 50% scores 0.75, so most of the gain is calibration: the model stopped answering 0 or 1.
-
-<p align="center"><img src="static/chart-climb.png" alt="12 prompt edits proposed over 4 rounds, 1 kept" width="100%"></p>
-
-Opus 5.5 proposed 12 edits from failure buckets. One survived the test gate: base-rate priors per question type.
-Each round's failure buckets, edits and full prompts are in [`climb-qwen-35b/`](envs/trial-forecast/climb-qwen-35b).
-
-<p align="center"><img src="static/chart-browsers.png" alt="verified facts: Browser Use 17, 3, 40 vs Claude Code 0, 0, 6" width="100%"></p>
-
-The results tables sit behind tabs and search forms. All 35 tasks rest on data a plain HTTP fetch does not return.
-
-## How it works
-
-The model under test never browses. It reads a case and answers; the grader knows what happened.
-
-<p align="center"><img src="static/case-view.png" alt="one case: the protocol the model reads, the prompt and panel forecasts, the posted outcome" width="100%"></p>
-
-```
-plan ──> mine ──> write ──> verify ──> panel ──> harden ──> climb
-          │                                         │
-          └─ browser agents, one record each        └─ too easy? rewrite harder (max 2 levels)
-```
+The climb kept 1 of 12 proposed edits (base-rate priors per question type); every round is in
+[`climb-qwen-35b/`](envs/trial-forecast/climb-qwen-35b).
 
 ## Manual install
 
@@ -85,11 +79,8 @@ cp .env.example .env && $EDITOR .env    # BROWSER_USE_API_KEY, OPENROUTER_API_KE
 .venv/bin/python -m pytest -q           # offline, ~10 s
 ```
 
-## Design principles
-
-1. **Real outcomes.** A case is materials plus what actually happened.
-2. **Correct by construction.** Code computes derived golds, never the drafting model.
-3. **Hard is measured.** A panel from three labs decides what is too easy.
-4. **A gain counts only on test.** "Within noise, do not merge" is a result.
-
 See [`SKILL.md`](./SKILL.md) for the full workflow and where every file is saved.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
