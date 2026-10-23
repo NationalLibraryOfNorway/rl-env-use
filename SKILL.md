@@ -78,7 +78,9 @@ tasks exist. Review pilot language quality; prompt instructions are not an indep
 Use when the user wants hands-off creation within their chosen scope and resource limits.
 
 1. Start with a small integration run:
-   `rl-env-use create "<domain, input -> outcome skill, source URLs, constraints>" --name <name> --tasks 12 --missions 2 --model local-text`.
+   `rl-env-use create "<domain, input -> outcome skill, source URLs, constraints>" --name <name> --tasks 12 --missions 2 --writer local:writer --critic local:critic --language nob --no-localize-diagnostics`.
+   This example assumes `writer` and `critic` routes are configured in `.env`; otherwise select available local aliases.
+   Pass both role flags when using different models: providing only one sets both roles to that model.
    This is not a statistically meaningful benchmark. `--plan-only` calls the text model and prints the proposed spec
    without building or saving it. For larger runs choose task and mission counts to fit the user's resources; use
    `new` and edit the spec first if custom mining limits or `max_rounds` are needed.
@@ -105,6 +107,27 @@ Use when the user wants hands-off creation within their chosen scope and resourc
    `report.html`, including "within noise, do not merge" outcomes.
 
 Terminal runs show a live board; redirected logs show status lines. Local spend displays are not compute estimates.
+
+## Forecasting trial endpoints
+
+For a clinical-trial endpoint dataset, set `--mix predict`, choose the dataset language explicitly, and name all
+requested discovery sources. Use registrations/protocol versions from before results as policy inputs; outcome
+pages and publications are private gold evidence, never policy context. Link registry records by trial identifiers
+and deduplicate them by trial. Keep the prespecified primary endpoint, time point, and success criterion fixed;
+never invent a new threshold to balance yes/no labels. A completed trial is not necessarily a successful trial.
+Exclude unresolved endpoints and unclear co-primary success rules rather than inventing gold labels.
+
+When launching a bounded pilot, use one task per trial (`tasks_per_case=1`) and suitable spec limits for the model
+server. A spec created with `new` can be edited before `create --name <name>` resumes the autonomous workflow.
+`create` does not replace an existing spec's source list or panel: confirm those in `spec.json` before resuming.
+If the user wants dataset text localized but internal feedback in English, save `localize_diagnostics=false` and
+use `--no-localize-diagnostics`; omitting the positive flag alone does not override a saved or `.env` true value.
+
+Check each configured endpoint before a long run without displaying tokens. Use the returned `/v1/models` ID
+exactly and verify structured output support. `api_key_env` contains only the environment variable's name;
+the transport sends its value as `Authorization: Bearer <token>`. Keep endpoint keys in ignored `.env`, not in
+specs, logs, prompts, commits or dataset exports. A named `local:` route may point to a remote self-hosted gateway;
+open-only mode enforces configured transport routes, not physical locality.
 
 ## Step by step
 
