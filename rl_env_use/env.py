@@ -2,6 +2,7 @@
 materials (`context`); browse tasks hand it a start URL and a browser."""
 
 import json
+import os
 from pathlib import Path
 
 from .config import TEXT_MODEL, browser_use_vision
@@ -56,6 +57,8 @@ class Env:
 		llm = make_llm(model)
 		agent_kwargs.setdefault('browser_session', browser(obs['allowed_domains']))
 		agent_kwargs.setdefault('use_vision', browser_use_vision())
+		agent_kwargs.setdefault('step_timeout', int(os.getenv('RLENV_STEP_TIMEOUT', '6000')))
+		agent_kwargs.setdefault('llm_timeout', int(os.getenv('RLENV_LOCAL_TIMEOUT', '6000')))
 		agent_kwargs.setdefault('extend_system_message', language_prompt('policy'))
 		agent = Agent(
 			task=obs['prompt'] + POLICY_SUFFIX,

@@ -51,7 +51,10 @@ or test a separate native Ollama transport.
 | `RLENV_LOCAL_MODELS` | `{}` | JSON mapping of local route names to `model`, `base_url`, and optional `api_key_env`. |
 | `RLENV_LOCAL_API_KEY` | Dummy local token | Optional authentication token for your own server; shared by both endpoints. |
 | `RLENV_LOCAL_MAX_TOKENS` | `262144` | Requested maximum completion tokens per call, shared by all local routes. Servers may enforce lower limits, including input-plus-output context limits. |
-| `RLENV_LOCAL_TIMEOUT` | `600` seconds | Per-call server timeout and browser-agent LLM timeout. |
+| `RLENV_LOCAL_TIMEOUT` | `6000` seconds | Per-call server timeout, structured-call deadline and browser-agent LLM timeout. |
+| `RLENV_STEP_TIMEOUT` | `6000` seconds | Outer browser-agent step deadline, including model work and actions. |
+| `RLENV_MISSION_TIMEOUT` | `18000` seconds | Total wall-clock limit per mining mission (five hours). |
+| `RLENV_GLOBAL_TIMEOUT` | `18000` seconds | Global autonomous creation limit, including all rounds (five hours). |
 | `RLENV_PANEL_MODELS` | `local-text` | Comma-separated local aliases or `local:MODEL_ID` entries. |
 | `RLENV_BROWSER_USE_VISION` | `1` | Set to `0` for a text-only browser model; navigate with DOM text instead of screenshot input. |
 | `RLENV_BROWSER_EXECUTABLE` | Browser discovery | Absolute path to your Chromium executable. |
@@ -298,3 +301,29 @@ Primary setup references:
 - [Browser Use supported models](https://docs.browser-use.com/open-source/supported-models)
 - [vLLM compatible server](https://docs.vllm.ai/en/latest/serving/online_serving/openai_compatible_server/)
 - [Qwen3-VL-8B-Instruct model card and license](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct)
+
+## Trial discovery and timeout limits
+
+ClinicalTrials.gov discovery uses `query.locn=Norway`, optional `query.cond` or
+`query.term`, `filter.overallStatus=COMPLETED`, and
+`filter.advanced=AREA[StudyType]INTERVENTIONAL AND AREA[HasResults]true`.
+Do not send `country`, `results=with`, the old `filter.geo=country|NO`, or
+invented `fields` names. The trial-source normalizer removes unsupported query
+parameters and fetches full records with a small page size. Current API records
+are discovery evidence; dated pre-results registration versions are still
+required for policy inputs.
+
+Helsenorge's own clinical-trials frontend supplies
+`https://www.helsenorge.no/api/v1/kliniskestudier`, a public JSON array.
+It exposes titles, summaries, categories, status, hospital names and `lenke`
+links. No authentication or Chromium is needed for this listing; filter records
+locally, and follow hospital links for registry IDs and published outcomes.
+The invented `/api/clinicaltrials` endpoint returns 404. Browser rendering can
+still be necessary for dynamic linked pages. Source guidance is injected into
+mining plans and known invalid trial-discovery URLs are normalized before use.
+
+Model calls and browser steps default to 6000 seconds. Both a mining mission
+and the entire `create` invocation are bounded at 18000 seconds (five hours);
+the global limit can stop a mission sooner. These are wall-clock limits, not
+output-token budgets. Set the four timeout variables in `.env` before starting
+Python; restarting is required for the module-level structured/mission limits.

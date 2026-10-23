@@ -24,6 +24,7 @@ from .config import BROWSER_MODEL, TEXT_MODEL, browser_use_vision, open_only
 from .graders import norm
 from .language import language_prompt
 from .llm import LEDGER, call, make_llm, now, usage_dict
+from .sources import discovery_guidance, normalize_mission
 from .store import write_atomic
 
 ANGLES = {
@@ -70,7 +71,7 @@ def fact_issue(value: str, quote: str) -> str | None:
 
 
 MATERIAL_CHARS = (300, 20000)
-MISSION_TIMEOUT = 1500  # a cloud browser stuck reconnecting held a mission for 80 minutes; what it saved stays saved
+MISSION_TIMEOUT = int(os.getenv('RLENV_MISSION_TIMEOUT', '18000'))  # a cloud browser stuck reconnecting held a mission for 80 minutes; what it saved stays saved
 MAX_MATERIALS = 3  # per case before its outcome is recorded: input is cheap, the outcome is the hard part
 
 
@@ -230,6 +231,8 @@ async def plan(topic: str, n: int, model: str, angles: list[str] | None = None, 
 			+ '\n\nSOURCE PAGES (plain fetch, truncated):\n'
 			+ '\n\n'.join(f'[{u}]\n{p["text"][:6000]}' for u, p in zip(sources, pages) if p.get('text'))
 		)
+	if guidance := discovery_guidance(sources):
+		sys += '\nVERIFIED SOURCE ROUTES:\n' + guidance
 	if health:
 		sys += ' SOURCE HEALTH below reports what earlier missions saved per site: move missions away from sites that crash or save no complete cases, to other official pages with the same data (record pages, report or docket pages, bulk downloads, APIs).'
 	user = (
@@ -245,7 +248,7 @@ async def plan(topic: str, n: int, model: str, angles: list[str] | None = None, 
 			user + (f'\n\nALREADY PLANNED (write only the {n - len(missions)} remaining, different ones):\n' + '\n'.join(m.instructions for m in missions) if missions else ''),
 			Plan,
 		)
-		missions += p.missions
+		missions += [normalize_mission(m) for m in p.missions]
 		if len(missions) >= n:
 			break
 	return missions[:n]
@@ -327,7 +330,8 @@ async def run_mission(m: Mission, topic: str, kb: dict, model: str, max_steps: i
 		use_vision=browser_use_vision(),
 		enable_signal_handler=False,
 		calculate_cost=not open_only(),
-		llm_timeout=int(os.getenv('RLENV_LOCAL_TIMEOUT', '600')) if open_only() else None,
+		llm_timeout=int(os.getenv('RLENV_LOCAL_TIMEOUT', '6000')) if open_only() else None,
+		step_timeout=int(os.getenv('RLENV_STEP_TIMEOUT', '6000')),
 	)  # its handler exits on SIGTERM without closing cloud browsers; ours cancels and cleans up
 	try:
 		h = await agent.run(max_steps=max_steps)

@@ -36,11 +36,11 @@ METRICS = [('supported', 'Supported'), ('correct', 'Correct'), ('grounded', 'Gro
 CASE_METRICS = [('correct', 'Correct')]
 
 
-def run(coro):
+def run(coro, timeout=None):
 	"""asyncio.run() without its shutdown phase: browser-use leaves tasks that ignore cancellation (see main). Ctrl-C or a
 	kill cancels the work and waits up to 45 s, so every agent's finally block releases its cloud browser."""
 	loop = asyncio.new_event_loop()
-	main = loop.create_task(coro)
+	main = loop.create_task(asyncio.wait_for(coro, timeout) if timeout is not None else coro)
 	try:
 		return loop.run_until_complete(main)
 	except KeyboardInterrupt:
@@ -145,7 +145,7 @@ def cmd_create(a):
 	env.mkdir(parents=True, exist_ok=True)
 	(env / 'spec.json').write_text(json.dumps(spec, indent=1))
 	with ui.board(f'rl-env-use create · {env.name}'):
-		res = run(pipeline.create(env, spec))
+		res = run(pipeline.create(env, spec), timeout=float(os.getenv('RLENV_GLOBAL_TIMEOUT', '18000')))
 	print(json.dumps(res, indent=1))
 	report(env, judges=False)
 	print(f'next: rl-env-use climb {env} --model <the policy you will train>')
@@ -545,7 +545,7 @@ def main(argv=None):
 	)
 	q.add_argument('--variant', help='baseline or v<N> (default: baseline; in a comparison --flow, the slot of --model)')
 	q.add_argument('--reps', type=int, default=1)
-	q.add_argument('--timeout', type=float, default=600)
+	q.add_argument('--timeout', type=float, default=18000)
 	q.add_argument('--concurrency', type=int, default=4)
 	q.add_argument('--limit', type=int)
 	q.add_argument('--system', help='system prompt file for the policy - the surface to hillclimb')

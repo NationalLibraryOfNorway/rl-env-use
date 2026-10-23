@@ -291,3 +291,10 @@ async def test_other_provider_errors_and_oversized_input_do_not_get_budget_retry
 		with pytest.raises(Exception, match='bad schema|maximum context'):
 			await chat.ainvoke([UserMessage(content='question')], output_format=Answer)
 	assert len(requests) == 1
+
+
+def test_model_timeout_defaults_and_override(strict, monkeypatch):
+	monkeypatch.delenv('RLENV_LOCAL_TIMEOUT', raising=False)
+	assert llm.make_llm('local-text')._chat.timeout == 6000
+	monkeypatch.setenv('RLENV_LOCAL_TIMEOUT', '123')
+	assert llm.make_llm('local-text')._chat.timeout == 123

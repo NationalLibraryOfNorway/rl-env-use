@@ -57,6 +57,8 @@ compute cap**, and `--dry-run` cannot establish a dollar price for local inferen
 `--reps`, `--concurrency` and `--timeout`; bound climbs with `--rounds`, `--k`, `--reps` and `--concurrency`.
 `RLENV_LOCAL_MAX_TOKENS` (default `262144`, shared by all local routes) and `RLENV_LOCAL_TIMEOUT` bound individual
 model calls. The token setting is a requested output ceiling; each server still enforces its context/output limits.
+Timeout defaults: `RLENV_LOCAL_TIMEOUT=6000` for model calls, `RLENV_STEP_TIMEOUT=6000` for browser steps,
+`RLENV_MISSION_TIMEOUT=18000` per mining mission, and `RLENV_GLOBAL_TIMEOUT=18000` for the entire autonomous create run.
 Creation's `--missions` sets the initial round; later rounds adapt to yield. `--tasks` is a target, not an exact
 episode limit. Use the spec's `max_rounds` and per-mission limits when sizing local work.
 
@@ -110,6 +112,11 @@ Use when the user wants hands-off creation within their chosen scope and resourc
 Terminal runs show a live board; redirected logs show status lines. Local spend displays are not compute estimates.
 
 ## Forecasting trial endpoints
+
+Use the verified Helsenorge listing API `https://www.helsenorge.no/api/v1/kliniskestudier` for discovery; filter
+its JSON array locally and follow `lenke` links. Chromium is needed only when linked pages require rendering.
+For ClinicalTrials.gov, use `query.locn=Norway` and `filter.advanced=AREA[StudyType]INTERVENTIONAL AND AREA[HasResults]true`;
+avoid invented API routes/fields. See the open-stack guide for verified queries and source provenance rules.
 
 For a clinical-trial endpoint dataset, set `--mix predict`, choose the dataset language explicitly, and name all
 requested discovery sources. Use registrations/protocol versions from before results as policy inputs; outcome
