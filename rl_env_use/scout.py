@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field
 
 from . import ui
 from .browse import SEARCH_ENGINES, UNUSED, browser, http_capture, page_text, quote_in
-from .config import BROWSER_MODEL, TEXT_MODEL, open_only
+from .config import BROWSER_MODEL, TEXT_MODEL, browser_use_vision, open_only
 from .graders import norm
 from .llm import LEDGER, call, make_llm, now, usage_dict
 from .store import write_atomic
@@ -322,6 +322,7 @@ async def run_mission(m: Mission, topic: str, kb: dict, model: str, max_steps: i
 		browser_session=browser(headless=headless),
 		output_model_schema=ScoutSummary,
 		use_judge=False,
+		use_vision=browser_use_vision(),
 		enable_signal_handler=False,
 		calculate_cost=not open_only(),
 		llm_timeout=int(os.getenv('RLENV_LOCAL_TIMEOUT', '600')) if open_only() else None,

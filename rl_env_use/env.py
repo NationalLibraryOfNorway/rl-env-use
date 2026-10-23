@@ -4,7 +4,7 @@ materials (`context`); browse tasks hand it a start URL and a browser."""
 import json
 from pathlib import Path
 
-from .config import TEXT_MODEL
+from .config import TEXT_MODEL, browser_use_vision
 from .graders import grade_answer
 from .rollout import POLICY_SUFFIX, Answer, public, solve_case
 from .tasks import balanced, keep, load_tasks
@@ -53,6 +53,7 @@ class Env:
 
 		llm = make_llm(model)
 		agent_kwargs.setdefault('browser_session', browser(obs['allowed_domains']))
+		agent_kwargs.setdefault('use_vision', browser_use_vision())
 		agent = Agent(
 			task=obs['prompt'] + POLICY_SUFFIX,
 			llm=llm,

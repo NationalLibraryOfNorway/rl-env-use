@@ -24,7 +24,8 @@ Before model or browser calls:
   compatibility mode unless the user explicitly chooses the hosted workflow.
 - Configure `RLENV_LOCAL_BASE_URL` (default `http://127.0.0.1:8000/v1`), `RLENV_LOCAL_TEXT_MODEL`, and
   `RLENV_LOCAL_BROWSER_MODEL` to match the user's self-hosted server. It must support `/v1/chat/completions`,
-  JSON-schema structured outputs, and image input for the vision-capable browser model. Verify the chosen weights'
+  JSON-schema structured outputs, and image input when browser vision is enabled. Set
+  `RLENV_BROWSER_USE_VISION=0` for a text-only browser model using DOM navigation. Verify the chosen weights'
   license and endpoint ownership; the code cannot attest to either.
 - Use `local-text` for planning, task writing, checks, case policies, prompt proposals and calibrated judges;
   `local-browser` for mining and browse policies; or `local:MODEL_ID` for an exact model ID. `--model` on `create`

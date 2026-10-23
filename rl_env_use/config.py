@@ -23,6 +23,14 @@ def open_only() -> bool:
 	return value == '1'
 
 
+def browser_use_vision() -> bool:
+	"""Text-only policies navigate with DOM text without screenshot input."""
+	value = os.getenv('RLENV_BROWSER_USE_VISION', '1')
+	if value not in ('0', '1'):
+		raise ValueError('RLENV_BROWSER_USE_VISION must be 0 (DOM only) or 1 (screenshots)')
+	return value == '1'
+
+
 if open_only():
 	# Set before browser-use initializes telemetry and cloud synchronization.
 	os.environ['ANONYMIZED_TELEMETRY'] = 'false'

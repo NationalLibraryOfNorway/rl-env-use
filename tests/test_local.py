@@ -160,3 +160,24 @@ assert os.environ['BROWSER_USE_CLOUD_SYNC'] == 'false'
 assert os.environ['BROWSER_USE_CALCULATE_COST'] == 'false'
 """
 	subprocess.run([sys.executable, '-c', code], cwd=tmp_path, env=env, check=True, capture_output=True, text=True)
+
+
+@pytest.mark.parametrize('setting, expected', [('0', False), ('1', True)])
+def test_browser_vision_mode(monkeypatch, setting, expected):
+	from rl_env_use.config import browser_use_vision
+
+	monkeypatch.setenv('RLENV_BROWSER_USE_VISION', setting)
+	assert browser_use_vision() is expected
+	from rl_env_use.browse import browser
+	from browser_use import Agent
+
+	agent = Agent(task='Read the current page', llm=llm.make_llm('local:test'), browser_session=browser(), use_vision=browser_use_vision(), calculate_cost=False)
+	assert agent.settings.use_vision is expected
+
+
+def test_browser_vision_mode_rejects_invalid_setting(monkeypatch):
+	from rl_env_use.config import browser_use_vision
+
+	monkeypatch.setenv('RLENV_BROWSER_USE_VISION', 'false')
+	with pytest.raises(ValueError, match='RLENV_BROWSER_USE_VISION'):
+		browser_use_vision()

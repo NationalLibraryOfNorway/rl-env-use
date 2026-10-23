@@ -18,7 +18,7 @@ from browser_use import Agent
 from pydantic import BaseModel, Field
 
 from .browse import browser
-from .config import BROWSER_MODEL, open_only
+from .config import BROWSER_MODEL, browser_use_vision, open_only
 from .graders import grade_answer, grounded, max_repeats
 from .llm import LEDGER, add_usage, call, cost, make_llm, now, usage_dict
 from .runner import run_eval
@@ -129,6 +129,7 @@ async def run_case(t: dict, rep: int, model: str, vdir: Path, max_steps: int, he
 		browser_session=browser(pub['allowed_domains'], headless),
 		output_model_schema=Answer,
 		use_judge=False,
+		use_vision=browser_use_vision(),
 		enable_signal_handler=False,
 		calculate_cost=not open_only(),
 		llm_timeout=int(os.getenv('RLENV_LOCAL_TIMEOUT', '600')) if open_only() else None,

@@ -12,7 +12,8 @@ cp .env.example .env
 
 Edit `.env` to match the model IDs and URLs exposed by your self-hosted
 OpenAI-compatible server. Set `RLENV_BROWSER_EXECUTABLE` to Chromium's absolute
-path. Serve a vision-capable model for `local-browser`; the writer/critic can use
+path. Serve a vision-capable model for `local-browser`, or set
+`RLENV_BROWSER_USE_VISION=0` for DOM-only navigation with a text model. The writer/critic can use
 a separate text model. The supplied example uses Qwen3-VL-8B-Instruct for both.
 Do not ask for Browser Use, OpenRouter or Anthropic API keys for this setup.
 

@@ -34,7 +34,7 @@ Otherwise browser-use uses its own browser discovery; that can select a
 proprietary Chrome installation already on your machine.
 
 The inference server must accept `/v1/chat/completions`, image content for browser
-agents, and `response_format.type=json_schema`. An OpenAI-compatible API is a
+agents when vision is enabled, and `response_format.type=json_schema`. An OpenAI-compatible API is a
 wire protocol: the requests go to your server, not OpenAI. Ollama's compatible
 endpoint may work with an appropriate model/version, but this fork does not add
 or test a separate native Ollama transport.
@@ -52,6 +52,7 @@ or test a separate native Ollama transport.
 | `RLENV_LOCAL_MAX_TOKENS` | `8192` | Maximum completion tokens per call. |
 | `RLENV_LOCAL_TIMEOUT` | `600` seconds | Per-call server timeout and browser-agent LLM timeout. |
 | `RLENV_PANEL_MODELS` | `local-text` | Comma-separated local aliases or `local:MODEL_ID` entries. |
+| `RLENV_BROWSER_USE_VISION` | `1` | Set to `0` for a text-only browser model; navigate with DOM text instead of screenshot input. |
 | `RLENV_BROWSER_EXECUTABLE` | Browser discovery | Absolute path to your Chromium executable. |
 
 The supplied `.env.example` sets both model aliases to Qwen3-VL-8B-Instruct,
