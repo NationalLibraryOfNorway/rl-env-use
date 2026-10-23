@@ -97,7 +97,8 @@ def cmd_create(a):
 		spec = spec_of(env)
 		print(f'resuming {env} ({spec.get("result", {}).get("kept", 0)} tasks kept so far)')
 	else:
-		plan = run(pipeline.plan_spec(a.line, a.model))
+		writer, _ = pipeline.writer_critic_models(a.model, a.critic)
+		plan = run(pipeline.plan_spec(a.line, writer))
 		env = env or Path('envs') / re.sub(r'[^a-z0-9]+', '-', plan['name'].lower()).strip('-')
 		if (env / 'spec.json').exists():
 			raise SystemExit(f'{env} exists - pass --name {env.name} to resume it, or another --name')
@@ -114,16 +115,18 @@ def cmd_create(a):
 			'panel': a.panel or PANEL,
 			'panel_reps': 2,
 		}
-		print(json.dumps(spec, indent=1))
+	writer, critic = pipeline.writer_critic_models(a.model, a.critic, spec)
+	spec.update(writer_model=writer, critic_model=critic)
 	spec |= {k: v for k, v in (('budget_usd', a.budget), ('target_tasks', a.tasks), ('mix', a.mix)) if v is not None}  # a resume keeps what it was given unless told otherwise
 	spec.setdefault('budget_usd', 40.0)
 	spec.setdefault('target_tasks', 150)
+	print(json.dumps(spec, indent=1))
 	if a.plan_only:
 		return
 	env.mkdir(parents=True, exist_ok=True)
 	(env / 'spec.json').write_text(json.dumps(spec, indent=1))
 	with ui.board(f'rl-env-use create · {env.name}'):
-		res = run(pipeline.create(env, spec, a.model))
+		res = run(pipeline.create(env, spec))
 	print(json.dumps(res, indent=1))
 	report(env, judges=False)
 	print(f'next: rl-env-use climb {env} --model <the policy you will train>')
@@ -175,7 +178,13 @@ def cmd_build(a):
 
 	if a.only and a.only not in pipeline.STAGES:
 		raise SystemExit(f'--only must be one of {pipeline.STAGES}')
-	print(run(pipeline.build(Path(a.env), spec_of(Path(a.env)) | ({'enrich': True} if a.enrich else {}), a.only, a.model)))
+	env = Path(a.env)
+	spec = spec_of(env)
+	writer, critic = pipeline.writer_critic_models(a.model, a.critic, spec)
+	spec.update(writer_model=writer, critic_model=critic)
+	pipeline.use_browser_spec(spec)
+	(env / 'spec.json').write_text(json.dumps(spec, indent=1))
+	print(run(pipeline.build(env, spec | ({'enrich': True} if a.enrich else {}), a.only)))
 
 
 def cmd_review(a):
@@ -464,7 +473,8 @@ def main(argv=None):
 	q.add_argument('--tasks', type=int, help='target number of kept tasks (default 150; a resume keeps its own)')
 	q.add_argument('--budget', type=float, help='API spend cap (default 40); does not cap self-hosted GPU time or electricity')
 	q.add_argument('--missions', type=int, default=12, help='mining missions in the first round (later rounds are sized from the measured yield)')
-	q.add_argument('--model', default=TEXT_MODEL, help='planner, task writer and critic')
+	q.add_argument('--model', '--writer', dest='model', help='planner and task writer (defaults to --critic, saved roles, or the text default)')
+	q.add_argument('--critic', help='task critic (defaults to the writer; saved roles are reused when neither role is passed)')
 	q.add_argument('--panel', nargs='+', help='difficulty panel (open-only default: RLENV_PANEL_MODELS); a task is dropped only if every panel model solves it')
 	q.add_argument('--mix', choices=['derive', 'predict', 'mixed'], help='override the planned task kinds')
 	q.add_argument('--plan-only', action='store_true', help='print the planned spec and stop')
@@ -497,7 +507,8 @@ def main(argv=None):
 	q = sp.add_parser('build', help='mine the sources, then write and verify tasks')
 	q.add_argument('env')
 	q.add_argument('--only', help='(re)run one stage: scout (another mining round, appended), look, synth (more tasks, appended), verify, panel, harden')
-	q.add_argument('--model', default=TEXT_MODEL, help='model for planning, task writing and checks')
+	q.add_argument('--model', '--writer', dest='model', help='planner and task writer (defaults to --critic, saved roles, or the text default)')
+	q.add_argument('--critic', help='task critic (defaults to the writer; saved roles are reused when neither role is passed)')
 	q.add_argument('--enrich', action='store_true', help='with --only scout: one mission per complete case to save the data its computations need')
 	q = sp.add_parser('review', help='local app for the mined data, tasks and traces')
 	q.add_argument('env')

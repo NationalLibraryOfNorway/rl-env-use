@@ -122,11 +122,12 @@ def test_browser_stays_local_and_billing_skipped(strict, monkeypatch):
 	assert llm.bu_balance() is None
 
 
-def test_legacy_spec_rejected_before_browser_use(strict):
+@pytest.mark.parametrize('field', ['panel', 'writer_model', 'critic_model'])
+def test_legacy_spec_rejected_before_browser_use(strict, field):
 	from rl_env_use.pipeline import use_browser_spec
 
 	with pytest.raises(ValueError, match='disabled'):
-		use_browser_spec({'agent_model': 'local-browser', 'panel': ['opus55']})
+		use_browser_spec({'agent_model': 'local-browser', field: ['opus55'] if field == 'panel' else 'opus55'})
 
 
 @pytest.mark.asyncio

@@ -102,6 +102,35 @@ Consequently `--budget` is **not a compute cap** for local inference. Control
 `--tasks`, `--missions`, climb `--rounds`, `--reps`, `--concurrency`, and the
 environment spec's `max_rounds` (default six for creation).
 
+## Separate writers and critics
+
+`create` and `build` accept `--writer` (an alias for the existing `--model`) and
+`--critic`. The writer handles planning, synthesis and hardening; the critic
+handles evidence support, ambiguity checks and blind answer recomputation.
+Mining, closed-book checks, difficulty panels and adjudicators retain their own
+model settings.
+
+```bash
+# Separate models; both IDs must be served by the shared local endpoint/router.
+rl-env-use create 'your skill and sources' --name my-env \
+  --writer local:writer-id --critic local:critic-id
+rl-env-use build envs/my-env --only verify --critic local:reviewer-id
+```
+
+If only one role flag is supplied, that model fills both roles. With neither
+flag, commands reuse `writer_model` and `critic_model` saved in `spec.json`,
+falling back to the configured text default for new or legacy environments.
+Supplying either role flag replaces the saved pair using the same fallback rule.
+`--plan-only` prints the resolved roles without saving them. Python callers can
+use `build(..., model=writer, critic=critic)` or
+`create(..., model=writer, critic=critic)` with the same semantics.
+
+A task records its reviewer in `checks.critic_model`. Verification repeats the
+critic review when that identity changes (or is absent in legacy tasks), while
+retaining cached live-evidence and closed-book checks. Changing weights behind
+the same alias still requires deliberate cache invalidation. This split adds
+no dedicated Norwegian language-quality grader.
+
 ## What open-only mode enforces
 
 - The supported model factory accepts only `local-text`, `local-browser` and
@@ -130,6 +159,8 @@ interpretable. In `spec.json`, replace hosted entries in:
 ```json
 {
   "agent_model": "local-browser",
+  "writer_model": "local-text",
+  "critic_model": "local-text",
   "closed_book": ["local-text"],
   "panel": ["local:your-open-model-a", "local:your-open-model-b"],
   "adjudicators": ["local:your-open-model-b", "local:your-open-model-a"]

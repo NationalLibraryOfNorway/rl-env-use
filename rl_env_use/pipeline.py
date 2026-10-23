@@ -86,7 +86,7 @@ def use_browser_spec(spec: dict) -> None:
 	if open_only():
 		from .llm import routes
 
-		for field in ('agent_model', 'closed_book', 'panel', 'adjudicators'):
+		for field in ('agent_model', 'writer_model', 'critic_model', 'closed_book', 'panel', 'adjudicators'):
 			values = spec.get(field) or []
 			for name in [values] if isinstance(values, str) else values:
 				routes(name)  # reject legacy hosted specs before opening a browser
@@ -103,7 +103,18 @@ def unverified(t: dict) -> bool:
 	return c.get('critic') is None or 'critic error' in str(c['critic']) or not ok(c.get('live')) or not (cb == 'skipped' or all(map(ok, cb.values())))
 
 
-async def build(env: Path, spec: dict, only: str | None = None, model: str = TEXT_MODEL, **_) -> str:
+def writer_critic_models(model: str | None = None, critic: str | None = None, spec: dict | None = None) -> tuple[str, str]:
+	"""An explicit single role fills both; otherwise resume the stored roles."""
+	if model or critic:
+		return model or critic, critic or model
+	spec = spec or {}
+	writer = spec.get('writer_model') or spec.get('critic_model') or TEXT_MODEL
+	return writer, spec.get('critic_model') or writer
+
+
+async def build(env: Path, spec: dict, only: str | None = None, model: str | None = None, critic: str | None = None, **_) -> str:
+	model, critic = writer_critic_models(model, critic, spec)
+	spec.update(writer_model=model, critic_model=critic)
 	use_browser_spec(spec)
 	out, scouted = [], False
 	if only in (None, 'scout') and (only or not (env / 'kb.json').exists()):
@@ -130,11 +141,11 @@ async def build(env: Path, spec: dict, only: str | None = None, model: str = TEX
 	if only in (None, 'synth') and (only or not (env / 'tasks.jsonl').exists()):
 		out.append(await synth_stage(env, spec, model))
 	if only in (None, 'verify'):
-		out.append(await verify_stage(env, spec, model))
+		out.append(await verify_stage(env, spec, critic))
 	if only == 'panel' or (only in (None, 'verify') and spec.get('panel')):
 		out.append(await panel_stage(env, spec))
 	if only == 'harden':  # too-easy tasks -> harder ones on the same cases, checked and measured like any draft
-		out += [await harden_stage(env, spec, model), await verify_stage(env, spec, model), await panel_stage(env, spec)]
+		out += [await harden_stage(env, spec, model), await verify_stage(env, spec, critic), await panel_stage(env, spec)]
 	return '\n'.join(out)
 
 
@@ -172,7 +183,10 @@ async def verify_stage(env: Path, spec: dict, model: str) -> str:
 	else:  # miners verified every quote on the live page when recording it; the re-check (a cloud browser) is for staleness
 		for t in todo:
 			t['checks']['live'] = 'skipped'
-	await critique(todo, facts, model)
+	# A newly selected critic must review cached tasks too; evidence checks remain cached.
+	critic_tasks = [t for t in tasks if not t['checks']['structural'] and not t['checks']['leakage']
+		and (t in todo or t['checks'].get('critic_model') != model)]
+	await critique(critic_tasks, facts, model)
 	mats = {m['id']: m for m in kb.get('materials', [])}
 	for t in tasks:  # the edge per task: needs_browser = some evidence or material is invisible to a plain fetch
 		t['needs_browser'] = any(facts.get(f, {}).get('http') not in ('visible', None) for f in t['fact_ids']) or any(
@@ -302,10 +316,12 @@ def show(tasks: list[dict], target: int) -> None:
 	ui.progress(len(kept) / max(target, 1))
 
 
-async def create(env: Path, spec: dict, model: str = TEXT_MODEL, log=print) -> dict:
+async def create(env: Path, spec: dict, model: str | None = None, log=print, *, critic: str | None = None) -> dict:
 	"""Mining rounds until `target_tasks` kept tasks, the budget, or two rounds that add (almost) nothing. Each round: scout
 	(cases first finish their outcomes) -> synth top-up -> verify -> panel. Headroom steers the next round: when the
 	strongest panel model saturates the derive tasks, synth moves to forecasts."""
+	model, critic = writer_critic_models(model, critic, spec)
+	spec.update(writer_model=model, critic_model=critic)
 	use_browser_spec(spec)
 	target, dry, prior = spec.get('target_tasks', 150), 0, spec.get('spent_usd', 0.0)  # a resumed env keeps its earlier spend
 	budget = spec.get('budget_usd', 40.0) - prior
@@ -352,7 +368,7 @@ async def create(env: Path, spec: dict, model: str = TEXT_MODEL, log=print) -> d
 			if LEDGER.usd >= budget:  # unmeasured drafts wait for a resumed run with more budget
 				log(f'round {rnd}: budget spent (${LEDGER.usd:.2f} of ${budget:.0f}) - skipping {stage.__name__} and the rest of the round')
 				break
-			log(f'round {rnd}: ' + await (stage(env, spec) if stage is panel_stage else stage(env, spec, model)))
+			log(f'round {rnd}: ' + await (stage(env, spec) if stage is panel_stage else stage(env, spec, critic if stage is verify_stage else model)))
 			save_spend()
 		tasks = load_jsonl(env / 'tasks.jsonl')
 		kept = balanced([t for t in tasks if keep(t)])

@@ -295,8 +295,8 @@ def cli(tmp_path, monkeypatch):
 		calls['plan'] = (line, model)
 		return dict(PLAN)
 
-	async def create(env, spec, model='sonnet46', log=print):
-		calls['create'] = (env, dict(spec), model)
+	async def create(env, spec, model=None, log=print):
+		calls['create'] = (env, dict(spec), spec.get('writer_model', model))
 		return {'kept': 0, 'status': 'incomplete'}
 
 	monkeypatch.setattr(P, 'plan_spec', plan)
@@ -375,3 +375,78 @@ def test_plan_spec_drops_template_and_non_url_sources(monkeypatch):
 
 	monkeypatch.setattr(P, 'call', fake)
 	assert asyncio.run(P.plan_spec('x'))['sources'] == ['https://clinicaltrials.gov/search?aggFilters=results:with']
+
+
+@pytest.mark.parametrize('flags, writer, critic', [
+	([], 'sonnet46', 'sonnet46'),
+	(['--writer', 'local:writer'], 'local:writer', 'local:writer'),
+	(['--model', 'local:writer'], 'local:writer', 'local:writer'),
+	(['--critic', 'local:critic'], 'local:critic', 'local:critic'),
+	(['--writer', 'local:writer', '--critic', 'local:critic'], 'local:writer', 'local:critic'),
+])
+def test_cli_writer_critic_fallbacks(cli, tmp_path, flags, writer, critic):
+	main(['create', 'line', *flags])
+	assert cli['plan'][1] == writer
+	spec = json.loads((tmp_path / 'envs/sec-credit/spec.json').read_text())
+	assert (spec['writer_model'], spec['critic_model']) == (writer, critic)
+
+
+def test_cli_resume_reuses_saved_roles(cli, tmp_path):
+	env = tmp_path / 'envs/saved'
+	env.mkdir(parents=True)
+	(env / 'spec.json').write_text(json.dumps({'writer_model': 'local:w', 'critic_model': 'local:c'}))
+	main(['create', 'line', '--name', 'saved'])
+	spec = cli['create'][1]
+	assert (spec['writer_model'], spec['critic_model']) == ('local:w', 'local:c')
+
+
+@pytest.mark.parametrize('command', ['create', 'build'])
+def test_pipeline_routes_writing_and_verification_separately(env, monkeypatch, command):
+	World(env).install(monkeypatch)
+	seen = []
+	for name in ('synth_stage', 'harden_stage', 'verify_stage'):
+		async def stage(env, spec, model, name=name):
+			seen.append((name, model))
+			return 'ok'
+		monkeypatch.setattr(P, name, stage)
+	spec = spec_(max_rounds=1)
+	if command == 'create':
+		asyncio.run(P.create(env, spec, 'local:w', critic='local:c', log=lambda *_: None))
+		assert seen == [('synth_stage', 'local:w'), ('verify_stage', 'local:c'), ('harden_stage', 'local:w'), ('verify_stage', 'local:c')]
+	else:
+		asyncio.run(P.build(env, spec, only='harden', model='local:w', critic='local:c'))
+		assert seen == [('harden_stage', 'local:w'), ('verify_stage', 'local:c')]
+
+
+def test_changed_critic_reviews_cached_tasks_without_rechecking_evidence(env, monkeypatch):
+	task = kept_task(0)
+	task['checks']['critic_model'] = 'local:old'
+	save_jsonl(env / 'tasks.jsonl', [task])
+	(env / 'kb.json').write_text(json.dumps({'facts': []}))
+	seen = []
+	async def evidence(tasks, *a):
+		assert tasks == []
+	async def critic(tasks, facts, model):
+		seen.append((len(tasks), model))
+		for task in tasks:
+			task['checks']['critic_model'] = model
+	monkeypatch.setattr(P, 'closed_book', evidence)
+	monkeypatch.setattr(P, 'check_live', evidence)
+	monkeypatch.setattr(P, 'critique', critic)
+	asyncio.run(P.verify_stage(env, {}, 'local:new'))
+	asyncio.run(P.verify_stage(env, {}, 'local:new'))
+	assert seen == [(1, 'local:new'), (0, 'local:new')]
+
+
+def test_cli_build_persists_roles(env, monkeypatch):
+	(env / 'spec.json').write_text(json.dumps({'topic': 'test'}))
+	monkeypatch.setattr(M.os, '_exit', lambda *_: None)
+	seen = []
+	async def build(env, spec, only=None):
+		seen.append((spec['writer_model'], spec['critic_model']))
+		return 'ok'
+	monkeypatch.setattr(P, 'build', build)
+	main(['build', str(env), '--critic', 'local:c', '--only', 'verify'])
+	main(['build', str(env), '--only', 'verify'])
+	assert seen == [('local:c', 'local:c'), ('local:c', 'local:c')]
+	assert json.loads((env / 'spec.json').read_text())['critic_model'] == 'local:c'

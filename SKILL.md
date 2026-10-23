@@ -28,8 +28,10 @@ Before model or browser calls:
   `RLENV_BROWSER_USE_VISION=0` for a text-only browser model using DOM navigation. Verify the chosen weights'
   license and endpoint ownership; the code cannot attest to either.
 - Use `local-text` for planning, task writing, checks, case policies, prompt proposals and calibrated judges;
-  `local-browser` for mining and browse policies; or `local:MODEL_ID` for an exact model ID. `--model` on `create`
-  and `build` selects the text role; mining uses `spec.json`'s `agent_model` (default `local-browser`).
+  `local-browser` for mining and browse policies; or `local:MODEL_ID` for an exact model ID. On `create` and `build`,
+  `--writer` (alias `--model`) selects the planner/writer and `--critic` selects the task critic. If only one is
+  supplied, both roles use it. If neither is supplied, saved `writer_model`/`critic_model` roles are reused, or the
+  text default is used for both. Explicit role flags replace the saved pair. Mining uses `spec.json`'s `agent_model` (default `local-browser`).
 - `RLENV_LOCAL_BROWSER_BASE_URL` optionally routes `local-browser` to a separate server. Explicit `local:MODEL_ID`
   entries always use the shared base URL, including panel entries. `RLENV_LOCAL_API_KEY` is optional authentication
   for the user's server, shared by both endpoints.
@@ -131,7 +133,7 @@ reward = env.reward(env.ids[0], "<policy answer>")
 
 For shipped or older environments, follow the migration section of [docs/OPEN_STACK.md](docs/OPEN_STACK.md) before
 running them. Work on a copy; replace hosted `agent_model`, `closed_book`, `panel` and `adjudicators` entries,
-rebuild verification and panel results, and recalibrate stored hosted judges. Closed-book checks may be cached;
+replace hosted `writer_model`/`critic_model` roles too, rebuild verification and panel results, and recalibrate stored hosted judges. Closed-book checks may be cached;
 clear the relevant checks when deliberately repeating verification. Use new run/climb directories after changing
 the actual model or endpoint behind an alias: resumption caches do not fingerprint weights or endpoint settings.
 

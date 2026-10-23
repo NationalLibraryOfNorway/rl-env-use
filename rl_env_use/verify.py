@@ -125,6 +125,7 @@ async def critique(tasks: list[dict], facts: dict, model: str = TEXT_MODEL) -> N
 	sys = 'You audit benchmark tasks. Be strict: flag any prompt that admits more than one reasonable answer, or any gold not supported by the evidence.'
 
 	async def one(t):
+		t['checks']['critic_model'] = model
 		ev = '\n'.join(f'"{facts[f]["quote"]}" ({facts[f]["url"]})' for f in t['fact_ids'] if f in facts)
 		try:  # blind recomputation first: a critic that sees the gold mostly copies it
 			if t.get('kind') == 'derive':  # well posed only if the gold follows from what the model is given: the materials alone
