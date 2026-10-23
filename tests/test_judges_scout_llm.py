@@ -1,4 +1,5 @@
 import asyncio
+import json
 from types import SimpleNamespace as NS
 
 import pytest
@@ -7,6 +8,22 @@ from conftest import mk_task
 import rl_env_use.llm as L
 import rl_env_use.scout as S
 from rl_env_use.judges import FailureMode, Judge, agreement, calibrate, codify, load_judges, save_judges, trace_text
+
+
+def test_scout_does_not_resume_quarantined_material(tmp_path, monkeypatch):
+	kb = {'facts': [], 'ideas': [], 'sources': [], 'missions': [], 'materials': [{'id': 'm0', 'case': 'bad', 'title': 'bad', 'url': 'https://example.com'}]}
+	(tmp_path / 'kb.json').write_text(json.dumps(kb))
+	(tmp_path / 'data_reviews.jsonl').write_text(json.dumps({'id': 'm0', 'verdict': 'reject'}) + '\n')
+	seen = []
+
+	async def plan(*args):
+		seen.append(args)
+		return []
+
+	monkeypatch.setattr(S, 'plan', plan)
+	result = asyncio.run(S.scout('topic', tmp_path, n_missions=1, skill='predict'))
+	assert len(seen) == 1  # plan fresh collection instead of an outcome mission for rejected input
+	assert result['materials'] == kb['materials']  # keep raw evidence for inspection
 
 MODE = FailureMode(
 	id='premature_stop',

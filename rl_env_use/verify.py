@@ -11,6 +11,7 @@ panel        difficulty, measured apart from correctness: models from several la
 
 import asyncio
 import math
+import os
 import re
 
 from pydantic import BaseModel, Field
@@ -122,17 +123,24 @@ CASE_CRITIC = (
 )
 
 
-async def critique(tasks: list[dict], facts: dict, model: str = TEXT_MODEL) -> None:
+async def critique(tasks: list[dict], facts: dict, model: str = TEXT_MODEL, *, checkpoint=None) -> None:
 	sys = 'You audit benchmark tasks. Be strict: flag any prompt that admits more than one reasonable answer, or any gold not supported by the evidence.'
 
-	async def one(t):
-		t['checks']['critic_model'] = model
-		t['checks']['critic_language'] = current()
+	task_timeout = float(os.getenv('RLENV_CRITIC_TASK_TIMEOUT', '180'))
+	call_timeout = float(os.getenv('RLENV_CRITIC_CALL_TIMEOUT', '60'))
+	retries = int(os.getenv('RLENV_CRITIC_RETRIES', '2'))
+	output_tokens = int(os.getenv('RLENV_CRITIC_MAX_TOKENS', '4096'))
+	if min(task_timeout, call_timeout, retries, output_tokens) <= 0:
+		raise ValueError('critic timeouts, retries and max tokens must be positive')
+
+	async def review(t):
+		async def critic_call(system, user, schema):
+			return await call(model, system, user, schema, retries=retries, timeout=call_timeout,
+				max_completion_tokens=output_tokens, log_context=f'critic {t["id"]} {schema.__name__}')
 		ev = '\n'.join(f'"{facts[f]["quote"]}" ({facts[f]["url"]})' for f in t['fact_ids'] if f in facts)
 		try:  # blind recomputation first: a critic that sees the gold mostly copies it
 			if t.get('kind') == 'derive':  # well posed only if the gold follows from what the model is given: the materials alone
-				r, _, _ = await call(
-					model,
+				r, _, _ = await critic_call(
 					'Answer the question from the materials only. If they lack what the answer needs, say exactly what is missing instead of guessing.',
 					f'QUESTION: {t["prompt"]}\nMATERIALS:\n{t["context"]}',
 					Recompute,
@@ -143,15 +151,28 @@ async def critique(tasks: list[dict], facts: dict, model: str = TEXT_MODEL) -> N
 					if t.get('kind') == 'predict'
 					else ''
 				)
-				r, _, _ = await call(model, f'Answer the question from the evidence only. {how}'.strip(), f'QUESTION: {t["prompt"]}\nEVIDENCE:\n{ev}', Recompute)
+				r, _, _ = await critic_call(f'Answer the question from the evidence only. {how}'.strip(), f'QUESTION: {t["prompt"]}\nEVIDENCE:\n{ev}', Recompute)
 			calc = f'; expression evaluated by code: {t["expression"]}' if t.get('expression') else ''
 			user = f'PROMPT: {t["prompt"]}\nGOLD: {t["answer"]} (type {t["answer_type"]}; derivation: {t.get("derivation") or "literal"}{calc})\nEVIDENCE:\n{ev}'
 			if t.get('context'):  # case task: the model under test sees CONTEXT + PROMPT; the evidence is the outcome it never sees
 				user = f'CONTEXT GIVEN TO THE MODEL ({t["kind"]} task):\n{t["context"]}\n\n{user}'
-			c, _, _ = await call(model, sys + CASE_CRITIC if t.get('context') else sys, user, CaseCritique if t.get('context') else Critique)
+			c, _, _ = await critic_call(sys + CASE_CRITIC if t.get('context') else sys, user, CaseCritique if t.get('context') else Critique)
 			t['checks']['critic'] = c.model_dump() | r.model_dump() | {'agrees': grade_answer(t, r.recomputed_answer) >= 0.5}
 		except Exception as e:  # unverified = rejected
 			t['checks']['critic'] = {'unambiguous': False, 'gold_supported': False, 'agrees': False, 'issues': f'critic error: {e}'[:300]}
+
+	async def one(t):
+		print(f'critic {t["id"]}: starting review; total deadline={task_timeout:g}s', flush=True)
+		try:
+			await asyncio.wait_for(review(t), task_timeout)
+		except TimeoutError:
+			t['checks']['critic'] = {'unambiguous': False, 'gold_supported': False, 'agrees': False, 'issues': 'critic error: total review deadline exceeded'}
+		# External cancellation propagates without stamping an incomplete verdict as complete.
+		t['checks']['critic_model'] = model
+		t['checks']['critic_language'] = current()
+		if checkpoint is not None:
+			checkpoint()
+		print(f'critic {t["id"]}: verdict saved' if checkpoint is not None else f'critic {t["id"]}: review complete', flush=True)
 
 	await ui.gather((one(t) for t in tasks), 'critic')
 

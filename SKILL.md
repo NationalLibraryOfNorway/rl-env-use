@@ -121,6 +121,19 @@ measure DeepInfra charges; use provider limits rather than treating `--budget` a
 Keep mining's `agent_model` explicit; writer/critic flags do not change it. Use a new environment for provider/model
 comparisons and verify structured/image support before a full run.
 
+## Recovering stalled reviews
+
+Task critics have separate bounded defaults: `RLENV_CRITIC_CALL_TIMEOUT=60`, `RLENV_CRITIC_TASK_TIMEOUT=180`,
+`RLENV_CRITIC_RETRIES=2` and `RLENV_CRITIC_MAX_TOKENS=4096`. Per-task verdicts are checkpointed immediately;
+logs identify task/model/schema, retry count, elapsed time and error type without printing keys or prompts.
+These overrides leave general writer/browser/panel budgets unchanged. Resume an interrupted review with
+`build envs/<name> --only verify`; already completed reviews keep their cached verdicts.
+
+Audit raw inputs and gold evidence before retrying. Quarantine invalid tasks through `reviews.jsonl` and input
+materials through `data_reviews.jsonl`; preserve originals. Domain conventions are passed to miners as collection
+requirements. Use `build --only scout` for replacement evidence and inspect it before drafting or verification.
+Do not automatically rerun a long full creation loop on known-invalid evidence.
+
 ## Forecasting trial endpoints
 
 Use the verified Helsenorge listing API `https://www.helsenorge.no/api/v1/kliniskestudier` for discovery; filter

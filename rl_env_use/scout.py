@@ -26,6 +26,7 @@ from .language import language_prompt
 from .llm import LEDGER, call, make_llm, now, usage_dict
 from .sources import discovery_guidance, normalize_mission
 from .store import write_atomic
+from .tasks import rejected_facts
 
 ANGLES = {
 	'database': "Mine a small table: pick ONE record type and 2-4 fixed fields (e.g. a score, a count, a position, a classification), then use the site's search, filters and pagination to open 5+ different records and record the SAME fields from each record page (prefer fields pinned to a versioned release over live counts that grow) - values only reachable through search or several clicks, never from the landing page.",
@@ -380,7 +381,9 @@ async def scout(
 	kb = json.loads(kb_path.read_text()) if kb_path.exists() else {'topic': topic, 'created': now(), 'facts': [], 'ideas': [], 'sources': [], 'missions': []}
 	seen = '\n'.join(dict.fromkeys([m['case'] for m in kb.get('materials', [])] + [f['claim'] for f in kb['facts']]))[:3000]  # another round: go wide, not over the same records
 	goal = topic + (f'\nSKILL the environment trains (input -> outcome): {skill}' if skill else '')
-	todo = (enrich_missions(kb) if enrich else outcome_missions(kb, skill))[:n_missions] if skill else []  # finish the cases already started before opening new ones
+	bad = rejected_facts(out_dir)
+	eligible = kb | {key: [item for item in kb.get(key, []) if item['id'] not in bad] for key in ('materials', 'facts')}
+	todo = (enrich_missions(eligible) if enrich else outcome_missions(eligible, skill))[:n_missions] if skill else []  # finish accepted cases before opening new ones
 	n_new = max(n_missions - len(todo), len(sources or ()) if not todo else 0)
 	missions = todo + (
 		await plan(

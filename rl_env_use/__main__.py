@@ -204,7 +204,7 @@ def cmd_build(a):
 	spec.update(writer_model=writer, critic_model=critic)
 	pipeline.use_browser_spec(spec)
 	(env / 'spec.json').write_text(json.dumps(spec, indent=1))
-	print(run(pipeline.build(env, spec | ({'enrich': True} if a.enrich else {}), a.only)))
+	print(run(pipeline.build(env, spec | ({'enrich': True} if a.enrich else {}), a.only), timeout=float(os.getenv('RLENV_GLOBAL_TIMEOUT', '18000'))))
 
 
 def cmd_review(a):

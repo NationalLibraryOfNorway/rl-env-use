@@ -374,3 +374,35 @@ less independent validation than independently trained model families.
 
 References: [DeepInfra chat API](https://docs.deepinfra.com/chat/overview) and
 [structured outputs](https://docs.deepinfra.com/chat/structured-outputs).
+
+## Critic recovery and incremental checkpoints
+
+Task critics use independent limits so a stuck review cannot silently consume
+the general 6000-second model-call allowance on every retry:
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `RLENV_CRITIC_CALL_TIMEOUT` | `60` | Seconds per critic API attempt. |
+| `RLENV_CRITIC_TASK_TIMEOUT` | `180` | Total seconds for one task's recomputation and critique, including retries. |
+| `RLENV_CRITIC_RETRIES` | `2` | Maximum attempts per structured critic call. |
+| `RLENV_CRITIC_MAX_TOKENS` | `4096` | Response cap for task-critic calls only. |
+
+These limits do not change writer/browser/panel budgets. Each critic request
+logs task ID, model, schema, attempt, deadline, elapsed time and exception type;
+prompt text, keys and raw provider error payloads are not included in retry logs.
+Successful and failed reviews are atomically checkpointed to `tasks.jsonl` as
+each task finishes. Completed evidence gates are saved before the critic starts.
+Cancellation preserves completed reviews without stamping pending tasks as done.
+Timeout/error verdicts remain unverified and may be retried by a later build.
+
+For recovery, inspect saved evidence before rerunning `build --only verify`.
+Reject invalid tasks in `reviews.jsonl` and unusable materials in
+`data_reviews.jsonl`; rejected inputs are excluded from future synthesis.
+Retain source evidence and pre-audit snapshots. Domain `conventions` now reach
+mining agents as collection requirements, not just the writer. For trial forecasts,
+a current registration page's first-posted date does not prove that its current
+contents were available before results. Require a dated historical version or
+pre-results protocol and a documented success rule before readmitting a case.
+Run `build --only scout` to collect replacement evidence without drafting tasks;
+review that evidence before the next synth/verify pass. Both `build` and `create`
+respect the global five-hour deadline.

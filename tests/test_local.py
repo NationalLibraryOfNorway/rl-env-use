@@ -298,3 +298,24 @@ def test_model_timeout_defaults_and_override(strict, monkeypatch):
 	assert llm.make_llm('local-text')._chat.timeout == 6000
 	monkeypatch.setenv('RLENV_LOCAL_TIMEOUT', '123')
 	assert llm.make_llm('local-text')._chat.timeout == 123
+
+
+@pytest.mark.asyncio
+async def test_per_call_budget_timeout_and_retry_logging(strict, monkeypatch, capsys):
+	from types import SimpleNamespace
+
+	chat = llm.make_llm('local-text')
+	original_budget = chat._chat.max_completion_tokens
+	monkeypatch.setattr(llm, 'make_llm', lambda *a, **kw: chat)
+	attempts = []
+	async def invoke(self, *a, **kw):
+		attempts.append(self._chat.max_completion_tokens)
+		if len(attempts) == 1:
+			await llm.asyncio.sleep(1)
+		return SimpleNamespace(completion=Answer(answer='42'), usage=None)
+	monkeypatch.setattr(LocalChat, 'ainvoke', invoke)
+	result, _, _ = await llm.call('local-text', 's', 'u', Answer, retries=2, timeout=0.01, max_completion_tokens=4096, log_context='critic task-id')
+	assert result.answer == '42' and attempts == [4096, 4096]
+	assert chat._chat.max_completion_tokens == original_budget
+	log = capsys.readouterr().out
+	assert 'request 1/2' in log and 'TimeoutError' in log and 'retrying' in log and 'completed in' in log

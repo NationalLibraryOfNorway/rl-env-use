@@ -430,21 +430,37 @@ def book_bu(start: float | None) -> None:
 CALL_TIMEOUT = float(os.getenv('RLENV_LOCAL_TIMEOUT', '6000'))  # a hung gateway connection otherwise stalls a whole stage (long structured outputs take minutes)
 
 
-async def call(name: str, system: str, user: str, schema: type[BaseModel], retries: int = 4, temperature: float | None = 0.0, audience: str = 'diagnostics'):
+async def call(name: str, system: str, user: str, schema: type[BaseModel], retries: int = 4, temperature: float | None = 0.0, audience: str = 'diagnostics', *, timeout: float | None = None, max_completion_tokens: int | None = None, log_context: str | None = None):
 	"""One structured LLM call. Returns (parsed, usage, model). Jittered backoff on transient errors; an invalid output
 	is fed back to the model on the next attempt (e.g. an enum value outside the allowed set)."""
 	system += language_prompt(audience)
+	deadline = CALL_TIMEOUT if timeout is None else timeout
 	feedback = ''
 	for attempt in range(retries):
 		# a deterministic (temperature 0) failure would repeat identically: later attempts resample
 		# the last attempts go to the alias's next route (the same model elsewhere): one gateway's outage is not the model's
 		llm = make_llm(name, temperature if attempt == 0 or temperature is None else 0.7, agent=False, fallback=attempt >= retries - 2)  # None: the model's own sampling, kept
+		if max_completion_tokens is not None:
+			from copy import copy
+
+			# Named OpenAI-compatible routes expose a request client. Do not mutate shared clients.
+			if hasattr(llm, '_chat'):
+				llm = copy(llm)
+				llm._chat = copy(llm._chat)
+				llm._chat.max_completion_tokens = max_completion_tokens
+		started = time.monotonic()
+		if log_context:
+			print(f'{log_context}: request {attempt + 1}/{retries} model={name} schema={schema.__name__} timeout={deadline:g}s', flush=True)
 		try:
-			r = await asyncio.wait_for(llm.ainvoke([SystemMessage(content=system), UserMessage(content=user + feedback)], output_format=schema), CALL_TIMEOUT)
+			r = await asyncio.wait_for(llm.ainvoke([SystemMessage(content=system), UserMessage(content=user + feedback)], output_format=schema), deadline)
 			u = usage_dict(r.usage)
 			LEDGER.add(llm.model, u)
+			if log_context:
+				print(f'{log_context}: completed in {time.monotonic() - started:.1f}s', flush=True)
 			return r.completion, u, llm.model
 		except Exception as e:
+			if log_context:
+				print(f'{log_context}: {type(e).__name__} after {time.monotonic() - started:.1f}s; ' + ('failed' if attempt == retries - 1 else 'retrying'), flush=True)
 			if attempt == retries - 1:
 				raise
 			if isinstance(e, ValidationError) or 'validation error' in str(e):

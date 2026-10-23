@@ -121,7 +121,7 @@ async def build(env: Path, spec: dict, only: str | None = None, model: str | Non
 	out, scouted = [], False
 	if only in (None, 'scout') and (only or not (env / 'kb.json').exists()):
 		kb = await scout(
-			spec['topic'],
+			spec['topic'] + (f'\nCASE COLLECTION REQUIREMENTS:\n{spec["conventions"]}' if spec.get('conventions') else ''),
 			env,
 			spec.get('missions', 4),
 			spec.get('agent_model', BROWSER_MODEL),
@@ -190,7 +190,9 @@ async def verify_stage(env: Path, spec: dict, model: str) -> str:
 	# A newly selected critic must review cached tasks too; evidence checks remain cached.
 	critic_tasks = [t for t in tasks if not t['checks']['structural'] and not t['checks']['leakage']
 		and (t in todo or t['checks'].get('critic_model') != model or t['checks'].get('critic_language') != current())]
-	await critique(critic_tasks, facts, model)
+	# Persist completed evidence gates and every critic verdict before the next task finishes.
+	save_jsonl(env / 'tasks.jsonl', tasks)
+	await critique(critic_tasks, facts, model, checkpoint=lambda: save_jsonl(env / 'tasks.jsonl', tasks))
 	mats = {m['id']: m for m in kb.get('materials', [])}
 	for t in tasks:  # the edge per task: needs_browser = some evidence or material is invisible to a plain fetch
 		t['needs_browser'] = any(facts.get(f, {}).get('http') not in ('visible', None) for f in t['fact_ids']) or any(
@@ -353,6 +355,8 @@ async def create(env: Path, spec: dict, model: str | None = None, log=print, *, 
 			break
 		before = len(balanced([t for t in load_jsonl(env / 'tasks.jsonl') if keep(t)]))
 		topic = spec['topic'] + (f'\nCASE SELECTION (never by outcome): {spec["sampling"]}' if spec.get('sampling') else '')
+		if spec.get('conventions'):
+			topic += f'\nCASE COLLECTION REQUIREMENTS:\n{spec["conventions"]}'
 		kb = await scout(
 			topic,
 			env,

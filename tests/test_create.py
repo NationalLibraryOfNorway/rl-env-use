@@ -426,7 +426,7 @@ def test_changed_critic_reviews_cached_tasks_without_rechecking_evidence(env, mo
 	seen = []
 	async def evidence(tasks, *a):
 		assert tasks == []
-	async def critic(tasks, facts, model):
+	async def critic(tasks, facts, model, **kwargs):
 		seen.append((len(tasks), model))
 		for task in tasks:
 			task['checks']['critic_model'] = model
@@ -452,3 +452,9 @@ def test_cli_build_persists_roles(env, monkeypatch):
 	main(['build', str(env), '--only', 'verify'])
 	assert seen == [('local:c', 'local:c'), ('local:c', 'local:c')]
 	assert json.loads((env / 'spec.json').read_text())['critic_model'] == 'local:c'
+
+
+def test_collection_conventions_reach_mining_agents(env, monkeypatch):
+	world = World(env).install(monkeypatch)
+	go(env, spec_(target_tasks=1, conventions='Require a version dated before results; never use post-results amendments.'))
+	assert 'Require a version dated before results' in world.scouts[0]['topic']
