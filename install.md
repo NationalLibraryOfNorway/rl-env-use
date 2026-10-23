@@ -34,6 +34,8 @@ The first test invocation explicitly exercises upstream compatibility; it does
 not enable hosted calls in your subsequent shell commands. Tests use mocks.
 
 Follow [docs/OPEN_STACK.md](docs/OPEN_STACK.md) for usage, panel configuration,
-migration, cost accounting and validation limits. The upstream `SKILL.md` is
-retained as historical workflow documentation, not the setup contract for this
-fork. Do not register it as an installation skill for an open-only setup.
+migration, cost accounting and validation limits. [SKILL.md](SKILL.md) is the
+agent entrypoint for daily open-only usage. Register this fork's skill using your
+agent's skill installation mechanism, keeping its relative links to this source
+tree intact. Run workflow commands from the repository root. After installation,
+wait for the user to name a domain and skill before building an environment.

@@ -1,89 +1,162 @@
 ---
 name: rl-env-use
-description: Build an RL environment / eval that trains or measures a skill in any domain (finance, medicine, law, math, science, a niche industry) from real cases that Browser Use agents mine from the web, then baseline and hillclimb a model on it. Use when the user knows a domain and what a model should be able to do in it, but not how to get the data or build the environment.
+description: Build and evaluate RL environments from real cases mined from the web, using self-hosted open-weight models and local Browser Use agents. Use when the user knows a domain and the input-to-outcome skill to measure but needs help collecting cases, verifying tasks, benchmarking policies, optimizing prompts, or exporting tasks for an external RL trainer.
 ---
 
 # rl-env-use
 
-Anthropic's [build-eval -> hillclimb](https://claude.dev/blog/automating-eval-design-and-hillclimbing/) workflow with
-real inputs. If the claude-api skill is available, its `shared/evals/build-eval.md` and `shared/evals/eval-hillclimb.md`
-are the method. A case = the materials the model gets + its true outcome, published elsewhere or later. Browser agents
-mine both. The model under test reads the materials and answers without a browser.
+A case pairs the materials a model receives with its true outcome, published elsewhere or later. Local Browser Use
+agents mine both; a case policy reads only the materials and answers without a browser. Omitting `--skill` when
+creating a spec instead makes a browse-task environment, where the policy finds answers on the live web.
 
-Commands: `rl-env-use ...` (or `python -m rl_env_use ...`). Every env is one folder, `./envs/<name>/`.
+This fork defaults to self-hosted open-weight models. `climb` optimizes a system prompt; it does not update model
+weights. Actual RL training requires a separate trainer consuming the exported tasks and rewards.
 
-## Where things are saved
+## Setup and model selection
 
+Run commands from this fork's repository root with its installed `rl-env-use` (or `python -m rl_env_use`) and Python
+environment. Relative `envs/` paths use the current working directory. For installation read [install.md](install.md);
+for endpoint configuration, migration and troubleshooting read [docs/OPEN_STACK.md](docs/OPEN_STACK.md).
+
+Before model or browser calls:
+
+- Keep `RLENV_OPEN_ONLY=1` (the default even without `.env`). Do not request hosted provider keys or enable
+  compatibility mode unless the user explicitly chooses the hosted workflow.
+- Configure `RLENV_LOCAL_BASE_URL` (default `http://127.0.0.1:8000/v1`), `RLENV_LOCAL_TEXT_MODEL`, and
+  `RLENV_LOCAL_BROWSER_MODEL` to match the user's self-hosted server. It must support `/v1/chat/completions`,
+  JSON-schema structured outputs, and image input for the vision-capable browser model. Verify the chosen weights'
+  license and endpoint ownership; the code cannot attest to either.
+- Use `local-text` for planning, task writing, checks, case policies, prompt proposals and calibrated judges;
+  `local-browser` for mining and browse policies; or `local:MODEL_ID` for an exact model ID. `--model` on `create`
+  and `build` selects the text role; mining uses `spec.json`'s `agent_model` (default `local-browser`).
+- `RLENV_LOCAL_BROWSER_BASE_URL` optionally routes `local-browser` to a separate server. Explicit `local:MODEL_ID`
+  entries always use the shared base URL, including panel entries. `RLENV_LOCAL_API_KEY` is optional authentication
+  for the user's server, shared by both endpoints.
+- Point `RLENV_BROWSER_EXECUTABLE` at an installed open-source Chromium executable. Browsers run locally;
+  cloud profile IDs and proxy-country flags do not configure local authentication or proxies. Resolve source access
+  with the user before mining if it needs these features.
+- Set `RLENV_PANEL_MODELS` to comma-separated local aliases or exact IDs available on the shared endpoint.
+  The default `local-text` panel is suitable for integration checks only. For meaningful difficulty validation,
+  use multiple independently trained models and identify the writer, panel and policy in the results.
+
+Exported variables override the working directory's `.env`, then the repository's `.env`. Set configuration before
+starting Python and restart existing processes after changes. Hosted aliases and fallbacks are rejected in open-only
+mode. Browser Use telemetry, cloud sync, remote pricing and billing calls are disabled, but web mining still reaches
+the source sites; this is routing enforcement, not a network sandbox.
+
+Local API spend is recorded as zero/unknown and excludes GPU time, rental and electricity. **`--budget` is not a local
+compute cap**, and `--dry-run` cannot establish a dollar price for local inference. Bound creation with `--tasks`,
+`--missions`, and the spec's `max_rounds` (default six), `max_steps` and `concurrency`. Bound runs with `--limit`,
+`--reps`, `--concurrency` and `--timeout`; bound climbs with `--rounds`, `--k`, `--reps` and `--concurrency`.
+`RLENV_LOCAL_MAX_TOKENS` and `RLENV_LOCAL_TIMEOUT` bound individual model calls.
+Creation's `--missions` sets the initial round; later rounds adapt to yield. `--tasks` is a target, not an exact
+episode limit. Use the spec's `max_rounds` and per-mission limits when sizing local work.
+
+## Autonomous workflow
+
+Use when the user wants hands-off creation within their chosen scope and resource limits.
+
+1. Start with a small integration run:
+   `rl-env-use create "<domain, input -> outcome skill, source URLs, constraints>" --name <name> --tasks 12 --missions 2 --model local-text`.
+   This is not a statistically meaningful benchmark. `--plan-only` calls the text model and prints the proposed spec
+   without building or saving it. For larger runs choose task and mission counts to fit the user's resources; use
+   `new` and edit the spec first if custom mining limits or `max_rounds` are needed.
+   - A planner defines sources, conventions and an outcome-blind sampling rule. Each round mines, writes, verifies,
+     measures panel difficulty, hardens easy tasks, then verifies and measures them again.
+   - Derived numbers are computed by code from expressions over the materials. Forecasts must depend on the
+     materials and must not be answerable without them; at most 60% of served forecasts resolve one way.
+   - Tasks solved by every configured panel model are hardened up to two levels. Difficulty is relative to those
+     models; an open-model panel does not establish frontier-model headroom. Use `--panel local:MODEL_A local:MODEL_B`
+     to override the panel for a new environment (IDs are placeholders). On resume edit the stored spec instead:
+     `--panel` does not replace an existing spec's panel.
+   - Naming a registry query or records-listing URL helps mining. Creation stops at the target, limits or low yield.
+     Ctrl-C cancels work; resume with `create "<same request>" --name <name>` and the same configuration.
+2. Pilot the served pool:
+   `rl-env-use run envs/<name> --model local-text --limit 5 --concurrency 1`.
+   Check graded results, traces and `errors.jsonl` before scaling. If a smaller policy needs tasks the panel found
+   easy, add `--verified` consistently to pilot, baseline and climb. This retains verification gates and includes
+   panel-easy tasks; report which pool was used.
+3. Start a bounded prompt climb:
+   `rl-env-use climb envs/<name> --model local-text --proposer local-text --rounds 2 --reps 3 --concurrency 1`.
+   It splits by case, estimates A/A noise from rep halves, screens edits on train and keeps paired case-bootstrap test
+   gains, with a final baseline-vs-best evaluation on fresh reps. Respect refusals for saturated or underpowered data;
+   collect enough independent cases rather than defaulting to `--force`. Report the final result and generated
+   `report.html`, including "within noise, do not merge" outcomes.
+
+Terminal runs show a live board; redirected logs show status lines. Local spend displays are not compute estimates.
+
+## Step by step
+
+Use when the user wants to review cases and tasks before continuing. Ask only for unresolved choices and the
+requested review decisions, using the host's available question mechanism.
+
+1. Establish one input -> outcome skill per environment and URLs containing inputs and outcomes, ideally separated
+   in place or time. Create the spec:
+   `rl-env-use new <name> --topic "<domain>" --skill "<input -> outcome>" --sources URL...`.
+   Edit `spec.json` for mining limits and panel models before building. Omit `--skill` only for live browse tasks.
+2. `rl-env-use build envs/<name>` mines and stops before task creation on the first fresh build. Show the output
+   (`build envs/<name> --only look` repeats it) and open `review envs/<name>` -> Data tab. Let the user review cases
+   before the next build. To add cases use `build envs/<name> --only scout`; add `--enrich` to gather table data needed
+   for computations on complete cases.
+3. `rl-env-use build envs/<name>` again writes and checks tasks: outcome-supported gold, leakage, closed-book recall,
+   live evidence and a critic, followed by the configured panel. Graders are programmatic (number/date/set/exact/
+   contains/prob) and self-tested against null, foreign and perturbed golds. Show representative tasks in the Tasks
+   tab and resolve disputed golds or grading before evaluating policies.
+4. Pilot with `rl-env-use run envs/<name> --model local-text --limit 5 --concurrency 1`, then remove `--limit` and add
+   `--dry-run` to inspect the full run. Agree on local runtime/concurrency limits if unresolved; zero dollar estimates
+   do not mean zero cost.
+5. Baseline each policy with `rl-env-use run envs/<name> --model local:MODEL_ID --flow models` (add `--verified` for
+   the broader pool). Each model gets its own slot. `report envs/<name>` regrades, audits and writes reports; it can
+   call stored trusted judges unless `--no-judges` is supplied. Investigate inverted cases as possible task or grader
+   bugs. Do not commit generated environments unless requested.
+6. Use `climb` as above for case tasks, or manually `split envs/<name>`, then
+   `run envs/<name> --model local-text --variant vN --system prompt.txt`. Label failures in the review app,
+   `codify envs/<name> --model local-text`, then `judges envs/<name> --model local-text`; judges become trusted only
+   after calibration against the user's labels.
+
+## Export and existing environments
+
+`rl-env-use export envs/<name>` writes `dataset.jsonl` for an external trainer. The CLI exporter uses the default
+panel-hard served pool; it does **not** inherit a previous run's `--verified`. To export the broader verified pool:
+
+```python
+from rl_env_use import Env
+
+env = Env("envs/<name>", verified=True)
+env.export_jsonl("envs/<name>/dataset-verified.jsonl")
+observation = env.reset(env.ids[0])  # public input only; gold stays in the reward function
+reward = env.reward(env.ids[0], "<policy answer>")
 ```
-envs/<name>/
-  spec.json        topic, skill, sources, conventions, budget; `create` adds spend and result
-  kb.json          what the agents mined: materials, quote-verified outcome facts, missions
-  tasks.jsonl      every drafted task with gold and checks (the env serves the ones that pass)
-  audit.json       latest audit (also printed by `report`)
-  reviews.jsonl    your verdicts and gold fixes from the review app
-  models/          model comparisons, one slot per model (named in <slot>/change.md)
-  climb-<model>/   a hillclimb: baseline, v1..vN (change.md = the edit, prompt.txt = full prompt), _state.json, report.html
-  hillclimb/       runs by hand; ablation/: runs with materials withheld (--blind)
-  <flow>/<slot>/   results.jsonl (graded rows), errors.jsonl (infra failures), traces/ (transcripts)
+
+For shipped or older environments, follow the migration section of [docs/OPEN_STACK.md](docs/OPEN_STACK.md) before
+running them. Work on a copy; replace hosted `agent_model`, `closed_book`, `panel` and `adjudicators` entries,
+rebuild verification and panel results, and recalibrate stored hosted judges. Closed-book checks may be cached;
+clear the relevant checks when deliberately repeating verification. Use new run/climb directories after changing
+the actual model or endpoint behind an alias: resumption caches do not fingerprint weights or endpoint settings.
+
+`compare` invokes proprietary Claude Code and is blocked in open-only mode. Compare local policies through
+`run --flow models --model local:MODEL_ID`. Hosted compatibility requires an explicit user choice and
+`RLENV_OPEN_ONLY=0` before starting Python; consult the guide rather than switching automatically on failure.
+
+## Saved artifacts
+
+Each environment is a folder under `envs/<name>/`:
+
+```text
+spec.json          skill, sources, sampling, model roles, limits; create adds spend and result
+kb.json            mined materials, quote-verified outcome facts, missions
+tasks.jsonl        drafted tasks, golds and checks; Env filters the served pool
+audit.json         latest audit, also printed by report
+reviews.jsonl      case/task verdicts and gold fixes from the review app
+annotations.jsonl  trace labels used by codify and judges
+models/            comparison slots, model identified in each change.md
+climb-<model>/     sanitized model name; adds -verified for the broader pool
+                   baseline, v1..vN, _state.json, report.html
+hillclimb/         manual runs and split; ablation/ holds --blind runs
+<flow>/<slot>/     results.jsonl, errors.jsonl, traces/
+dataset.jsonl      default CLI export
 ```
-Slots are `baseline`, `v1`, `v2`, ...; `change.md`'s first line is the report's column title. Traces, trajectory/ and
-logs are git-ignored.
 
-## Autonomous (default when the user wants it hands-off)
-
-1. `create "<domain, skill, sources, constraints in one line>" [--tasks 150] [--budget 40]`. A planner writes the spec
-   (skill, sources, conventions, an outcome-blind sampling rule). Mining rounds then run until the task target, the
-   budget, or two rounds with no new tasks. Each round: mine -> write -> verify -> panel -> harden -> verify -> panel.
-   - Derived numbers are computed by code from an expression over numbers in the materials.
-   - The frontier panel (opus55, gpt-astra, gemini) measures difficulty. All-pass tasks go back to the drafter and
-     come back harder on the same case, up to two levels. Forecasts must move with the materials and must not be
-     answerable without them. At most 60% of served forecasts resolve one way.
-   - When the panel saturates derive tasks (on SEC filings it solves nearly every computation), later rounds write
-     forecasts. Derive tasks stay useful for smaller policies: pass `--panel` with the policy family.
-   - Mining is fastest when the line names a URL that lists records (a registry API query, a search page).
-   - Ctrl-C stops cleanly (cloud browsers are released); `create --name <env>` resumes with its spend so far.
-2. `climb envs/<name> --model M`: the hillclimb loop in `climb-<model>/`. Split by case, A/A noise from rep halves,
-   refuses saturated or underpowered setups, K edits per round screened on train, kept only on a paired case-bootstrap
-   test gain, failure audit on stalls, final baseline-vs-best on fresh reps. Report the final line and
-   `climb-<model>/report.html` as they are: "within noise, do not merge" is a result.
-
-On a terminal both show a live board (stage bar with ETA, spend vs budget, kept tasks; for climb: baseline, best,
-rounds). In a log they print status lines.
-
-## Step by step (when the user wants to review)
-
-Ask every decision with AskUserQuestion, your pick first as "(Recommended)". Wait for a clear yes at each sign-off.
-
-**Step 0: what is evaluated.** Ask: (1) the skill as input -> outcome ("given a trial's protocol, predict whether it met
-its primary endpoint"), one per env; (2) where inputs and outcomes live (2-6 URLs), ideally separated in place or time;
-(3) logins (Browser Use profile id) or a proxy country. Then
-`new <name> --topic "<domain>" --skill "<input -> outcome>" --sources URL.. [--profile ID] [--proxy-country CC]`.
-Without `--skill` it is a browse-task env (the model must find answers on the live web).
-
-**Step 1: mine the cases (sign-off 1).** `build envs/<name>` mines (~$0.15-0.40 per mission) and stops before any task
-exists. Show the look output (`build envs/<name> --only look` reprints it). The user checks `review envs/<name>` -> Data
-tab. Too few cases: `build --only scout`. Tasks that compute from tables need them in the materials:
-`build --only scout --enrich`. SIGN-OFF: "Are these the cases the environment should be built from?"
-
-**Step 2: tasks and grading (sign-off 2).** `build envs/<name>` again writes and checks tasks: gold from outcome quotes,
-no leak into prompt or materials, closed-book memory check, live evidence, a critic. Grading is programmatic (number /
-date / set / exact / contains / prob), self-tested against null, foreign and perturbed golds. Show 5 tasks (Tasks tab).
-SIGN-OFF: "Would you grade any of these differently?"
-
-**Step 3: pilot and cost (sign-off 3).** `run envs/<name> --model M --limit 5`, then `run ... --dry-run` prices the full
-run from measured cost per episode. SIGN-OFF on that number.
-
-**Step 4: baseline.** `run envs/<name> --model M --flow models` per model (each gets its own slot). `report envs/<name>`
-regrades, audits and writes each `report.html`. `inverted` cases usually mean a task or grader bug. Headroom is relative
-to the policy: frontier-saturated derive tasks can still train a smaller model; for frontier headroom use forecasts on
-lesser-known records. Ask whether to commit the env.
-
-**Step 5: hillclimb.** `climb envs/<name> --model M`, or by hand: `split envs/<name>`, then per round
-`run envs/<name> --model M --variant vN --system prompt.txt`. Label failures in the Traces tab, `codify`, then `judges`
-(trusted once they agree with the user's labels). `export envs/<name>` writes the dataset for an RL trainer;
-`from rl_env_use import Env` serves it (`reset`, `reward`).
-
-## Optional: measure the edge
-
-`compare envs/<name> --missions 8` reruns the mining with vanilla Claude Code (WebSearch + WebFetch, same model and
-instructions) and pushes both arms through the same synth + verify.
+Slots are `baseline`, `v1`, `v2`, etc. Each climb slot's `change.md` describes the edit and `prompt.txt` stores the
+prompt extension. Infrastructure failures are recorded separately from graded answers. Keep model/pool provenance
+with results and distinguish a passing integration check from evidence of mining quality or policy improvement.

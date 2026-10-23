@@ -150,10 +150,11 @@ that the original frontier panel would fail the new tasks.
 
 Set `RLENV_OPEN_ONLY=0` **before starting Python** to restore upstream hosted
 defaults and comparison commands. This permits paid/proprietary calls and is not
-the all-open setup. The upstream README retained below this fork's introduction,
-the bundled `SKILL.md`, and shipped example environments describe the original
-hosted workflow; use this guide and `install.md` for the fork. Do not follow their
-hosted API-key setup instructions for an open-only installation.
+the all-open setup. The upstream README retained below this fork's introduction
+and shipped example environments describe the original hosted workflow. Use
+`install.md` for setup and [SKILL.md](../SKILL.md) for the agent's open-only daily
+workflow. Do not follow the historical README's hosted API-key setup instructions
+for an open-only installation; migrate shipped environments before running them.
 
 ## Verification and practical limits
 
