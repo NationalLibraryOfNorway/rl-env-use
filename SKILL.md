@@ -123,6 +123,12 @@ comparisons and verify structured/image support before a full run.
 
 ## Recovering stalled reviews
 
+On ClinicalTrials.gov API study pages, `record_outcome` requires the exact primary-outcome title and saves the
+complete outcome JSON object verbatim, including every reported analysis. Text markers are ignored for these
+pages. Invalid/incomplete JSON, ambiguous titles and oversized objects are rejected without saving a partial
+passage. This checks extraction completeness only: historical provenance, prespecified success rules and
+whether the source actually reports sufficient statistics still require evidence review.
+
 Task critics have separate bounded defaults: `RLENV_CRITIC_CALL_TIMEOUT=120`, `RLENV_CRITIC_TASK_TIMEOUT=360`,
 `RLENV_CRITIC_RETRIES=2` and `RLENV_CRITIC_MAX_TOKENS=4096`. Per-task verdicts are checkpointed immediately;
 logs identify task/model/schema, retry count, elapsed time and error type without printing keys or prompts.

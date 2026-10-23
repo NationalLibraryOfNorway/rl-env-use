@@ -352,6 +352,42 @@ def test_record_outcome_saves_a_verbatim_results_passage(monkeypatch):
 	assert 'Already saved' in run(case='acme', title='results', starts_with='ITEM 2. LIQUIDITY', ends_with='capital.').extracted_content and len(kb['facts']) == 1
 
 
+def test_clinical_outcome_keeps_full_analysis_and_rejects_partial_json(monkeypatch):
+	measure = {'type': 'PRIMARY', 'title': 'Depression score', 'description': 'A scale.',
+		'analyses': [{'nonInferiorityComment': 'Reliability at the end of therapy.', 'pValue': '0.04', 'ciLowerLimit': '0.1', 'ciUpperLimit': '2.0'}]}
+	document = {'protocolSection': {'outcomesModule': {'primaryOutcomes': [{'title': 'Depression score'}]}},
+		'resultsSection': {'outcomeMeasuresModule': {'outcomeMeasures': [measure]}}}
+	text = json.dumps(document, indent=2)
+	quote = S.clinical_outcome(text, 'Depression score')
+	assert quote in text and json.loads(quote) == measure
+	assert 'pValue' in quote and 'ciUpperLimit' in quote
+	assert S.clinical_outcome(text[:text.index('pValue')], 'Depression score').startswith('!')
+	assert S.clinical_outcome(text, 'missing').startswith('!Use the exact title')
+	monkeypatch.setattr(S, 'MATERIAL_CHARS', (300, 10))
+	assert 'not been truncated or saved' in S.clinical_outcome(text, 'Depression score')
+
+
+def test_clinical_record_outcome_ignores_premature_end_marker(monkeypatch):
+	measure = {'type': 'PRIMARY', 'title': 'Depression score', 'analyses': [{'comment': 'end of therapy', 'pValue': '0.04'}]}
+	text = json.dumps({'resultsSection': {'outcomeMeasuresModule': {'outcomeMeasures': [measure]}}})
+	kb = {'facts': [], 'materials': [{'id': 'm0', 'case': 'trial'}]}
+
+	async def page_text(_):
+		return text
+
+	async def url():
+		return 'https://clinicaltrials.gov/api/v2/studies/NCT01873742'
+
+	monkeypatch.setattr(S, 'page_text', page_text)
+	tools = S.make_tools(kb, 'cases')
+	result = asyncio.run(tools.registry.execute_action('record_outcome',
+		{'case': 'trial', 'title': 'Depression score', 'starts_with': 'Depression score', 'ends_with': 'end of therapy'},
+		browser_session=NS(get_current_page_url=url, cdp_client=None)))
+	assert not result.error
+	assert json.loads(kb['facts'][0]['quote']) == measure
+	assert kb['facts'][0]['capture'] == 'complete_primary_outcome_json'
+
+
 def test_a_stuck_mission_times_out_and_the_rest_continue(monkeypatch, tmp_path):
 	async def run_mission(m, *a, **k):
 		if m.start_url.endswith('stuck'):

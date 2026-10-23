@@ -406,3 +406,18 @@ pre-results protocol and a documented success rule before readmitting a case.
 Run `build --only scout` to collect replacement evidence without drafting tasks;
 review that evidence before the next synth/verify pass. Both `build` and `create`
 respect `RLENV_GLOBAL_TIMEOUT` when it is positive (zero disables the deadline).
+
+## Complete ClinicalTrials.gov outcomes
+
+On `/api/v2/studies/NCT...` pages, the collector parses the full current page JSON
+and locates the unique primary outcome matching the supplied exact title. It saves
+the original JSON substring for the complete object under
+`resultsSection.outcomeMeasuresModule.outcomeMeasures`, including all reported
+analyses, and marks it `capture=complete_primary_outcome_json`. Model-selected
+start/end markers cannot shorten this object. Malformed/truncated JSON, missing
+or ambiguous titles, and objects exceeding the passage cap fail without saving.
+Other sites retain verbatim marker-based extraction and require manual completeness
+review. A complete source object does not prove a valid success label: missing
+statistics, historical provenance, time points and prespecified rules remain
+separate checks. Existing partial records require repair; they are not silently
+upgraded by this change.

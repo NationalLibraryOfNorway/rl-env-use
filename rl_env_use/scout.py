@@ -104,6 +104,40 @@ def slice_passage(text: str, starts_with: str, ends_with: str) -> str:
 	return passage
 
 
+def clinical_outcome(text: str, title: str) -> str:
+	"""One complete primary-outcome object, verbatim from a full ClinicalTrials.gov JSON record.
+
+	Never fall back to marker slicing: a partial analysis can look like a valid quotation.
+	"""
+	try:
+		document = json.loads(text)
+		measures = document['resultsSection']['outcomeMeasuresModule']['outcomeMeasures']
+		matches = [m for m in measures if m.get('type') == 'PRIMARY' and norm(m.get('title', '')) == norm(title)]
+	except (ValueError, KeyError, TypeError, AttributeError):
+		return '!Open the complete ClinicalTrials.gov API record: valid JSON with resultsSection.outcomeMeasuresModule.outcomeMeasures is required.'
+	if len(matches) != 1:
+		return '!Use the exact title of one primary outcome. Available titles: ' + ', '.join(m.get('title', '') for m in measures if m.get('type') == 'PRIMARY')
+	decoder = json.JSONDecoder()
+	for array in re.finditer(r'"outcomeMeasures"\s*:\s*\[', text):
+		at = array.end()
+		while at < len(text):
+			while at < len(text) and text[at] in ' \t\r\n,':
+				at += 1
+			if at == len(text) or text[at] == ']':
+				break
+			try:
+				item, end = decoder.raw_decode(text, at)
+			except ValueError:
+				break
+			if item == matches[0]:
+				passage = text[at:end]
+				if len(passage) > MATERIAL_CHARS[1]:
+					return '!Complete outcome exceeds the passage limit; use a focused primary source. It has not been truncated or saved.'
+				return passage
+			at = end
+	return '!Could not locate the complete outcome object verbatim; nothing saved.'
+
+
 def make_tools(kb: dict, angle: str, save=lambda: None, tally: dict | None = None) -> Tools:
 	tally = {} if tally is None else tally  # what this mission saved: the source-health record
 	own = set()  # case keys this mission opened
@@ -138,7 +172,7 @@ def make_tools(kb: dict, angle: str, save=lambda: None, tally: dict | None = Non
 		return ActionResult(extracted_content=f'Recorded fact: {claim} = {value}', long_term_memory=f'Recorded fact #{len(kb["facts"])}: {claim}')
 
 	@tools.action(
-		'Save the OUTCOME of a case as a verbatim passage of the CURRENT page - a results section, a results table, a decision - when it is a table or several numbers (record_fact is for one value). Give the first and last few words exactly as on the page; everything between is saved. `case`: the key its material was saved under. Save what the page shows; never a computed or summarized value.'
+		'Save the OUTCOME of a case from the CURRENT page. For ClinicalTrials.gov API JSON, give the exact primary-outcome title: the complete outcome object including all analyses is saved automatically and text markers are ignored. Else give the first and last few words of the COMPLETE results passage, including its statistical analysis. `case`: the key its material was saved under. Never compute or summarize the source.'
 	)
 	async def record_outcome(case: str, title: str, starts_with: str, ends_with: str, browser_session: BrowserSession) -> ActionResult:
 		keys = {m['case'] for m in kb.get('materials', [])}
@@ -147,13 +181,15 @@ def make_tools(kb: dict, angle: str, save=lambda: None, tally: dict | None = Non
 		url, text = await browser_session.get_current_page_url(), await page_text(browser_session)
 		if SEARCH_ENGINES.match(url):
 			return ActionResult(error='Search result snippets are not evidence. Open the primary source page.')
-		passage = slice_passage(text, starts_with, ends_with)
+		clinical = urlparse(url).hostname in ('clinicaltrials.gov', 'www.clinicaltrials.gov') and bool(re.fullmatch(r'/api/v2/studies/NCT\d+', urlparse(url).path))
+		passage = clinical_outcome(text, title) if clinical else slice_passage(text, starts_with, ends_with)
 		if passage.startswith('!'):
 			return ActionResult(error=passage[1:])
 		if any(f.get('case') == case and passage in f['quote'] for f in kb['facts']):
 			return ActionResult(extracted_content=f'Already saved for case {case}.')
 		kb['facts'].append(
-			{'id': f'f{len(kb["facts"])}', 'claim': title, 'value': '(results passage)', 'quote': passage, 'url': url, 'angle': angle, 'at': now(), 'case': case, 'passage': True}
+			{'id': f'f{len(kb["facts"])}', 'claim': title, 'value': '(results passage)', 'quote': passage, 'url': url, 'angle': angle, 'at': now(), 'case': case, 'passage': True,
+			 **({'capture': 'complete_primary_outcome_json'} if clinical else {})}
 		)
 		tally['outcomes'] = tally.get('outcomes', 0) + 1
 		save()
