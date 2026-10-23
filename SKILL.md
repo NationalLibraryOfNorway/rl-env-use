@@ -111,6 +111,16 @@ Use when the user wants hands-off creation within their chosen scope and resourc
 
 Terminal runs show a live board; redirected logs show status lines. Local spend displays are not compute estimates.
 
+## Optional DeepInfra routes
+
+See the open-stack guide and `.env.example` for `deepinfra-deepseek-writer`/`deepinfra-deepseek-critic` and
+`deepinfra-nemotron-writer`/`deepinfra-nemotron-critic`. Each uses the configured DeepInfra base URL and reads
+`DEEPINFRA_API_KEY` via `api_key_env`; never print the key. Select them as `local:<route-name>`.
+The `local:` prefix selects the compatible transport, not physical locality. Generic route accounting does not
+measure DeepInfra charges; use provider limits rather than treating `--budget` as a spending cap.
+Keep mining's `agent_model` explicit; writer/critic flags do not change it. Use a new environment for provider/model
+comparisons and verify structured/image support before a full run.
+
 ## Forecasting trial endpoints
 
 Use the verified Helsenorge listing API `https://www.helsenorge.no/api/v1/kliniskestudier` for discovery; filter

@@ -327,3 +327,50 @@ and the entire `create` invocation are bounded at 18000 seconds (five hours);
 the global limit can stop a mission sooner. These are wall-clock limits, not
 output-token budgets. Set the four timeout variables in `.env` before starting
 Python; restarting is required for the module-level structured/mission limits.
+
+## Optional DeepInfra endpoints
+
+The named-route transport also supports explicitly configured hosted open-weight
+endpoints. `local:NAME` identifies the transport route, not physical locality.
+DeepInfra uses `https://api.deepinfra.com/v1/openai` and Bearer authentication;
+set the raw token in the ignored `.env`:
+
+```dotenv
+DEEPINFRA_API_KEY=
+```
+
+Merge the four route entries from `.env.example` into your existing single-line
+`RLENV_LOCAL_MODELS` JSON object. Each entry uses `api_key_env=DEEPINFRA_API_KEY`.
+The prepared names and exact served model IDs are:
+
+| Route | Model |
+| --- | --- |
+| `local:deepinfra-deepseek-writer` | `deepseek-ai/DeepSeek-V4.1-Flash-1017` |
+| `local:deepinfra-deepseek-critic` | `deepseek-ai/DeepSeek-V4.1-Flash` |
+| `local:deepinfra-nemotron-writer` | `nvidia/NVIDIA-Nemotron-3.5-Super-VL` |
+| `local:deepinfra-nemotron-critic` | `nvidia/NVIDIA-Nemotron-3.5-Lightning` |
+
+```bash
+rl-env-use create 'your skill and sources' --name deepinfra-pilot --language nob \
+  --writer local:deepinfra-deepseek-writer --critic local:deepinfra-deepseek-critic \
+  --tasks 12 --missions 2 --no-localize-diagnostics --plan-only
+```
+
+Remove `--plan-only` to build, after checking a small structured-response request.
+For Nemotron use the corresponding `deepinfra-nemotron-*` names. `--writer` does
+not change mining: to use the same DeepInfra writer for browser agents, set
+`agent_model` in the new environment's `spec.json` to that named route, or set
+`RLENV_LOCAL_BROWSER_MODEL=deepinfra-deepseek-writer` before creating a new spec.
+Do not change the endpoint behind an alias mid-run; use a new environment/run
+for comparisons with the existing local/Sigma2 setup.
+
+DeepInfra is paid hosting. Calls on these generic named routes still record
+zero/unknown cost in this application's ledger, so `--budget` is not a reliable
+spending cap; use provider-side limits and bounded tasks/missions. Provider
+output caps may be below the configured 262144 ceiling; verify compatibility
+with the selected model. No authenticated DeepInfra inference is implied by
+loading these configurations. Closely related writer/critic versions provide
+less independent validation than independently trained model families.
+
+References: [DeepInfra chat API](https://docs.deepinfra.com/chat/overview) and
+[structured outputs](https://docs.deepinfra.com/chat/structured-outputs).
