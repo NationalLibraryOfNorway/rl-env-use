@@ -72,7 +72,7 @@ def fact_issue(value: str, quote: str) -> str | None:
 
 
 MATERIAL_CHARS = (300, 20000)
-MISSION_TIMEOUT = int(os.getenv('RLENV_MISSION_TIMEOUT', '18000'))  # a cloud browser stuck reconnecting held a mission for 80 minutes; what it saved stays saved
+MISSION_TIMEOUT = int(os.getenv('RLENV_MISSION_TIMEOUT', '3000'))  # a cloud browser stuck reconnecting held a mission for 80 minutes; what it saved stays saved
 MAX_MATERIALS = 3  # per case before its outcome is recorded: input is cheap, the outcome is the hard part
 
 
@@ -331,8 +331,8 @@ async def run_mission(m: Mission, topic: str, kb: dict, model: str, max_steps: i
 		use_vision=browser_use_vision(),
 		enable_signal_handler=False,
 		calculate_cost=not open_only(),
-		llm_timeout=int(os.getenv('RLENV_LOCAL_TIMEOUT', '6000')) if open_only() else None,
-		step_timeout=int(os.getenv('RLENV_STEP_TIMEOUT', '6000')),
+		llm_timeout=int(os.getenv('RLENV_LOCAL_TIMEOUT', '1200')) if open_only() else None,
+		step_timeout=int(os.getenv('RLENV_STEP_TIMEOUT', '360')),
 	)  # its handler exits on SIGTERM without closing cloud browsers; ours cancels and cleans up
 	try:
 		h = await agent.run(max_steps=max_steps)

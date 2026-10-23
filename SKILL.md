@@ -57,8 +57,8 @@ compute cap**, and `--dry-run` cannot establish a dollar price for local inferen
 `--reps`, `--concurrency` and `--timeout`; bound climbs with `--rounds`, `--k`, `--reps` and `--concurrency`.
 `RLENV_LOCAL_MAX_TOKENS` (default `262144`, shared by all local routes) and `RLENV_LOCAL_TIMEOUT` bound individual
 model calls. The token setting is a requested output ceiling; each server still enforces its context/output limits.
-Timeout defaults: `RLENV_LOCAL_TIMEOUT=6000` for model calls, `RLENV_STEP_TIMEOUT=6000` for browser steps,
-`RLENV_MISSION_TIMEOUT=18000` per mining mission, and `RLENV_GLOBAL_TIMEOUT=18000` for the entire autonomous create run.
+Timeout defaults: `RLENV_LOCAL_TIMEOUT=1200` for model calls, `RLENV_STEP_TIMEOUT=360` for browser steps,
+`RLENV_MISSION_TIMEOUT=3000` per mining mission, and `RLENV_GLOBAL_TIMEOUT=0` to disable the global deadline (the original behavior).
 Creation's `--missions` sets the initial round; later rounds adapt to yield. `--tasks` is a target, not an exact
 episode limit. Use the spec's `max_rounds` and per-mission limits when sizing local work.
 
@@ -123,7 +123,7 @@ comparisons and verify structured/image support before a full run.
 
 ## Recovering stalled reviews
 
-Task critics have separate bounded defaults: `RLENV_CRITIC_CALL_TIMEOUT=60`, `RLENV_CRITIC_TASK_TIMEOUT=180`,
+Task critics have separate bounded defaults: `RLENV_CRITIC_CALL_TIMEOUT=120`, `RLENV_CRITIC_TASK_TIMEOUT=360`,
 `RLENV_CRITIC_RETRIES=2` and `RLENV_CRITIC_MAX_TOKENS=4096`. Per-task verdicts are checkpointed immediately;
 logs identify task/model/schema, retry count, elapsed time and error type without printing keys or prompts.
 These overrides leave general writer/browser/panel budgets unchanged. Resume an interrupted review with

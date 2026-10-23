@@ -295,7 +295,7 @@ async def test_other_provider_errors_and_oversized_input_do_not_get_budget_retry
 
 def test_model_timeout_defaults_and_override(strict, monkeypatch):
 	monkeypatch.delenv('RLENV_LOCAL_TIMEOUT', raising=False)
-	assert llm.make_llm('local-text')._chat.timeout == 6000
+	assert llm.make_llm('local-text')._chat.timeout == 1200
 	monkeypatch.setenv('RLENV_LOCAL_TIMEOUT', '123')
 	assert llm.make_llm('local-text')._chat.timeout == 123
 

@@ -53,7 +53,7 @@ class LocalChat:
 			temperature=temperature,
 			frequency_penalty=None,
 			max_completion_tokens=int(os.getenv('RLENV_LOCAL_MAX_TOKENS', '262144')),
-			timeout=float(os.getenv('RLENV_LOCAL_TIMEOUT', '6000')),
+			timeout=float(os.getenv('RLENV_LOCAL_TIMEOUT', '1200')),
 			max_retries=0,  # call()/the browser agent own retries; never change providers
 		)
 

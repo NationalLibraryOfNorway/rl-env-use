@@ -51,10 +51,10 @@ or test a separate native Ollama transport.
 | `RLENV_LOCAL_MODELS` | `{}` | JSON mapping of local route names to `model`, `base_url`, and optional `api_key_env`. |
 | `RLENV_LOCAL_API_KEY` | Dummy local token | Optional authentication token for your own server; shared by both endpoints. |
 | `RLENV_LOCAL_MAX_TOKENS` | `262144` | Requested maximum completion tokens per call, shared by all local routes. Servers may enforce lower limits, including input-plus-output context limits. |
-| `RLENV_LOCAL_TIMEOUT` | `6000` seconds | Per-call server timeout, structured-call deadline and browser-agent LLM timeout. |
-| `RLENV_STEP_TIMEOUT` | `6000` seconds | Outer browser-agent step deadline, including model work and actions. |
-| `RLENV_MISSION_TIMEOUT` | `18000` seconds | Total wall-clock limit per mining mission (five hours). |
-| `RLENV_GLOBAL_TIMEOUT` | `18000` seconds | Global autonomous creation limit, including all rounds (five hours). |
+| `RLENV_LOCAL_TIMEOUT` | `1200` seconds | Per-call server timeout, structured-call deadline and browser-agent LLM timeout. |
+| `RLENV_STEP_TIMEOUT` | `360` seconds | Outer browser-agent step deadline, including model work and actions. |
+| `RLENV_MISSION_TIMEOUT` | `3000` seconds | Total wall-clock limit per mining mission (50 minutes). |
+| `RLENV_GLOBAL_TIMEOUT` | `0` | Optional global build/create deadline in seconds; zero disables it. |
 | `RLENV_PANEL_MODELS` | `local-text` | Comma-separated local aliases or `local:MODEL_ID` entries. |
 | `RLENV_BROWSER_USE_VISION` | `1` | Set to `0` for a text-only browser model; navigate with DOM text instead of screenshot input. |
 | `RLENV_BROWSER_EXECUTABLE` | Browser discovery | Absolute path to your Chromium executable. |
@@ -322,9 +322,9 @@ The invented `/api/clinicaltrials` endpoint returns 404. Browser rendering can
 still be necessary for dynamic linked pages. Source guidance is injected into
 mining plans and known invalid trial-discovery URLs are normalized before use.
 
-Model calls and browser steps default to 6000 seconds. Both a mining mission
-and the entire `create` invocation are bounded at 18000 seconds (five hours);
-the global limit can stop a mission sooner. These are wall-clock limits, not
+Model calls default to 1200 seconds, browser steps to 360 seconds, and mining
+missions to 3000 seconds. The optional global build/create deadline defaults
+to zero (disabled); a positive value can stop a mission sooner. These are wall-clock limits, not
 output-token budgets. Set the four timeout variables in `.env` before starting
 Python; restarting is required for the module-level structured/mission limits.
 
@@ -378,12 +378,12 @@ References: [DeepInfra chat API](https://docs.deepinfra.com/chat/overview) and
 ## Critic recovery and incremental checkpoints
 
 Task critics use independent limits so a stuck review cannot silently consume
-the general 6000-second model-call allowance on every retry:
+the general 1200-second model-call allowance on every retry:
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `RLENV_CRITIC_CALL_TIMEOUT` | `60` | Seconds per critic API attempt. |
-| `RLENV_CRITIC_TASK_TIMEOUT` | `180` | Total seconds for one task's recomputation and critique, including retries. |
+| `RLENV_CRITIC_CALL_TIMEOUT` | `120` | Seconds per critic API attempt. |
+| `RLENV_CRITIC_TASK_TIMEOUT` | `360` | Total seconds for one task's recomputation and critique, including retries. |
 | `RLENV_CRITIC_RETRIES` | `2` | Maximum attempts per structured critic call. |
 | `RLENV_CRITIC_MAX_TOKENS` | `4096` | Response cap for task-critic calls only. |
 
@@ -405,4 +405,4 @@ contents were available before results. Require a dated historical version or
 pre-results protocol and a documented success rule before readmitting a case.
 Run `build --only scout` to collect replacement evidence without drafting tasks;
 review that evidence before the next synth/verify pass. Both `build` and `create`
-respect the global five-hour deadline.
+respect `RLENV_GLOBAL_TIMEOUT` when it is positive (zero disables the deadline).

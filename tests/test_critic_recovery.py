@@ -42,7 +42,7 @@ def test_completed_review_survives_cancellation_of_another(tmp_path, monkeypatch
 	assert rows[0]['checks']['critic_model']
 	# The second task retains its original verdict; its model stamp was not changed.
 	assert 'critic_model' not in rows[1]['checks']
-	assert all(k['timeout'] == 60 and k['retries'] == 2 and k['max_completion_tokens'] == 4096 for k in options)
+	assert all(k['timeout'] == 120 and k['retries'] == 2 and k['max_completion_tokens'] == 4096 for k in options)
 
 
 def test_total_review_deadline_is_saved_as_retryable_error(tmp_path, monkeypatch):

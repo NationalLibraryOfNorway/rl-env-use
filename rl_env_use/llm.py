@@ -427,7 +427,7 @@ def book_bu(start: float | None) -> None:
 		LEDGER.by_model[BU_CLOUD] = {'reported_cost': max(0.0, start - now - booked)}
 
 
-CALL_TIMEOUT = float(os.getenv('RLENV_LOCAL_TIMEOUT', '6000'))  # a hung gateway connection otherwise stalls a whole stage (long structured outputs take minutes)
+CALL_TIMEOUT = float(os.getenv('RLENV_LOCAL_TIMEOUT', '1200'))  # a hung gateway connection otherwise stalls a whole stage (long structured outputs take minutes)
 
 
 async def call(name: str, system: str, user: str, schema: type[BaseModel], retries: int = 4, temperature: float | None = 0.0, audience: str = 'diagnostics', *, timeout: float | None = None, max_completion_tokens: int | None = None, log_context: str | None = None):

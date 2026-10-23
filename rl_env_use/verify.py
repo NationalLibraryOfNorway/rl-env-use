@@ -126,8 +126,8 @@ CASE_CRITIC = (
 async def critique(tasks: list[dict], facts: dict, model: str = TEXT_MODEL, *, checkpoint=None) -> None:
 	sys = 'You audit benchmark tasks. Be strict: flag any prompt that admits more than one reasonable answer, or any gold not supported by the evidence.'
 
-	task_timeout = float(os.getenv('RLENV_CRITIC_TASK_TIMEOUT', '180'))
-	call_timeout = float(os.getenv('RLENV_CRITIC_CALL_TIMEOUT', '60'))
+	task_timeout = float(os.getenv('RLENV_CRITIC_TASK_TIMEOUT', '360'))
+	call_timeout = float(os.getenv('RLENV_CRITIC_CALL_TIMEOUT', '120'))
 	retries = int(os.getenv('RLENV_CRITIC_RETRIES', '2'))
 	output_tokens = int(os.getenv('RLENV_CRITIC_MAX_TOKENS', '4096'))
 	if min(task_timeout, call_timeout, retries, output_tokens) <= 0:

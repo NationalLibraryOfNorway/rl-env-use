@@ -29,7 +29,7 @@ def done_keys(path: Path) -> set:
 	return {(r['prompt_id'], r['rep']) for r in load_jsonl(path) if r.get('status') in ('ok', 'truncated')}  # a cut last line is run again
 
 
-async def run_eval(cases: list[dict], run_one, flow: Path, variant: str = 'baseline', reps: int = 1, timeout_s: float = 18000, concurrency: int = 4, first: int = 0) -> Path:
+async def run_eval(cases: list[dict], run_one, flow: Path, variant: str = 'baseline', reps: int = 1, timeout_s: float = 1200, concurrency: int = 4, first: int = 0) -> Path:
 	"""run_one(case, rep, vdir) -> (trace, row). Hard wall-clock ceiling per case; infra failures go to errors.jsonl."""
 	vdir = flow / variant
 	(vdir / 'traces').mkdir(parents=True, exist_ok=True)
