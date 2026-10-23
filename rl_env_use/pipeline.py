@@ -22,6 +22,7 @@ from .browse import host, http_capture, quote_in
 from .config import BROWSER_MODEL, CLOSED_BOOK, TEXT_MODEL, open_only
 from .env import Env
 from .graders import grade_answer
+from .language import current, environment_language
 from .llm import LEDGER, book_bu, bu_balance, call
 from .rollout import rollout, trace_grade
 from .scout import scout
@@ -112,6 +113,7 @@ def writer_critic_models(model: str | None = None, critic: str | None = None, sp
 	return writer, spec.get('critic_model') or writer
 
 
+@environment_language
 async def build(env: Path, spec: dict, only: str | None = None, model: str | None = None, critic: str | None = None, **_) -> str:
 	model, critic = writer_critic_models(model, critic, spec)
 	spec.update(writer_model=model, critic_model=critic)
@@ -149,6 +151,7 @@ async def build(env: Path, spec: dict, only: str | None = None, model: str | Non
 	return '\n'.join(out)
 
 
+@environment_language
 async def synth_stage(env: Path, spec: dict, model: str) -> str:
 	kb = kb_for_synth(env) | {'skill': spec.get('skill', '')}
 	old = {t['id']: t for t in load_jsonl(env / 'tasks.jsonl')}
@@ -172,6 +175,7 @@ async def synth_stage(env: Path, spec: dict, model: str) -> str:
 	return f'synth: {len(new)} tasks drafted'
 
 
+@environment_language
 async def verify_stage(env: Path, spec: dict, model: str) -> str:
 	tasks = load_jsonl(env / 'tasks.jsonl')
 	kb = json.loads((env / 'kb.json').read_text())
@@ -185,7 +189,7 @@ async def verify_stage(env: Path, spec: dict, model: str) -> str:
 			t['checks']['live'] = 'skipped'
 	# A newly selected critic must review cached tasks too; evidence checks remain cached.
 	critic_tasks = [t for t in tasks if not t['checks']['structural'] and not t['checks']['leakage']
-		and (t in todo or t['checks'].get('critic_model') != model)]
+		and (t in todo or t['checks'].get('critic_model') != model or t['checks'].get('critic_language') != current())]
 	await critique(critic_tasks, facts, model)
 	mats = {m['id']: m for m in kb.get('materials', [])}
 	for t in tasks:  # the edge per task: needs_browser = some evidence or material is invisible to a plain fetch
@@ -197,6 +201,7 @@ async def verify_stage(env: Path, spec: dict, model: str) -> str:
 	return f'verify: {len(kept)}/{len(tasks)} tasks pass all checks; {sum(t["needs_browser"] for t in kept)} of them rest on data a plain fetch does not see'
 
 
+@environment_language
 async def harden_stage(env: Path, spec: dict, model: str) -> str:
 	"""Every task the whole panel solved (or that asked for several values) goes back to the drafter with the env's
 	calibration: one harder task on the same case per such task, up to `harden_levels` deep. Difficulty is a design goal,
@@ -233,6 +238,7 @@ def panel_todo(t: dict, panel: list[str] | None = None) -> bool:
 	return keep(t | {'checks': t['checks'] | {'panel': {'verdict': 'keep'}}}) and (p.get('verdict', 'unmeasured') == 'unmeasured' or stale)
 
 
+@environment_language
 async def panel_stage(env: Path, spec: dict) -> str:
 	tasks = load_jsonl(env / 'tasks.jsonl')
 	facts = {f['id']: f for f in json.loads((env / 'kb.json').read_text())['facts']}
@@ -316,6 +322,7 @@ def show(tasks: list[dict], target: int) -> None:
 	ui.progress(len(kept) / max(target, 1))
 
 
+@environment_language
 async def create(env: Path, spec: dict, model: str | None = None, log=print, *, critic: str | None = None) -> dict:
 	"""Mining rounds until `target_tasks` kept tasks, the budget, or two rounds that add (almost) nothing. Each round: scout
 	(cases first finish their outcomes) -> synth top-up -> verify -> panel. Headroom steers the next round: when the
@@ -405,6 +412,7 @@ async def create(env: Path, spec: dict, model: str | None = None, log=print, *, 
 	return spec['result']
 
 
+@environment_language
 async def run(env: Path, spec: dict, a) -> Path:
 	use_browser_spec(spec)
 	tasks = Env(env, verified=getattr(a, 'verified', False)).tasks()

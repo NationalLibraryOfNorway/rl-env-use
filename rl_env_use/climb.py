@@ -19,6 +19,7 @@ from . import ui
 from .audit import paired, split
 from .config import TEXT_MODEL
 from .env import Env
+from .language import environment_language
 from .llm import LEDGER, call
 from .rollout import rollout
 from .store import load_jsonl
@@ -91,6 +92,7 @@ def write_variant(flow: Path, v: str, prompt: str, change: str, model: str) -> N
 	(d / 'summary.json').write_text(json.dumps({'description': change, 'target': 'system_prompt', 'model': model}))
 
 
+@environment_language
 async def climb(
 	env: Path,
 	model: str,

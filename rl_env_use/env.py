@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .config import TEXT_MODEL, browser_use_vision
 from .graders import grade_answer
+from .language import environment_language, language_prompt
 from .rollout import POLICY_SUFFIX, Answer, public, solve_case
 from .tasks import balanced, keep, load_tasks
 
@@ -41,6 +42,7 @@ class Env:
 	def reward(self, task_id: str, answer) -> float:
 		return float(grade_answer(self._tasks[task_id], answer))
 
+	@environment_language
 	async def rollout(self, task_id: str, model: str = TEXT_MODEL, max_steps: int = 25, **agent_kwargs) -> dict:
 		obs = self.reset(task_id)
 		if 'context' in obs:
@@ -54,6 +56,7 @@ class Env:
 		llm = make_llm(model)
 		agent_kwargs.setdefault('browser_session', browser(obs['allowed_domains']))
 		agent_kwargs.setdefault('use_vision', browser_use_vision())
+		agent_kwargs.setdefault('extend_system_message', language_prompt('policy'))
 		agent = Agent(
 			task=obs['prompt'] + POLICY_SUFFIX,
 			llm=llm,
@@ -74,6 +77,7 @@ class Env:
 		"""Flat dataset for external RL trainers: prompt + context (or start_url) + verifiable answer spec."""
 		keys = (
 			'id',
+			'language',
 			'prompt',
 			'context',
 			'kind',

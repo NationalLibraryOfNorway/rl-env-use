@@ -132,6 +132,58 @@ Consequently `--budget` is **not a compute cap** for local inference. Control
 `--tasks`, `--missions`, climb `--rounds`, `--reps`, `--concurrency`, and the
 environment spec's `max_rounds` (default six for creation).
 
+## Dataset language and optional diagnostic localization
+
+Use `--language` on `new`, `create` or `build` with a three-letter ISO 639-3
+code. Common choices are `eng` (English), `nob` (Norwegian Bokmål), `nno`
+(Norwegian Nynorsk), and `spa` (Spanish). `nor` selects Norwegian with Bokmål
+as the default writing standard; use `nob` or `nno` to be precise. Two-letter
+codes such as `nb` or `nn` are rejected. Other registered ISO 639-3 codes are
+accepted using their language names.
+
+```bash
+rl-env-use create 'your Norwegian use case and sources' --name norsk-pilot \
+  --language nob --writer local:writer --critic local:critic --tasks 12 --missions 2
+# Also put newly generated model feedback and mining notes in Bokmål:
+rl-env-use build envs/norsk-pilot --localize-diagnostics
+# Return future internal diagnostics to English:
+rl-env-use build envs/norsk-pilot --no-localize-diagnostics
+```
+
+The dataset language applies to generated questions, natural-language answers,
+answer choices, derivations and `why_hard`. Each generated task and exported row
+records `language`. Policy evaluations request answers in that language too.
+Explicit policy reasoning is an internal diagnostic: it stays in English unless
+`--localize-diagnostics` is enabled. No option controls a model's hidden reasoning.
+
+The optional flag also covers model-generated critic explanations, mining
+observations, mission plans, judge feedback and climb diagnostics. Source
+quotations/materials and tool responses remain verbatim. Code-generated logs,
+error messages, report UI and machine fields are not translated. Existing mined
+notes and cached model outputs are not retroactively translated; a changed critic
+language setting does trigger a new critic review during verification.
+
+`rl_env_use/language.py` composes language-specific output templates with shared
+workflow instructions. It includes translated dataset templates for English,
+Bokmål, Nynorsk, Norwegian and Spanish, and a language-name template for other
+ISO codes; the domain rules themselves need not be copied into every language.
+Template selection changes neither task counts (`--tasks`) nor grading rules.
+
+Canonical forecast golds (`yes`/`no`), numeric/date formats, JSON keys, enum values,
+URLs, identifiers and arithmetic expressions stay unchanged. Writers are asked
+to retain original source values as aliases for translated categorical answers;
+source evidence stays intact and all normal verification gates still apply.
+Source materials may therefore be in a different language from the generated
+questions. Language compliance is prompted, not a separate certified language
+quality gate; review a pilot before training.
+
+Settings are saved as `language` and `localize_diagnostics` in `spec.json` and
+reused by subsequent build/run/climb/report/judge workflows. You can also set
+`RLENV_LANGUAGE=eng` and `RLENV_LOCALIZE_DIAGNOSTICS=0` in `.env` as defaults.
+Start a new environment for another language: changing the language after tasks
+exist is rejected to prevent mixing datasets. Use new run directories when
+changing diagnostic settings if you need all traces in the same language.
+
 ## Separate writers and critics
 
 `create` and `build` accept `--writer` (an alias for the existing `--model`) and

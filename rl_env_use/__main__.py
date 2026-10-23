@@ -27,6 +27,7 @@ from pathlib import Path
 
 from . import ui
 from .config import BROWSER_MODEL, CLOSED_BOOK, TEXT_MODEL, open_only
+from .language import environment_language, language_code, language_scope, settings
 from .llm import LEDGER, load_dotenv
 from .store import load_jsonl, save_jsonl
 
@@ -74,6 +75,21 @@ def write_state(env: Path, judges=(), flow: str = 'hillclimb') -> None:
 	p.write_text(json.dumps(s, indent=1))
 
 
+def language_options(a, spec: dict | None = None, env: Path | None = None) -> dict:
+	options = dict(spec or {})
+	existing = load_jsonl(env / 'tasks.jsonl') if env else []
+	if existing:
+		options.setdefault('language', existing[0].get('language', 'eng'))
+	if getattr(a, 'language', None) is not None:
+		options['language'] = a.language
+	if getattr(a, 'localize_diagnostics', None) is not None:
+		options['localize_diagnostics'] = a.localize_diagnostics
+	resolved = settings(options)
+	if any(t.get('language', 'eng') != resolved['language'] for t in existing):
+		raise SystemExit('Changing the language of existing tasks would mix datasets. Create a new environment for the new language.')
+	return resolved
+
+
 def cmd_new(a):
 	from .verify import PANEL
 
@@ -83,6 +99,7 @@ def cmd_new(a):
 	env.mkdir(parents=True, exist_ok=True)
 	spec = {'topic': a.topic, 'sources': a.sources, 'missions': max(4, 2 * len(a.sources)), 'agent_model': BROWSER_MODEL, 'max_steps': 40, 'concurrency': 4}
 	spec |= {'skill': a.skill, 'tasks_per_case': 2, 'panel': PANEL} if a.skill else {'n_tasks': 30, 'hard': False}
+	spec.update(language_options(a))
 	spec |= ({'profile_id': a.profile} if a.profile else {}) | ({'proxy_country': a.proxy_country} if a.proxy_country else {})
 	(env / 'spec.json').write_text(json.dumps(spec, indent=1))
 	print(f'{env}/spec.json written. Next: rl-env-use build {env}')
@@ -98,7 +115,8 @@ def cmd_create(a):
 		print(f'resuming {env} ({spec.get("result", {}).get("kept", 0)} tasks kept so far)')
 	else:
 		writer, _ = pipeline.writer_critic_models(a.model, a.critic)
-		plan = run(pipeline.plan_spec(a.line, writer))
+		with language_scope(language_options(a)):
+			plan = run(pipeline.plan_spec(a.line, writer))
 		env = env or Path('envs') / re.sub(r'[^a-z0-9]+', '-', plan['name'].lower()).strip('-')
 		if (env / 'spec.json').exists():
 			raise SystemExit(f'{env} exists - pass --name {env.name} to resume it, or another --name')
@@ -115,6 +133,7 @@ def cmd_create(a):
 			'panel': a.panel or PANEL,
 			'panel_reps': 2,
 		}
+	spec.update(language_options(a, spec, env))
 	writer, critic = pipeline.writer_critic_models(a.model, a.critic, spec)
 	spec.update(writer_model=writer, critic_model=critic)
 	spec |= {k: v for k, v in (('budget_usd', a.budget), ('target_tasks', a.tasks), ('mix', a.mix)) if v is not None}  # a resume keeps what it was given unless told otherwise
@@ -180,6 +199,7 @@ def cmd_build(a):
 		raise SystemExit(f'--only must be one of {pipeline.STAGES}')
 	env = Path(a.env)
 	spec = spec_of(env)
+	spec.update(language_options(a, spec, env))
 	writer, critic = pipeline.writer_critic_models(a.model, a.critic, spec)
 	spec.update(writer_model=writer, critic_model=critic)
 	pipeline.use_browser_spec(spec)
@@ -304,6 +324,7 @@ def report(env: Path, judges: bool = True) -> None:
 			print(f'{f.name}/report.html not written ({e}); install Node.js to get the HTML report')
 
 
+@environment_language
 async def apply_judges(env: Path, judges) -> None:
 	"""Calibrated narrow judges on every stored conversation that has no verdict yet (verdicts are cached in the row)."""
 	from .audit import load_variants
@@ -377,7 +398,8 @@ def cmd_codify(a):
 
 	env = Path(a.env)
 	ann = labels(env, a.annotator)
-	tax = run(codify(ann, a.model))
+	with language_scope(spec_of(env)):
+		tax = run(codify(ann, a.model))
 	counts = mode_counts(tax, ann)
 	n_fail = sum(x['verdict'] == 'fail' for x in ann)
 	(env / 'failure_modes.json').write_text(
@@ -418,7 +440,8 @@ def cmd_judges(a):
 			save_judges(env / 'judges.json', list(judges.values()))
 			forget_verdicts(env, j.id)  # the recalibrated judge re-scores every run on the next report
 
-	run(calibrate_all())
+	with language_scope(spec_of(env)):
+		run(calibrate_all())
 
 
 def cmd_split(a):
@@ -558,6 +581,10 @@ def main(argv=None):
 		if name == 'split':
 			q.add_argument('--test-frac', type=float, default=0.5)
 			q.add_argument('--seed', type=int, default=0)
+	for command in ('new', 'create', 'build'):
+		parser = sp.choices[command]
+		parser.add_argument('--language', type=language_code, metavar='ISO639_3', help='dataset language, e.g. eng, nob, nno or spa (default: saved language or RLENV_LANGUAGE/eng)')
+		parser.add_argument('--localize-diagnostics', action=argparse.BooleanOptionalAction, default=None, help='also generate model feedback, mining notes and diagnostics in the dataset language (default: saved setting or false)')
 	a = p.parse_args(argv)
 	sys.stdout.reconfigure(line_buffering=True)  # progress lines reach a redirected log as they happen
 	debug_signals()

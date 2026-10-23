@@ -430,6 +430,8 @@ def test_changed_critic_reviews_cached_tasks_without_rechecking_evidence(env, mo
 		seen.append((len(tasks), model))
 		for task in tasks:
 			task['checks']['critic_model'] = model
+			from rl_env_use.language import current
+			task['checks']['critic_language'] = current()
 	monkeypatch.setattr(P, 'closed_book', evidence)
 	monkeypatch.setattr(P, 'check_live', evidence)
 	monkeypatch.setattr(P, 'critique', critic)

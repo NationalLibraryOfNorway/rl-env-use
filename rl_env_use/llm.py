@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field, ValidationError
 
 from .config import load_dotenv as load_dotenv
 from .config import open_only
+from .language import language_prompt
 
 KEYS = {
 	'bu': 'BROWSER_USE_API_KEY',
@@ -429,9 +430,10 @@ def book_bu(start: float | None) -> None:
 CALL_TIMEOUT = 600  # a hung gateway connection otherwise stalls a whole stage (long structured outputs take minutes)
 
 
-async def call(name: str, system: str, user: str, schema: type[BaseModel], retries: int = 4, temperature: float | None = 0.0):
+async def call(name: str, system: str, user: str, schema: type[BaseModel], retries: int = 4, temperature: float | None = 0.0, audience: str = 'diagnostics'):
 	"""One structured LLM call. Returns (parsed, usage, model). Jittered backoff on transient errors; an invalid output
 	is fed back to the model on the next attempt (e.g. an enum value outside the allowed set)."""
+	system += language_prompt(audience)
 	feedback = ''
 	for attempt in range(retries):
 		# a deterministic (temperature 0) failure would repeat identically: later attempts resample

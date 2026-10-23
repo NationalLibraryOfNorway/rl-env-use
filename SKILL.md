@@ -59,6 +59,20 @@ compute cap**, and `--dry-run` cannot establish a dollar price for local inferen
 Creation's `--missions` sets the initial round; later rounds adapt to yield. `--tasks` is a target, not an exact
 episode limit. Use the spec's `max_rounds` and per-mission limits when sizing local work.
 
+## Dataset language
+
+Use `--language` on `new`, `create` or `build` with ISO 639-3 codes such as `eng`, `nob` (Bokmål), `nno` (Nynorsk)
+or `spa`. Prefer `nob`/`nno` over generic `nor` for Norwegian. Language-specific output templates control generated
+questions, textual answers, choices, derivations and `why_hard`. Task counts remain controlled by `--tasks`.
+Source materials and quotations remain verbatim, as do grading tokens, numeric/date formats, identifiers and schemas.
+Translated categorical answers retain source forms as aliases and still pass normal evidence/grading checks.
+
+Internal model feedback, mining notes, critiques and explicit policy reasoning stay in English by default. Add
+`--localize-diagnostics` to generate these in the dataset language too; `--no-localize-diagnostics` turns that off.
+Code logs/report UI and existing cached outputs are not translated. Settings persist in `spec.json`; `.env` defaults
+are `RLENV_LANGUAGE=eng` and `RLENV_LOCALIZE_DIAGNOSTICS=0`. Start a new environment to change dataset language after
+tasks exist. Review pilot language quality; prompt instructions are not an independent language-quality gate.
+
 ## Autonomous workflow
 
 Use when the user wants hands-off creation within their chosen scope and resource limits.

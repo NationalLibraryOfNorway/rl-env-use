@@ -20,6 +20,7 @@ from pydantic import BaseModel, Field
 from .browse import browser
 from .config import BROWSER_MODEL, browser_use_vision, open_only
 from .graders import grade_answer, grounded, max_repeats
+from .language import current, language_prompt, language_scope
 from .llm import LEDGER, add_usage, call, cost, make_llm, now, usage_dict
 from .runner import run_eval
 
@@ -53,8 +54,8 @@ def trace_grade(t: dict, correct: bool, trace: list[dict]) -> dict:
 def public(t: dict) -> dict:
 	"""The only task fields a policy ever sees. Gold, evidence and checks stay out of reach."""
 	if t.get('context'):
-		return {'id': t['id'], 'prompt': t['prompt'], 'context': t['context']}
-	return {'id': t['id'], 'prompt': t['prompt'], 'start_url': t['start_url'], 'allowed_domains': t.get('allowed_domains')}
+		return {'id': t['id'], 'prompt': t['prompt'], 'context': t['context'], **({'language': t['language']} if 'language' in t else {})}
+	return {'id': t['id'], 'prompt': t['prompt'], 'start_url': t['start_url'], 'allowed_domains': t.get('allowed_domains'), **({'language': t['language']} if 'language' in t else {})}
 
 
 def case_messages(pub: dict, extend_system: str | None = None, answer_only: bool = False) -> tuple[str, str]:
@@ -68,7 +69,9 @@ async def solve_case(pub: dict, model: str, extend_system: str | None = None):
 
 	quiet = model in ANSWER_ONLY
 	system, user = case_messages(pub, extend_system, quiet)
-	r, usage, mid = await call(model, system, user, Answer if quiet else Reasoned, temperature=None)
+	with language_scope(current() | pub):
+		system += language_prompt('policy')
+		r, usage, mid = await call(model, system, user, Answer if quiet else Reasoned, temperature=None)
 	return system, user, r.answer, getattr(r, 'reasoning', ''), usage, mid
 
 
@@ -133,7 +136,7 @@ async def run_case(t: dict, rep: int, model: str, vdir: Path, max_steps: int, he
 		enable_signal_handler=False,
 		calculate_cost=not open_only(),
 		llm_timeout=int(os.getenv('RLENV_LOCAL_TIMEOUT', '600')) if open_only() else None,
-		extend_system_message=extend_system,
+		extend_system_message=(extend_system or '') + language_prompt('policy'),
 		initial_actions=[{'navigate': {'url': pub['start_url']}}],
 	)
 	t0 = time.monotonic()

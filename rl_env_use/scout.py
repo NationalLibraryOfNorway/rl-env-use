@@ -22,6 +22,7 @@ from . import ui
 from .browse import SEARCH_ENGINES, UNUSED, browser, http_capture, page_text, quote_in
 from .config import BROWSER_MODEL, TEXT_MODEL, browser_use_vision, open_only
 from .graders import norm
+from .language import language_prompt
 from .llm import LEDGER, call, make_llm, now, usage_dict
 from .store import write_atomic
 
@@ -321,6 +322,7 @@ async def run_mission(m: Mission, topic: str, kb: dict, model: str, max_steps: i
 		tools=tools,
 		browser_session=browser(headless=headless),
 		output_model_schema=ScoutSummary,
+		extend_system_message=language_prompt('diagnostics'),
 		use_judge=False,
 		use_vision=browser_use_vision(),
 		enable_signal_handler=False,

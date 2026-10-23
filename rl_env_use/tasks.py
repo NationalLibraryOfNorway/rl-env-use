@@ -19,6 +19,7 @@ from . import ui
 from .checks import code_gold, derived, gold_issues, grade_answer, leaks, rounding_tol, structural_issues
 from .config import TEXT_MODEL
 from .graders import norm
+from .language import PROBABILITY, current
 from .llm import call, now
 from .store import load_jsonl
 
@@ -129,7 +130,7 @@ async def synthesize(kb: dict, n: int, model: str = TEXT_MODEL, existing: list[s
 	ideas = '\n'.join(f'- {i["question"]} (hard because: {i["why_hard"]})' for i in kb['ideas'])
 	obs = '\n'.join(o for m in kb['missions'] for o in m.get('observations', []))
 	user = f'Topic: {kb["topic"]}\n\nALREADY WRITTEN (do not duplicate):\n{chr(10).join(existing) or "-"}\n\nEVIDENCE (only source of answers):\n{ev}\n\nREAL USER QUESTIONS seen while scouting (match their style and intent):\n{ideas or "-"}\n\nSCOUT OBSERVATIONS about what is hard here:\n{obs or "-"}\n\nWrite {n} tasks.'
-	d, _, _ = await call(model, SYNTH_SYS + (HARD if hard else MIX), user, Drafts, temperature=0.7)
+	d, _, _ = await call(model, SYNTH_SYS + (HARD if hard else MIX), user, Drafts, temperature=0.7, audience='dataset')
 	return [finish(td.model_dump(), facts) for td in d.tasks]
 
 
@@ -260,7 +261,7 @@ async def synthesize_cases(
 			+ f'\n\nALREADY WRITTEN (do not duplicate):\n{chr(10).join(written) or "-"}\n\n{ask}'
 		)
 		try:
-			d, _, _ = await call(model, system, user, CaseDrafts, temperature=0.7)
+			d, _, _ = await call(model, system, user, CaseDrafts, temperature=0.7, audience='dataset')
 		except Exception as e:  # one case must not sink the round: it is topped up on the next synth
 			print(f'synth: case {key} skipped ({type(e).__name__}: {str(e)[:120]})')
 			return []
@@ -289,6 +290,7 @@ async def synthesize_cases(
 
 def finish(t: dict, facts: dict) -> dict:
 	"""Shared post-processing of a drafted task: evidence, id, numeric typing, tolerance, deterministic checks."""
+	t['language'] = current()['language']
 	t |= {'source_urls': list(dict.fromkeys(facts[f]['url'] for f in t['fact_ids'] if f in facts)), 'created': now()}
 	t['evidence'] = [{'url': facts[f]['url'], 'value': facts[f]['value'], 'quote': facts[f]['quote']} for f in t['fact_ids'] if f in facts]
 	t['id'] = task_id(t['prompt'] + t.get('case', ''))
@@ -300,7 +302,7 @@ def finish(t: dict, facts: dict) -> dict:
 	if t['answer_type'] == 'prob':
 		t['answer'] = norm(t['answer'])
 		if 'probab' not in t['prompt'].lower():
-			t['prompt'] += ' Answer with the probability (0 to 1) that it did.'
+			t['prompt'] += ' ' + PROBABILITY.get(t['language'], '(0–1)')
 	t['checks'] = {'structural': structural_issues(t, facts), 'leakage': leaks(t)}
 	return t
 

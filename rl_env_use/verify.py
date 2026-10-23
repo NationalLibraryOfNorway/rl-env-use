@@ -20,6 +20,7 @@ from .browse import browser, capture, page_text, quote_in
 from .checks import grade_answer
 from .config import PANEL_MODELS, TEXT_MODEL, open_only
 from .graders import norm, numbers, prob_of
+from .language import current
 from .llm import call, now
 from .tasks import keep
 
@@ -126,6 +127,7 @@ async def critique(tasks: list[dict], facts: dict, model: str = TEXT_MODEL) -> N
 
 	async def one(t):
 		t['checks']['critic_model'] = model
+		t['checks']['critic_language'] = current()
 		ev = '\n'.join(f'"{facts[f]["quote"]}" ({facts[f]["url"]})' for f in t['fact_ids'] if f in facts)
 		try:  # blind recomputation first: a critic that sees the gold mostly copies it
 			if t.get('kind') == 'derive':  # well posed only if the gold follows from what the model is given: the materials alone
