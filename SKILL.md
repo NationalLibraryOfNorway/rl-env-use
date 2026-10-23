@@ -55,7 +55,8 @@ Local API spend is recorded as zero/unknown and excludes GPU time, rental and el
 compute cap**, and `--dry-run` cannot establish a dollar price for local inference. Bound creation with `--tasks`,
 `--missions`, and the spec's `max_rounds` (default six), `max_steps` and `concurrency`. Bound runs with `--limit`,
 `--reps`, `--concurrency` and `--timeout`; bound climbs with `--rounds`, `--k`, `--reps` and `--concurrency`.
-`RLENV_LOCAL_MAX_TOKENS` and `RLENV_LOCAL_TIMEOUT` bound individual model calls.
+`RLENV_LOCAL_MAX_TOKENS` (default `262144`, shared by all local routes) and `RLENV_LOCAL_TIMEOUT` bound individual
+model calls. The token setting is a requested output ceiling; each server still enforces its context/output limits.
 Creation's `--missions` sets the initial round; later rounds adapt to yield. `--tasks` is a target, not an exact
 episode limit. Use the spec's `max_rounds` and per-mission limits when sizing local work.
 

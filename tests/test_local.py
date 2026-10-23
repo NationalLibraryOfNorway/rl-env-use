@@ -170,8 +170,9 @@ def test_browser_vision_mode(monkeypatch, setting, expected):
 
 	monkeypatch.setenv('RLENV_BROWSER_USE_VISION', setting)
 	assert browser_use_vision() is expected
-	from rl_env_use.browse import browser
 	from browser_use import Agent
+
+	from rl_env_use.browse import browser
 
 	agent = Agent(task='Read the current page', llm=llm.make_llm('local:test'), browser_session=browser(), use_vision=browser_use_vision(), calculate_cost=False)
 	assert agent.settings.use_vision is expected
@@ -244,3 +245,49 @@ def test_named_route_invalid_endpoint_rejected(strict, monkeypatch, url):
 	monkeypatch.setenv('RLENV_LOCAL_MODELS', json.dumps({'x': {'base_url': url}}))
 	with pytest.raises(ValueError, match='local base URL'):
 		llm.make_llm('local:x')
+
+
+@pytest.mark.parametrize('alias', ['local-text', 'local-browser', 'local:critic'])
+def test_local_completion_default_and_override(strict, monkeypatch, alias):
+	monkeypatch.delenv('RLENV_LOCAL_MAX_TOKENS', raising=False)
+	assert llm.make_llm(alias)._chat.max_completion_tokens == 262144
+	monkeypatch.setenv('RLENV_LOCAL_MAX_TOKENS', '4096')
+	assert llm.make_llm(alias)._chat.max_completion_tokens == 4096
+
+
+@pytest.mark.asyncio
+async def test_context_limit_retries_with_remaining_budget_without_mutating_default(strict, monkeypatch):
+	monkeypatch.setenv('RLENV_LOCAL_MAX_TOKENS', '262144')
+	requests = []
+	def handler(request):
+		requests.append(request)
+		if len(requests) == 1:
+			return httpx.Response(400, json={'error': {'message': "Requested token count exceeds the model's maximum context length of 262144 tokens. You requested a total of 262322 tokens: 178 tokens from the input messages and 262144 tokens for the completion."}})
+		return httpx.Response(200, json={'id': 'test', 'object': 'chat.completion', 'created': 0, 'model': 'test-text',
+			'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': '{"answer":"42"}'}, 'finish_reason': 'stop'}],
+			'usage': {'prompt_tokens': 178, 'completion_tokens': 4, 'total_tokens': 182}})
+	chat = llm.make_llm('local-text')
+	async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+		chat._chat.http_client = client
+		result = await chat.ainvoke([UserMessage(content='6 times 7?')], output_format=Answer)
+	assert result.completion.answer == '42'
+	bodies = [json.loads(r.content) for r in requests]
+	assert [b['max_completion_tokens'] for b in bodies] == [262144, 261966]
+	assert requests[0].url == requests[1].url
+	assert bodies[0]['messages'] == bodies[1]['messages']
+	assert chat._chat.max_completion_tokens == 262144
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('message', ['bad schema', 'maximum context length of 100 tokens; 101 tokens from the input messages'])
+async def test_other_provider_errors_and_oversized_input_do_not_get_budget_retry(strict, message):
+	requests = []
+	def handler(request):
+		requests.append(request)
+		return httpx.Response(400, json={'error': {'message': message}})
+	chat = llm.make_llm('local-text')
+	async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+		chat._chat.http_client = client
+		with pytest.raises(Exception, match='bad schema|maximum context'):
+			await chat.ainvoke([UserMessage(content='question')], output_format=Answer)
+	assert len(requests) == 1

@@ -2,9 +2,12 @@
 
 import json
 import os
+import re
+from copy import copy
 from urllib.parse import urlparse
 
 from browser_use import ChatOpenAI
+from browser_use.llm.exceptions import ModelProviderError
 
 
 def local_model_config(name: str) -> dict:
@@ -49,7 +52,7 @@ class LocalChat:
 			api_key=key,
 			temperature=temperature,
 			frequency_penalty=None,
-			max_completion_tokens=int(os.getenv('RLENV_LOCAL_MAX_TOKENS', '8192')),
+			max_completion_tokens=int(os.getenv('RLENV_LOCAL_MAX_TOKENS', '262144')),
 			timeout=float(os.getenv('RLENV_LOCAL_TIMEOUT', '600')),
 			max_retries=0,  # call()/the browser agent own retries; never change providers
 		)
@@ -67,4 +70,19 @@ class LocalChat:
 		return self.model
 
 	async def ainvoke(self, messages, output_format=None, **kwargs):
-		return await self._chat.ainvoke(messages, output_format=output_format, **kwargs)
+		try:
+			return await self._chat.ainvoke(messages, output_format=output_format, **kwargs)
+		except ModelProviderError as error:
+			# Some servers enforce input + requested output <= context, even for short answers.
+			# Use their exact input count; never truncate evidence or switch endpoints.
+			limit = re.search(r'maximum context length of (\d+) tokens', str(error), re.I)
+			inputs = re.search(r'(\d+) tokens from the input messages', str(error), re.I)
+			if error.status_code != 400 or not limit or not inputs:
+				raise
+			remaining = int(limit[1]) - int(inputs[1])
+			if not 0 < remaining < self._chat.max_completion_tokens:
+				raise
+			# A request-local copy avoids changing the configured ceiling or concurrent calls.
+			chat = copy(self._chat)
+			chat.max_completion_tokens = remaining
+			return await chat.ainvoke(messages, output_format=output_format, **kwargs)

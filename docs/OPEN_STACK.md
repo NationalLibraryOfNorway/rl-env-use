@@ -50,11 +50,17 @@ or test a separate native Ollama transport.
 | `RLENV_LOCAL_BROWSER_BASE_URL` | Shared base URL | Optional separate endpoint, used by the `local-browser` alias only. |
 | `RLENV_LOCAL_MODELS` | `{}` | JSON mapping of local route names to `model`, `base_url`, and optional `api_key_env`. |
 | `RLENV_LOCAL_API_KEY` | Dummy local token | Optional authentication token for your own server; shared by both endpoints. |
-| `RLENV_LOCAL_MAX_TOKENS` | `8192` | Maximum completion tokens per call. |
+| `RLENV_LOCAL_MAX_TOKENS` | `262144` | Requested maximum completion tokens per call, shared by all local routes. Servers may enforce lower limits, including input-plus-output context limits. |
 | `RLENV_LOCAL_TIMEOUT` | `600` seconds | Per-call server timeout and browser-agent LLM timeout. |
 | `RLENV_PANEL_MODELS` | `local-text` | Comma-separated local aliases or `local:MODEL_ID` entries. |
 | `RLENV_BROWSER_USE_VISION` | `1` | Set to `0` for a text-only browser model; navigate with DOM text instead of screenshot input. |
 | `RLENV_BROWSER_EXECUTABLE` | Browser discovery | Absolute path to your Chromium executable. |
+
+When a server explicitly rejects input plus requested output as exceeding its context
+window and reports both token counts, the transport retries once with output
+limited to the remaining context. The configured ceiling stays unchanged; inputs
+and evidence are never truncated, and the endpoint does not change. Other errors
+are propagated normally.
 
 The supplied `.env.example` sets both model aliases to Qwen3-VL-8B-Instruct,
 allowing a one-server smoke test. For real dataset generation, use a stronger
