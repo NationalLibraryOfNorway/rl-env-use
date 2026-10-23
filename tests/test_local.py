@@ -96,10 +96,11 @@ async def test_real_serializer_preserves_images_and_validates_schema(strict):
 
 @pytest.mark.asyncio
 async def test_unavailable_local_server_never_falls_back(strict, monkeypatch):
+	monkeypatch.setenv('RLENV_LOCAL_MODELS', '{"test-text":{"base_url":"http://unavailable.test:9000/v1","model":"raw-text"}}')
 	seen = []
 
 	async def fail(self, *a, **kw):
-		seen.append(self.model)
+		seen.append((self.model, self._chat.base_url, self._chat.model))
 		raise ConnectionError('local endpoint down')
 
 	async def no_sleep(*a):
@@ -109,7 +110,7 @@ async def test_unavailable_local_server_never_falls_back(strict, monkeypatch):
 	monkeypatch.setattr(llm.asyncio, 'sleep', no_sleep)
 	with pytest.raises(ConnectionError):
 		await llm.call('local-text', 'sys', 'question', Answer, retries=3)
-	assert seen == ['local:test-text'] * 3
+	assert seen == [('local:test-text', 'http://unavailable.test:9000/v1', 'raw-text')] * 3
 
 
 def test_browser_stays_local_and_billing_skipped(strict, monkeypatch):
@@ -182,3 +183,64 @@ def test_browser_vision_mode_rejects_invalid_setting(monkeypatch):
 	monkeypatch.setenv('RLENV_BROWSER_USE_VISION', 'false')
 	with pytest.raises(ValueError, match='RLENV_BROWSER_USE_VISION'):
 		browser_use_vision()
+
+
+@pytest.mark.asyncio
+async def test_named_local_models_route_requests_and_auth_independently(strict, monkeypatch):
+	monkeypatch.setenv('RLENV_LOCAL_MODELS', json.dumps({
+		'writer': {'model': 'shared-id', 'base_url': 'http://writer.test:8000/v1', 'api_key_env': 'WRITER_TOKEN'},
+		'critic': {'model': 'shared-id', 'base_url': 'http://critic.test:9000/v1', 'api_key_env': 'CRITIC_TOKEN'},
+	}))
+	monkeypatch.setenv('WRITER_TOKEN', 'writer-token')
+	monkeypatch.setenv('CRITIC_TOKEN', 'critic-token')
+	requests = []
+	def handler(request):
+		requests.append(request)
+		return httpx.Response(200, json={
+			'id': 'test', 'object': 'chat.completion', 'created': 0, 'model': 'shared-id',
+			'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': '{"answer":"42"}'}, 'finish_reason': 'stop'}],
+			'usage': {'prompt_tokens': 1, 'completion_tokens': 1, 'total_tokens': 2},
+		})
+	for alias in ('writer', 'critic'):
+		chat = llm.make_llm(f'local:{alias}', agent=False, fallback=True)
+		assert chat.model == f'local:{alias}'
+		async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+			chat._chat.http_client = client
+			result = await chat.ainvoke([UserMessage(content='6 times 7?')], output_format=Answer)
+		assert result.completion.answer == '42'
+	assert [str(r.url) for r in requests] == ['http://writer.test:8000/v1/chat/completions', 'http://critic.test:9000/v1/chat/completions']
+	assert [r.headers['authorization'] for r in requests] == ['Bearer writer-token', 'Bearer critic-token']
+	assert all(json.loads(r.content)['model'] == 'shared-id' for r in requests)
+
+
+def test_named_route_overrides_browser_endpoint_and_preserves_defaults(strict, monkeypatch):
+	monkeypatch.setenv('RLENV_LOCAL_BROWSER_MODEL', 'vision')
+	monkeypatch.setenv('RLENV_LOCAL_BROWSER_BASE_URL', 'http://browser.test/v1')
+	monkeypatch.setenv('RLENV_LOCAL_MODELS', json.dumps({'vision': {'model': 'raw-vision', 'base_url': 'http://vision.test/v1'}}))
+	for name in ('local-browser', 'local:vision'):
+		chat = llm.make_llm(name)
+		assert chat._chat.base_url == 'http://vision.test/v1'
+		assert chat._chat.model == 'raw-vision'
+	assert llm.make_llm('local-text', agent=False)._chat.base_url == 'http://127.0.0.1:8000/v1'
+	assert llm.make_llm('local:unregistered')._chat.model == 'unregistered'
+
+
+@pytest.mark.parametrize('value', ['{bad', '[]', '{"x":null}', '{"x":{"unknown":"foo"}}', '{"x":{"model":1}}', '{"x":{"base_url":""}}'])
+def test_invalid_local_model_registry_rejected(strict, monkeypatch, value):
+	monkeypatch.setenv('RLENV_LOCAL_MODELS', value)
+	with pytest.raises(ValueError, match='local model|RLENV_LOCAL_MODELS'):
+		llm.make_llm('local:x')
+
+
+def test_named_route_missing_token_fails_without_fallback(strict, monkeypatch):
+	monkeypatch.setenv('RLENV_LOCAL_MODELS', '{"x":{"api_key_env":"UNSET_LOCAL_TEST_TOKEN"}}')
+	monkeypatch.delenv('UNSET_LOCAL_TEST_TOKEN', raising=False)
+	with pytest.raises(ValueError, match='api_key_env'):
+		llm.make_llm('local:x', fallback=True)
+
+
+@pytest.mark.parametrize('url', ['https://user:secret@host/v1', 'file:///tmp/model', 'http://host/v1?key=secret'])
+def test_named_route_invalid_endpoint_rejected(strict, monkeypatch, url):
+	monkeypatch.setenv('RLENV_LOCAL_MODELS', json.dumps({'x': {'base_url': url}}))
+	with pytest.raises(ValueError, match='local base URL'):
+		llm.make_llm('local:x')

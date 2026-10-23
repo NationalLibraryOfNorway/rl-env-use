@@ -32,13 +32,17 @@ Before model or browser calls:
   `--writer` (alias `--model`) selects the planner/writer and `--critic` selects the task critic. If only one is
   supplied, both roles use it. If neither is supplied, saved `writer_model`/`critic_model` roles are reused, or the
   text default is used for both. Explicit role flags replace the saved pair. Mining uses `spec.json`'s `agent_model` (default `local-browser`).
-- `RLENV_LOCAL_BROWSER_BASE_URL` optionally routes `local-browser` to a separate server. Explicit `local:MODEL_ID`
-  entries always use the shared base URL, including panel entries. `RLENV_LOCAL_API_KEY` is optional authentication
-  for the user's server, shared by both endpoints.
+- `RLENV_LOCAL_MODELS` optionally maps names to per-model settings: for example,
+  `{"critic":{"model":"served-id","base_url":"http://host:8000/v1","api_key_env":"CRITIC_TOKEN"}}` routes
+  `local:critic` to that server. Named routes work for writers, critics, panels, adjudicators, judges and policies.
+  Optional `api_key_env` names an environment variable containing that endpoint's token. Without it, the shared
+  `RLENV_LOCAL_API_KEY` or dummy token is used. Text/browser model variables may name registry entries too.
+  An entry's `base_url` takes precedence over `RLENV_LOCAL_BROWSER_BASE_URL` for `local-browser`, then the shared
+  base URL. Unregistered explicit IDs keep the shared endpoint. See the open-stack guide for full examples.
 - Point `RLENV_BROWSER_EXECUTABLE` at an installed open-source Chromium executable. Browsers run locally;
   cloud profile IDs and proxy-country flags do not configure local authentication or proxies. Resolve source access
   with the user before mining if it needs these features.
-- Set `RLENV_PANEL_MODELS` to comma-separated local aliases or exact IDs available on the shared endpoint.
+- Set `RLENV_PANEL_MODELS` to comma-separated local aliases, named routes or exact served IDs.
   The default `local-text` panel is suitable for integration checks only. For meaningful difficulty validation,
   use multiple independently trained models and identify the writer, panel and policy in the results.
 

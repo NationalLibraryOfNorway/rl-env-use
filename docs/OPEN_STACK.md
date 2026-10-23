@@ -48,6 +48,7 @@ or test a separate native Ollama transport.
 | `RLENV_LOCAL_TEXT_MODEL` | Required for `local-text` | Planner, writer, critic, closed-book checks, proposer and case-policy default. |
 | `RLENV_LOCAL_BROWSER_MODEL` | Required for `local-browser` | Vision-capable browser-agent default. |
 | `RLENV_LOCAL_BROWSER_BASE_URL` | Shared base URL | Optional separate endpoint, used by the `local-browser` alias only. |
+| `RLENV_LOCAL_MODELS` | `{}` | JSON mapping of local route names to `model`, `base_url`, and optional `api_key_env`. |
 | `RLENV_LOCAL_API_KEY` | Dummy local token | Optional authentication token for your own server; shared by both endpoints. |
 | `RLENV_LOCAL_MAX_TOKENS` | `8192` | Maximum completion tokens per call. |
 | `RLENV_LOCAL_TIMEOUT` | `600` seconds | Per-call server timeout and browser-agent LLM timeout. |
@@ -60,12 +61,41 @@ allowing a one-server smoke test. For real dataset generation, use a stronger
 writer/critic and multiple independently trained panel models. A single-model
 panel is not independent validation, particularly if that model wrote the tasks.
 
-`local:MODEL_ID` sends the exact model ID to the shared base URL. All panel models
-must be available there (directly or through your own open-source router).
-An explicit `local:` ID does not select the separate browser endpoint: use
-`local-browser` for that. The code cannot attest that an endpoint is self-hosted
-or that its model has open weights. You control the endpoint and must verify
-the selected model's license.
+`local:NAME` first looks up `NAME` in `RLENV_LOCAL_MODELS`. A matching entry can
+select a separate endpoint and translate the route name to the exact model ID
+served there. Without an entry, the name is sent as the model ID to the shared
+base URL, preserving the existing behavior. The code cannot attest that an
+endpoint is self-hosted or that its model has open weights; verify both yourself.
+
+### Different endpoints per model
+
+Add a single-line JSON object to `.env`, for example:
+
+```dotenv
+RLENV_LOCAL_MODELS={"writer":{"model":"qwen-model-id","base_url":"http://192.168.1.129:8000/v1"},"critic":{"model":"reviewer-model-id","base_url":"http://192.168.1.130:8000/v1","api_key_env":"CRITIC_SERVER_TOKEN"}}
+```
+
+Use the actual IDs exposed by each server's `/v1/models` endpoint. If the critic
+requires authentication, export `CRITIC_SERVER_TOKEN` or set it in the ignored
+`.env`; omit `api_key_env` for servers without endpoint-specific authentication.
+A configured `api_key_env` must name a nonempty environment variable. Otherwise
+the shared `RLENV_LOCAL_API_KEY` (or a dummy token) is used.
+
+```bash
+rl-env-use create 'your skill and sources' --writer local:writer --critic local:critic
+# Any named route can also be a panel, adjudicator, closed-book, judge or policy model.
+rl-env-use run envs/my-env --model local:critic
+```
+
+Each entry may contain `model`, `base_url`, and `api_key_env`; omitted fields use
+the existing defaults. Route names are retained as `local:NAME` in accounting and
+results, so two servers serving the same raw model ID can be compared separately.
+`RLENV_LOCAL_TEXT_MODEL` and `RLENV_LOCAL_BROWSER_MODEL` can also name registry
+entries (without `local:`). An entry's `base_url` overrides the separate browser
+URL; otherwise `local-browser` keeps its browser endpoint and other models keep
+the shared endpoint. Retries stay on the selected route without switching servers.
+Restart Python after configuration changes, and use new aliases or run directories
+when replacing a server/model behind an existing route to avoid stale caches.
 
 Configuration loads before browser-use is imported: exported variables override
 the working directory's `.env`, which overrides this repository's `.env`.
@@ -111,7 +141,7 @@ Mining, closed-book checks, difficulty panels and adjudicators retain their own
 model settings.
 
 ```bash
-# Separate models; both IDs must be served by the shared local endpoint/router.
+# Separate models; use served IDs or named routes from RLENV_LOCAL_MODELS.
 rl-env-use create 'your skill and sources' --name my-env \
   --writer local:writer-id --critic local:critic-id
 rl-env-use build envs/my-env --only verify --critic local:reviewer-id
