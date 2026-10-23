@@ -8,6 +8,7 @@ reads the materials and answers (one structured call, no tools). Browse tasks: a
 
 import asyncio
 import json
+import os
 import shutil
 import time
 from pathlib import Path
@@ -17,6 +18,7 @@ from browser_use import Agent
 from pydantic import BaseModel, Field
 
 from .browse import browser
+from .config import BROWSER_MODEL, open_only
 from .graders import grade_answer, grounded, max_repeats
 from .llm import LEDGER, add_usage, call, cost, make_llm, now, usage_dict
 from .runner import run_eval
@@ -128,7 +130,8 @@ async def run_case(t: dict, rep: int, model: str, vdir: Path, max_steps: int, he
 		output_model_schema=Answer,
 		use_judge=False,
 		enable_signal_handler=False,
-		calculate_cost=True,
+		calculate_cost=not open_only(),
+		llm_timeout=int(os.getenv('RLENV_LOCAL_TIMEOUT', '600')) if open_only() else None,
 		extend_system_message=extend_system,
 		initial_actions=[{'navigate': {'url': pub['start_url']}}],
 	)
@@ -195,7 +198,7 @@ async def rollout(
 	tasks: list[dict],
 	flow: Path,
 	variant: str = 'baseline',
-	model: str = 'bu',
+	model: str = BROWSER_MODEL,
 	reps: int = 1,
 	max_steps: int = 25,
 	timeout_s: float = 600,

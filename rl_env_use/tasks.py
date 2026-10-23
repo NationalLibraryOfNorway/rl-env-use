@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from . import ui
 from .checks import code_gold, derived, gold_issues, grade_answer, leaks, rounding_tol, structural_issues
+from .config import TEXT_MODEL
 from .graders import norm
 from .llm import call, now
 from .store import load_jsonl
@@ -122,7 +123,7 @@ MIX = '\n- Mix families: direct lookups deep in a site, multi-hop (combine two p
 HARD = '\nHARD MODE: no single lookups - single lookups saturate (any agent searches the name and reads one page). Each task needs the same attribute from 3+ different records/pages, reduced to ONE answer: a superlative (which of these genes has the lowest X?), a ranking-derived pick, a count over records (how many of these have X above Y?), or a difference between records. Name the candidate entities in the prompt; never put any of their values in it.'
 
 
-async def synthesize(kb: dict, n: int, model: str = 'sonnet46', existing: list[str] = (), hard: bool = False) -> list[dict]:
+async def synthesize(kb: dict, n: int, model: str = TEXT_MODEL, existing: list[str] = (), hard: bool = False) -> list[dict]:
 	facts = {f['id']: f for f in kb['facts']}
 	ev = '\n'.join(f'[{f["id"]}] ({f.get("angle", "")}) {f["claim"]} = {f["value"]} | quote: "{f["quote"]}" | url: {f["url"]}' for f in kb['facts'])
 	ideas = '\n'.join(f'- {i["question"]} (hard because: {i["why_hard"]})' for i in kb['ideas'])
@@ -211,7 +212,7 @@ def calibration(tasks: list[dict], k: int = 6) -> str:
 async def synthesize_cases(
 	kb: dict,
 	per_case: int = 2,
-	model: str = 'sonnet46',
+	model: str = TEXT_MODEL,
 	existing: list[str] = (),
 	concurrency: int = 4,
 	have: dict | None = None,

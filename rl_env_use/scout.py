@@ -7,6 +7,7 @@ A case = materials (what the model under test is given) + facts with the same ca
 
 import asyncio
 import json
+import os
 import re
 import shutil
 from pathlib import Path
@@ -19,6 +20,7 @@ from pydantic import BaseModel, Field
 
 from . import ui
 from .browse import SEARCH_ENGINES, UNUSED, browser, http_capture, page_text, quote_in
+from .config import BROWSER_MODEL, TEXT_MODEL, open_only
 from .graders import norm
 from .llm import LEDGER, call, make_llm, now, usage_dict
 from .store import write_atomic
@@ -321,7 +323,8 @@ async def run_mission(m: Mission, topic: str, kb: dict, model: str, max_steps: i
 		output_model_schema=ScoutSummary,
 		use_judge=False,
 		enable_signal_handler=False,
-		calculate_cost=True,
+		calculate_cost=not open_only(),
+		llm_timeout=int(os.getenv('RLENV_LOCAL_TIMEOUT', '600')) if open_only() else None,
 	)  # its handler exits on SIGTERM without closing cloud browsers; ours cancels and cleans up
 	try:
 		h = await agent.run(max_steps=max_steps)
@@ -355,11 +358,11 @@ async def scout(
 	topic: str,
 	out_dir: Path,
 	n_missions: int = 4,
-	model: str = 'bu',
+	model: str = BROWSER_MODEL,
 	max_steps: int = 30,
 	headless: bool = True,
 	concurrency: int = 4,
-	plan_model: str = 'sonnet46',
+	plan_model: str = TEXT_MODEL,
 	angles: list[str] | None = None,
 	sources: list[str] | None = None,
 	skill: str | None = None,

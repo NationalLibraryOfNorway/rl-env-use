@@ -1,6 +1,6 @@
 [project]
 name = "rl-env-use"
-version = "0.1.0"
+version = "0.1.0+open.1"
 description = "Build RL environments for any domain from real cases that Browser Use agents mine from the web"
 license = { file = "LICENSE" }
 requires-python = ">=3.11"

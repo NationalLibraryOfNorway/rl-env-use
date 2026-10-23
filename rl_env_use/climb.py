@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from . import ui
 from .audit import paired, split
+from .config import TEXT_MODEL
 from .env import Env
 from .llm import LEDGER, call
 from .rollout import rollout
@@ -97,7 +98,7 @@ async def climb(
 	k: int = 3,
 	reps: int = 3,
 	budget: float = 20.0,
-	proposer: str = 'sonnet46',
+	proposer: str = TEXT_MODEL,
 	system: str = '',
 	test_frac: float = 0.5,
 	seed: int = 0,

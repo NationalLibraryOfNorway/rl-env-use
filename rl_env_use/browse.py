@@ -12,6 +12,7 @@ import httpx
 os.environ.setdefault('TIMEOUT_BrowserStateRequestEvent', '90')  # long records (court opinions, filings, accident dockets) outgrow the 30s DOM snapshot
 from browser_use import BrowserProfile, BrowserSession  # noqa: E402
 
+from .config import open_only
 from .graders import norm
 
 SEARCH_ENGINES = re.compile(r'^https?://([a-z]+\.)?(google|bing|duckduckgo|yahoo|baidu|yandex|search\.brave)\.[a-z.]+/', re.I)
@@ -22,12 +23,15 @@ def browser(allowed_domains: list[str] | None = None, headless: bool = True, pro
 	`proxy_country`), parallel-safe. `profile_id` attaches a synced cloud login profile, so harvesting can reach
 	logged-in communities and helpdesk UIs. Falls back to local headless Chrome without a key."""
 	kw = {'allowed_domains': allowed_domains} if allowed_domains else {}
-	if os.getenv('BROWSER_USE_API_KEY') and os.getenv('RLENV_LOCAL_BROWSER') != '1':
+	if not open_only() and os.getenv('BROWSER_USE_API_KEY') and os.getenv('RLENV_LOCAL_BROWSER') != '1':
 		profile_id = profile_id or os.getenv('RLENV_CLOUD_PROFILE_ID')
 		proxy_country = proxy_country or os.getenv('RLENV_PROXY_COUNTRY')
 		cloud = ({'cloud_profile_id': profile_id} if profile_id else {}) | ({'cloud_proxy_country_code': proxy_country} if proxy_country else {})
 		return BrowserSession(use_cloud=True, **cloud, **kw)
-	return BrowserSession(browser_profile=BrowserProfile(headless=headless, **kw))
+	return BrowserSession(
+		use_cloud=False,
+		browser_profile=BrowserProfile(headless=headless, **({'executable_path': os.environ['RLENV_BROWSER_EXECUTABLE']} if os.getenv('RLENV_BROWSER_EXECUTABLE') else {}), **kw),
+	)
 
 
 # the page as a person reads it, including same-origin frames (document viewers such as EDGAR's inline XBRL render the document in an iframe)

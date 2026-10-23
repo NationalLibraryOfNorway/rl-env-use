@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 
 from .browse import SEARCH_ENGINES, browser, capture, quote_in
+from .config import open_only
 from .graders import grade_answer, norm
 from .llm import LEDGER, now
 from .rollout import trace_grade
@@ -20,6 +21,8 @@ NO_TOOLS = 'Bash,Edit,Write,Read,NotebookEdit,Task,Agent,Glob,Grep'
 
 async def claude_web(prompt: str, model: str = 'claude-sonnet-4-6', timeout: float = 900) -> tuple[str, list[dict], float]:
 	"""One Claude Code run with only WebSearch/WebFetch. Returns (final text, trace in our format, API-equivalent $)."""
+	if open_only():
+		raise ValueError('Claude CLI is disabled by RLENV_OPEN_ONLY=1')
 	args = ['claude', '-p', '--model', model, '--output-format', 'stream-json', '--verbose', '--allowedTools', 'WebSearch,WebFetch', '--disallowedTools', NO_TOOLS]
 	proc = await asyncio.create_subprocess_exec(*args, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, cwd='/tmp')
 	try:

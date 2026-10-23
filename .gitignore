@@ -17,3 +17,6 @@ dist/
 envs/**/traces/
 envs/**/trajectory/
 envs/**/*.log
+
+# Local test scratch
+pytest-of-root/

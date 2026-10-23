@@ -26,6 +26,7 @@ import sys
 from pathlib import Path
 
 from . import ui
+from .config import BROWSER_MODEL, CLOSED_BOOK, TEXT_MODEL, open_only
 from .llm import LEDGER, load_dotenv
 from .store import load_jsonl, save_jsonl
 
@@ -80,7 +81,7 @@ def cmd_new(a):
 	if (env / 'spec.json').exists():
 		raise SystemExit(f'{env}/spec.json exists - edit it instead')
 	env.mkdir(parents=True, exist_ok=True)
-	spec = {'topic': a.topic, 'sources': a.sources, 'missions': max(4, 2 * len(a.sources)), 'agent_model': 'bu', 'max_steps': 40, 'concurrency': 4}
+	spec = {'topic': a.topic, 'sources': a.sources, 'missions': max(4, 2 * len(a.sources)), 'agent_model': BROWSER_MODEL, 'max_steps': 40, 'concurrency': 4}
 	spec |= {'skill': a.skill, 'tasks_per_case': 2, 'panel': PANEL} if a.skill else {'n_tasks': 30, 'hard': False}
 	spec |= ({'profile_id': a.profile} if a.profile else {}) | ({'proxy_country': a.proxy_country} if a.proxy_country else {})
 	(env / 'spec.json').write_text(json.dumps(spec, indent=1))
@@ -104,12 +105,12 @@ def cmd_create(a):
 			'request': a.line,
 			'auto': True,
 			'missions': a.missions,
-			'agent_model': 'bu',
+			'agent_model': BROWSER_MODEL,
 			'max_steps': 60,
 			'concurrency': 6,
 			'tasks_per_case': 4,
 			'hard': True,
-			'closed_book': ['haiku', 'sonnet46'],
+			'closed_book': CLOSED_BOOK,
 			'panel': a.panel or PANEL,
 			'panel_reps': 2,
 		}
@@ -190,7 +191,7 @@ def cmd_review(a):
 
 def cmd_run(a):
 	env = Path(a.env)
-	a.model = a.model or ('sonnet46' if spec_of(env).get('skill') else 'bu')
+	a.model = a.model or (TEXT_MODEL if spec_of(env).get('skill') else BROWSER_MODEL)
 	if a.dry_run:  # the consent gate before a paid run: $ and minutes per episode measured on this env's earlier runs of the model
 		from .audit import load_variants
 		from .llm import MODELS, resolve
@@ -244,6 +245,8 @@ def model_slot(flow: Path, model: str) -> str:
 
 
 def cmd_compare(a):
+	if open_only():
+		raise SystemExit('compare uses the proprietary Claude CLI and is disabled in open-only mode; use run --model local:MODEL_ID --flow models instead')
 	from .pipeline import load_kept
 	from .vanilla import compare_mining, solve
 
@@ -459,20 +462,20 @@ def main(argv=None):
 	)
 	q.add_argument('--name', help='env name (default: planned); an existing env of that name is resumed')
 	q.add_argument('--tasks', type=int, help='target number of kept tasks (default 150; a resume keeps its own)')
-	q.add_argument('--budget', type=float, help='$ cap for mining, writing, verifying and calibrating, Browser Use + OpenRouter (default 40; a resume keeps its own)')
+	q.add_argument('--budget', type=float, help='API spend cap (default 40); does not cap self-hosted GPU time or electricity')
 	q.add_argument('--missions', type=int, default=12, help='mining missions in the first round (later rounds are sized from the measured yield)')
-	q.add_argument('--model', default='sonnet46', help='planner, task writer and critic')
-	q.add_argument('--panel', nargs='+', help='difficulty panel (default: the frontier, opus55 gpt-astra gemini); a task is dropped only if every panel model solves it')
+	q.add_argument('--model', default=TEXT_MODEL, help='planner, task writer and critic')
+	q.add_argument('--panel', nargs='+', help='difficulty panel (open-only default: RLENV_PANEL_MODELS); a task is dropped only if every panel model solves it')
 	q.add_argument('--mix', choices=['derive', 'predict', 'mixed'], help='override the planned task kinds')
 	q.add_argument('--plan-only', action='store_true', help='print the planned spec and stop')
 	q = sp.add_parser('climb', help="autonomous: hillclimb a policy's system prompt on an env")
 	q.add_argument('env')
-	q.add_argument('--model', required=True, help='the policy to climb (e.g. qwen-27b, haiku, bu-mini, gemini-flash)')
+	q.add_argument('--model', required=True, help='the policy to climb (e.g. local-text or local:MODEL_ID)')
 	q.add_argument('--rounds', type=int, default=8)
 	q.add_argument('--k', type=int, default=3, help='candidate edits per round (screened on train, the best goes to test)')
 	q.add_argument('--reps', type=int, default=3)
 	q.add_argument('--budget', type=float, default=20.0)
-	q.add_argument('--proposer', default='sonnet46', help='model that reads train failures and proposes edits')
+	q.add_argument('--proposer', default=TEXT_MODEL, help='model that reads train failures and proposes edits')
 	q.add_argument('--system', help='starting system prompt extension (file)')
 	q.add_argument('--test-frac', type=float, default=0.5)
 	q.add_argument('--seed', type=int, default=0)
@@ -494,7 +497,7 @@ def main(argv=None):
 	q = sp.add_parser('build', help='mine the sources, then write and verify tasks')
 	q.add_argument('env')
 	q.add_argument('--only', help='(re)run one stage: scout (another mining round, appended), look, synth (more tasks, appended), verify, panel, harden')
-	q.add_argument('--model', default='sonnet46', help='model for planning, task writing and checks')
+	q.add_argument('--model', default=TEXT_MODEL, help='model for planning, task writing and checks')
 	q.add_argument('--enrich', action='store_true', help='with --only scout: one mission per complete case to save the data its computations need')
 	q = sp.add_parser('review', help='local app for the mined data, tasks and traces')
 	q.add_argument('env')
@@ -502,7 +505,10 @@ def main(argv=None):
 	q.add_argument('--port', type=int, default=8765)
 	q = sp.add_parser('run', help='run the policy under test, grade, audit, report')
 	q.add_argument('env')
-	q.add_argument('--model', help='policy model: opus55, gpt-astra, gemini, sonnet46, haiku, qwen-27b, bu, ... (default sonnet46 for case tasks, bu for browse tasks)')
+	q.add_argument(
+		'--model',
+		help='policy model alias or local:MODEL_ID (open-only defaults: local-text for case tasks, local-browser for browse tasks)',
+	)
 	q.add_argument('--variant', help='baseline or v<N> (default: baseline; in a comparison --flow, the slot of --model)')
 	q.add_argument('--reps', type=int, default=1)
 	q.add_argument('--timeout', type=float, default=600)
@@ -519,7 +525,7 @@ def main(argv=None):
 	q.add_argument('--missions', type=int, default=0, help="mining A/B: rerun N of the env's missions with both harnesses")
 	q.add_argument('--variant', help="solving A/B: run Claude Code on the env's tasks as this hillclimb variant (v<N>)")
 	q.add_argument('--cc-model', default='claude-sonnet-4-6', help='model for the Claude Code arm')
-	q.add_argument('--bu-model', default='sonnet46', help='same model on the Browser Use gateway for the mining arm (sonnet5 does not drive browser-use 0.13.10 agents yet)')
+	q.add_argument('--bu-model', default=TEXT_MODEL, help='same model on the Browser Use gateway for the mining arm (sonnet5 does not drive browser-use 0.13.10 agents yet)')
 	q.add_argument('--timeout', type=float, default=900)
 	q.add_argument('--concurrency', type=int, default=4)
 	q = sp.add_parser('report', help='regrade, audit, write report.html')
@@ -534,7 +540,7 @@ def main(argv=None):
 		q = sp.add_parser(name, help=h)
 		q.add_argument('env')
 		if name in ('codify', 'judges'):
-			q.add_argument('--model', default='sonnet46')
+			q.add_argument('--model', default=TEXT_MODEL)
 			q.add_argument('--annotator', default='human', help="whose labels to use: 'human', a subagent name, or 'any'")
 		if name == 'judges':
 			q.add_argument('--modes', help='comma-separated failure mode ids (default: all)')

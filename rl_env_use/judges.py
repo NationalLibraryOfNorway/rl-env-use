@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 
 from pydantic import BaseModel, Field
 
+from .config import TEXT_MODEL
 from .llm import call
 
 
@@ -60,7 +61,7 @@ def trace_text(trace: list[dict], limit: int = 60000) -> str:
 	return s if len(s) <= limit else s[: limit // 2] + '\n...[truncated]...\n' + s[-limit // 2 :]
 
 
-async def codify(annotations: list[dict], model: str = 'sonnet46') -> Taxonomy:
+async def codify(annotations: list[dict], model: str = TEXT_MODEL) -> Taxonomy:
 	notes = [f'[{a["id"]}] {a["notes"]}' for a in annotations if a.get('verdict') == 'fail' and a.get('notes', '').strip()]
 	if not notes:
 		raise ValueError('no annotated failures with notes - annotate traces first')
@@ -77,7 +78,7 @@ def mode_counts(tax: Taxonomy, annotations: list[dict]) -> dict:
 @dataclass
 class Judge:
 	mode: FailureMode
-	model: str = 'sonnet46'
+	model: str = TEXT_MODEL
 	stats: dict = field(default_factory=dict)
 
 	@property

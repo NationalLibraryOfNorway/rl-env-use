@@ -1,3 +1,30 @@
+## Open-weight models and local tools
+
+This fork adds a self-hosted option to the workflow documented below:
+
+- **Open-only mode by default:** model calls use your own OpenAI-compatible
+  endpoint; hosted model routes and hosted fallbacks are blocked.
+- **Local browser execution:** run the open-source Browser Use library with
+  Chromium, with no Browser Use Cloud account required.
+- **Configurable model roles:** use `local-text`, `local-browser`, or
+  `local:MODEL_ID` for planning, mining, task writing, verification, evaluation,
+  and prompt optimization.
+- **Configurable evaluation panel:** choose your own open-weight models;
+  independent models are recommended for meaningful validation.
+- **Local operation controls:** Browser Use telemetry, cloud synchronization,
+  remote pricing lookup, and billing requests are disabled in open-only mode.
+
+Start with [installation](install.md), then see the
+[open-stack guide](docs/OPEN_STACK.md) for configuration, usage, migration,
+validation, and limitations. See the [change log](docs/CHANGES_OPEN_STACK.md)
+for implementation details.
+
+The original README follows unchanged. Its hosted API-key setup applies to
+explicit compatibility mode (`RLENV_OPEN_ONLY=0`); use the guides above for the
+self-hosted setup.
+
+---
+
 <p align="center">
   <img src="static/rl-env-use.gif" alt="rl-env-use: one line in, a verified RL environment out" width="100%">
 </p>

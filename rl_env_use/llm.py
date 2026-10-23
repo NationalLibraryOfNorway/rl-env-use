@@ -8,7 +8,6 @@ import shutil
 import threading
 import time
 from dataclasses import dataclass, field
-from pathlib import Path
 from types import SimpleNamespace
 
 from browser_use import ChatAnthropic
@@ -17,7 +16,16 @@ from browser_use.llm.messages import SystemMessage, UserMessage
 from browser_use.llm.views import ChatInvokeCompletion, ChatInvokeUsage
 from pydantic import BaseModel, Field, ValidationError
 
-KEYS = {'bu': 'BROWSER_USE_API_KEY', 'anthropic': 'ANTHROPIC_API_KEY', 'openrouter': 'OPENROUTER_API_KEY', 'claude': None}  # claude = local `claude -p` (your Claude account)
+from .config import load_dotenv as load_dotenv
+from .config import open_only
+
+KEYS = {
+	'bu': 'BROWSER_USE_API_KEY',
+	'anthropic': 'ANTHROPIC_API_KEY',
+	'openrouter': 'OPENROUTER_API_KEY',
+	'claude': None,
+	'local': None,
+}  # claude = local `claude -p` (your Claude account)
 # alias -> candidate (route, model id), first route with a key wins. LLM calls go to OpenRouter first, so Browser Use
 # credits pay only for browsers (and the bu models, which live only there); the gateway is the fallback route.
 MODELS = {
@@ -75,6 +83,16 @@ PRICES = [
 
 def routes(name: str) -> list[tuple[str, str]]:
 	"""Every route of an alias that has a key, in preference order; an explicit 'route:model_id' is its only route."""
+	if name in ('local-text', 'local-browser'):
+		var = 'RLENV_LOCAL_BROWSER_MODEL' if name == 'local-browser' else 'RLENV_LOCAL_TEXT_MODEL'
+		mid = os.getenv(var)
+		if not mid:
+			raise ValueError(f'{var} must name a model served by your local endpoint')
+		return [('local', mid)]
+	if open_only() and not name.startswith('local:'):
+		raise ValueError(f'hosted model {name!r} is disabled by RLENV_OPEN_ONLY=1; use local-text, local-browser or local:MODEL_ID')
+	if name == 'local:':
+		raise ValueError('local: requires a model ID')
 	if ':' in name and name.split(':', 1)[0] in KEYS:
 		return [tuple(name.split(':', 1))]
 	return [(r, m) for r, m in MODELS.get(name, []) if (shutil.which('claude') if r == 'claude' else os.getenv(KEYS[r]))]
@@ -309,6 +327,10 @@ def make_llm(name: str, temperature: float | None = None, agent: bool = True, fa
 	GatewayStructured when a Browser Use key is set, or `claude -p` for claude-* models). fallback: the alias's next route."""
 	rs = routes(name) or [resolve(name)]
 	route, mid = rs[min(int(fallback), len(rs) - 1)]
+	if route == 'local':
+		from .local import LocalChat
+
+		return LocalChat(mid, temperature, browser=agent and name == 'local-browser')
 	if route == 'claude':
 		if agent:
 			raise ValueError('claude -p models serve text-only structured calls, not browser agents (screenshots every step)')
@@ -334,6 +356,8 @@ def price_of(model: str) -> tuple[float, float] | None:
 
 
 def cost(model: str, usage: dict) -> float | None:
+	if (model or '').startswith('local:'):
+		return None  # hardware/electricity costs are not API token prices
 	if (usage or {}).get('reported_cost'):
 		return usage['reported_cost']
 	p = price_of(model)
@@ -383,7 +407,7 @@ BU_CLOUD = 'browser-use cloud (balance)'  # what the account was charged beyond 
 
 def bu_balance() -> float | None:
 	"""The Browser Use account's credit balance: the ground truth for what mining cost."""
-	if not os.getenv(KEYS['bu']):
+	if open_only() or not os.getenv(KEYS['bu']):
 		return None
 	try:
 		import httpx
@@ -429,12 +453,3 @@ async def call(name: str, system: str, user: str, schema: type[BaseModel], retri
 
 def now() -> str:
 	return time.strftime('%Y-%m-%dT%H:%M:%S')
-
-
-def load_dotenv() -> None:
-	"""Keys from ./.env, then from the repo's .env (an editable install of `rl-env-use` works from any folder). Exported vars win."""
-	for path in (Path('.env'), Path(__file__).resolve().parents[1] / '.env'):
-		for line in path.read_text().splitlines() if path.is_file() else []:
-			k, _, v = line.strip().partition('=')
-			if k and not k.startswith('#') and v:
-				os.environ.setdefault(k, v.strip('"\''))

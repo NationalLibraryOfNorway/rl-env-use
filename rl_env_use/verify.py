@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 from . import ui
 from .browse import browser, capture, page_text, quote_in
 from .checks import grade_answer
+from .config import PANEL_MODELS, TEXT_MODEL, open_only
 from .graders import norm, numbers, prob_of
 from .llm import call, now
 from .tasks import keep
@@ -120,7 +121,7 @@ CASE_CRITIC = (
 )
 
 
-async def critique(tasks: list[dict], facts: dict, model: str = 'sonnet46') -> None:
+async def critique(tasks: list[dict], facts: dict, model: str = TEXT_MODEL) -> None:
 	sys = 'You audit benchmark tasks. Be strict: flag any prompt that admits more than one reasonable answer, or any gold not supported by the evidence.'
 
 	async def one(t):
@@ -158,10 +159,10 @@ class Adjudication(BaseModel):
 	panel_error: str = Field(description="The concrete mistake behind the models' answer - or why they are right and the gold is wrong.")
 
 
-PANEL = ['opus55', 'gpt-astra', 'gemini']  # frontier models of three labs: a task is dropped only when all of them solve it
+PANEL = PANEL_MODELS if open_only() else ['opus55', 'gpt-astra', 'gemini']  # a task is dropped only when every configured panel model solves it
 
 
-ADJUDICATORS = ['gpt-astra', 'opus55', 'gemini']  # the first one that did not give the disputed answer
+ADJUDICATORS = PANEL_MODELS if open_only() else ['gpt-astra', 'opus55', 'gemini']  # the first one that did not give the disputed answer
 
 
 SHIFT = 0.1  # forecasts: the materials must move the panel's probability by this much (outcome-blind: surprises stay in)

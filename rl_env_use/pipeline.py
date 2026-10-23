@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field
 
 from . import ui
 from .browse import host, http_capture, quote_in
+from .config import BROWSER_MODEL, CLOSED_BOOK, TEXT_MODEL, open_only
 from .env import Env
 from .graders import grade_answer
 from .llm import LEDGER, book_bu, bu_balance, call
@@ -82,6 +83,13 @@ def kb_for_synth(env: Path) -> dict:
 
 def use_browser_spec(spec: dict) -> None:
 	"""Logged-in cloud profile / proxy country for every browser this env opens (miners, checks and policies alike)."""
+	if open_only():
+		from .llm import routes
+
+		for field in ('agent_model', 'closed_book', 'panel', 'adjudicators'):
+			values = spec.get(field) or []
+			for name in [values] if isinstance(values, str) else values:
+				routes(name)  # reject legacy hosted specs before opening a browser
 	for k, var in (('profile_id', 'RLENV_CLOUD_PROFILE_ID'), ('proxy_country', 'RLENV_PROXY_COUNTRY')):
 		if spec.get(k):
 			os.environ[var] = spec[k]
@@ -95,7 +103,7 @@ def unverified(t: dict) -> bool:
 	return c.get('critic') is None or 'critic error' in str(c['critic']) or not ok(c.get('live')) or not (cb == 'skipped' or all(map(ok, cb.values())))
 
 
-async def build(env: Path, spec: dict, only: str | None = None, model: str = 'sonnet46', **_) -> str:
+async def build(env: Path, spec: dict, only: str | None = None, model: str = TEXT_MODEL, **_) -> str:
 	use_browser_spec(spec)
 	out, scouted = [], False
 	if only in (None, 'scout') and (only or not (env / 'kb.json').exists()):
@@ -103,7 +111,7 @@ async def build(env: Path, spec: dict, only: str | None = None, model: str = 'so
 			spec['topic'],
 			env,
 			spec.get('missions', 4),
-			spec.get('agent_model', 'bu'),
+			spec.get('agent_model', BROWSER_MODEL),
 			spec.get('max_steps', 40),
 			True,
 			spec.get('concurrency', 4),
@@ -158,7 +166,7 @@ async def verify_stage(env: Path, spec: dict, model: str) -> str:
 	kb = json.loads((env / 'kb.json').read_text())
 	facts = {f['id']: f for f in kb['facts']}
 	todo = [t for t in tasks if not t['checks']['structural'] and not t['checks']['leakage'] and unverified(t)]
-	await closed_book(todo, spec.get('closed_book', ['haiku', 'sonnet46']))
+	await closed_book(todo, spec.get('closed_book', CLOSED_BOOK))
 	if spec.get('live_check', True):
 		await check_live(todo, facts)
 	else:  # miners verified every quote on the live page when recording it; the re-check (a cloud browser) is for staleness
@@ -278,7 +286,7 @@ precise (a number, a category, a yes/no event with a threshold). Avoid outcomes 
 sources, use them; otherwise pick the official primary sources where both inputs and outcomes are public without login."""
 
 
-async def plan_spec(line: str, model: str = 'sonnet46') -> dict:
+async def plan_spec(line: str, model: str = TEXT_MODEL) -> dict:
 	p, _, _ = await call(model, PLAN_SYS, f'REQUEST: {line}', SpecPlan)
 	return p.model_dump() | {'sources': [u for u in p.sources if re.fullmatch(r'https?://[^\s{}<>]+', u)]}  # a template like /study/{id} is no start page
 
@@ -294,7 +302,7 @@ def show(tasks: list[dict], target: int) -> None:
 	ui.progress(len(kept) / max(target, 1))
 
 
-async def create(env: Path, spec: dict, model: str = 'sonnet46', log=print) -> dict:
+async def create(env: Path, spec: dict, model: str = TEXT_MODEL, log=print) -> dict:
 	"""Mining rounds until `target_tasks` kept tasks, the budget, or two rounds that add (almost) nothing. Each round: scout
 	(cases first finish their outcomes) -> synth top-up -> verify -> panel. Headroom steers the next round: when the
 	strongest panel model saturates the derive tasks, synth moves to forecasts."""
@@ -323,7 +331,17 @@ async def create(env: Path, spec: dict, model: str = 'sonnet46', log=print) -> d
 		before = len(balanced([t for t in load_jsonl(env / 'tasks.jsonl') if keep(t)]))
 		topic = spec['topic'] + (f'\nCASE SELECTION (never by outcome): {spec["sampling"]}' if spec.get('sampling') else '')
 		kb = await scout(
-			topic, env, missions, spec.get('agent_model', 'bu'), spec.get('max_steps', 60), True, spec.get('concurrency', 6), model, None, spec.get('sources'), spec.get('skill')
+			topic,
+			env,
+			missions,
+			spec.get('agent_model', BROWSER_MODEL),
+			spec.get('max_steps', 60),
+			True,
+			spec.get('concurrency', 6),
+			model,
+			None,
+			spec.get('sources'),
+			spec.get('skill'),
 		)
 		log(f'round {rnd}: scout {missions} missions -> {len(cases(kb))} complete cases (${prior + LEDGER.usd:.2f} spent in total)')
 		ui.stage('look', 1)

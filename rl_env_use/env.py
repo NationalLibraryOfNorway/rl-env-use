@@ -4,6 +4,7 @@ materials (`context`); browse tasks hand it a start URL and a browser."""
 import json
 from pathlib import Path
 
+from .config import TEXT_MODEL
 from .graders import grade_answer
 from .rollout import POLICY_SUFFIX, Answer, public, solve_case
 from .tasks import balanced, keep, load_tasks
@@ -40,7 +41,7 @@ class Env:
 	def reward(self, task_id: str, answer) -> float:
 		return float(grade_answer(self._tasks[task_id], answer))
 
-	async def rollout(self, task_id: str, model: str = 'sonnet46', max_steps: int = 25, **agent_kwargs) -> dict:
+	async def rollout(self, task_id: str, model: str = TEXT_MODEL, max_steps: int = 25, **agent_kwargs) -> dict:
 		obs = self.reset(task_id)
 		if 'context' in obs:
 			_, _, answer, reasoning, _, _ = await solve_case(obs, model)
