@@ -464,6 +464,13 @@ def cmd_export(a):
 	print(f'{export(env, env / "dataset.jsonl")} tasks -> {env}/dataset.jsonl')
 
 
+def cmd_sft(a):
+	from .sft import export_sft
+
+	out = Path(a.out) if a.out else Path(a.env) / 'dataset-sft.jsonl'
+	print(f'{export_sft(a.env, a.targets, out)} SFT examples -> {out}')
+
+
 def debug_signals() -> None:
 	"""kill -USR1 <pid>: thread stacks; kill -USR2 <pid>: every pending asyncio task's stack (where a stalled run waits)."""
 	import faulthandler
@@ -565,6 +572,10 @@ def main(argv=None):
 	q = sp.add_parser('report', help='regrade, audit, write report.html')
 	q.add_argument('env')
 	q.add_argument('--no-judges', action='store_true', help='skip applying calibrated judges to new runs')
+	q = sp.add_parser('sft', help='export curated evidence-interpretation examples with short explanations')
+	q.add_argument('env')
+	q.add_argument('--targets', required=True, help='JSON array of edited prompts, labels and explanations; see docs/OPEN_STACK.md')
+	q.add_argument('--out', help='output JSONL (default: <env>/dataset-sft.jsonl)')
 	for name, h in (
 		('codify', 'failure taxonomy from your trace notes'),
 		('judges', 'calibrate narrow judges on your labels'),

@@ -454,3 +454,52 @@ itself be reported as a task defect. Evidence and precision checks still apply.
 Case-draft schemas place a concise final justification before the private gold
 field, so structured decoding can resolve the event before committing its label.
 The localized probability instruction is appended only when it is absent.
+
+## Curated SFT explanations
+
+Use `sft` to export **retrospective outcome interpretation**, with published results in the
+training input and a short edited explanation in the target. This changes the task from
+forecasting an unknown outcome to interpreting evidence. Do not train a registration-only
+forecast to output a hindsight explanation or treat its observed yes/no outcome as a calibrated
+forecast probability. Rewriting explanations must correct errors against source evidence;
+it must not invent support for a preferred target.
+
+```sh
+rl-env-use sft envs/<name> --targets envs/<name>/sft-targets.json
+```
+
+The targets file is a JSON array, with one object per selected task:
+
+```json
+[
+  {
+    "task_id": "<existing task ID>",
+    "answer": "no",
+    "label": "Nei",
+    "system": "Tolk resultatene ut fra dokumentasjonen. Svar på norsk bokmål.",
+    "prompt": "Viste studien overlegenhet for det forhåndsdefinerte primærendepunktet?",
+    "explanation": "Den rapporterte p-verdien var 0,78, som overstiger signifikansnivået på 0,05. Statistisk signifikant overlegenhet ble ikke vist."
+  }
+]
+```
+
+Use the saved task's ISO 639-3 language for the system message, new question, localized label
+and explanation. Source context and outcome quotations stay verbatim. Do not reuse the
+original prospective probability question. The exporter checks the binary label against the
+verified task, requires passing live and critic correctness checks, and rejects quarantined
+material or evidence. It deliberately ignores RL panel difficulty, closed-book recall and
+forecast balance for this different task; the original RL files and gates are unchanged.
+It does not automatically establish that a new question or edited explanation is correct:
+review both against the supplied evidence before training.
+
+`dataset-sft.jsonl` contains only chat `messages` (system, user, assistant), with protocol
+context and published outcome evidence in the user message. Raw traces, old derivations,
+critic diagnostics and grading metadata are excluded. `dataset-sft.audit.json` separately
+records source IDs/URLs, evidence and target hashes, and original panel verdicts. Edited
+explanations are marked as curated final explanations and not human-reviewed; optional
+`explanation_model` in each target records the model used to rewrite it. `--out` chooses another
+JSONL destination. Keep all examples from the same trial together when splitting data, and
+exclude these trials from any later prospective forecasting evaluation after training on results.
+
+For the Norwegian clinical-trial pilot, `envs/norwegian-trial-endpoints-pilot/sft-targets.json`
+contains four edited targets. This is a format-review seed set, not a sufficient fine-tuning corpus.
