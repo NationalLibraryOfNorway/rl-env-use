@@ -23,6 +23,22 @@ def test_helsenorge_listing_and_mission_links_are_corrected():
 	assert clinical_trials_url('https://unrelated.test/api/clinicaltrials') == 'https://unrelated.test/api/clinicaltrials'
 
 
+def test_publication_backed_discovery_does_not_require_registry_results():
+	url = clinical_trials_url('https://clinicaltrials.gov/api/v2/studies?query.locn=Norway')
+	assert parse_qs(urlsplit(url).query)['filter.advanced'] == ['AREA[StudyType]INTERVENTIONAL']
+	assert clinical_trials_url(url) == url
+	advanced = 'AREA[StudyType]INTERVENTIONAL AND AREA[Phase]PHASE3'
+	url = clinical_trials_url('https://clinicaltrials.gov/api/v2/studies?filter.advanced=' + advanced)
+	assert parse_qs(urlsplit(url).query)['filter.advanced'] == [advanced]
+
+
+def test_old_has_results_parameter_is_translated_only_when_requested():
+	url = clinical_trials_url('https://clinicaltrials.gov/api/v2/studies?filter.hasResults=true')
+	query = parse_qs(urlsplit(url).query)
+	assert 'filter.hasResults' not in query
+	assert query['filter.advanced'] == ['AREA[StudyType]INTERVENTIONAL AND AREA[HasResults]true']
+
+
 def test_guidance_requires_provenance_and_never_invents_outcome_evidence():
 	text = discovery_guidance(['https://clinicaltrials.gov/', 'https://www.helsenorge.no/en/clinical-trials/'])
 	assert HELSENORGE in text and 'nvaProjectId is not an NCT ID' in text
