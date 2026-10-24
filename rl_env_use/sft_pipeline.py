@@ -9,7 +9,7 @@ from datetime import UTC, datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
-from urllib.parse import urlencode, urljoin
+from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
 
 import httpx
 from bs4 import BeautifulSoup
@@ -172,7 +172,16 @@ async def collect(env, spec):
 				continue
 			status(env, 'discovery', source=url, documents=len(docs))
 			try:
-				r, prov = await capture(downloader, env, url)
+				request_url = url
+				is_ctg = 'clinicaltrials.gov/api/v2/studies?' in url
+				if is_ctg:
+					parts = urlsplit(url)
+					params = dict(parse_qsl(parts.query))
+					params['pageSize'] = str(min(limit, 1000))
+					if state.get(url, {}).get('next_page_token'):
+						params['pageToken'] = state[url]['next_page_token']
+					request_url = urlunsplit(parts._replace(query=urlencode(params)))
+				r, prov = await capture(downloader, env, request_url)
 				found = set(re.findall(r'\bNCT\d{8}\b', r.text))
 				links = []
 				if 'helsenorge.no/api/v1/kliniskestudier' in url:
@@ -188,8 +197,9 @@ async def collect(env, spec):
 							links.append(urljoin(url, link['url']))
 					state[url] = {'offset': min(offset + limit, len(items)), 'total': len(items), 'exhausted': offset + limit >= len(items)}
 				elif 'clinicaltrials.gov/api/v2/studies?' in url:
-					for study in r.json().get('studies', [])[:limit]:
-						found.add(study['protocolSection']['identificationModule']['nctId'])
+					page = r.json()
+					found = {study['protocolSection']['identificationModule']['nctId'] for study in page.get('studies', [])}
+					state[url] = {'exhausted': not bool(page.get('nextPageToken')), 'next_page_token': page.get('nextPageToken')}
 				else:
 					# The Norwegian infrastructure portals often link hospital-hosted trial pages.
 					soup = BeautifulSoup(r.text, 'html.parser')
@@ -200,7 +210,7 @@ async def collect(env, spec):
 							if re.search(r'klinisk[e-]?stud|clinical-trial', a.get('href', ''), re.I) and '?lang=' not in a['href']
 						)
 					)[:limit]
-				if 'helsenorge.no/api/v1/kliniskestudier' not in url:
+				if 'helsenorge.no/api/v1/kliniskestudier' not in url and not is_ctg:
 					state[url] = {'exhausted': True}
 				for nct in sorted(found)[:limit]:
 					ids.setdefault(nct, []).append(url)

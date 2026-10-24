@@ -150,3 +150,35 @@ def test_export_bundles_evidence_and_raw_snapshot_provenance_and_rejects_corrupt
 	assert 'Complete supplied evidence.' in record['messages'][1]['content']
 	(tmp_path / 'source.html').write_bytes(b'truncated')
 	assert export_accepted(tmp_path) == 0
+
+
+@pytest.mark.asyncio
+async def test_ctg_discovery_paginates_and_reopens_only_after_last_page(tmp_path, monkeypatch):
+	from urllib.parse import parse_qs, urlsplit
+
+	import rl_env_use.sft_pipeline as module
+
+	seen = []
+
+	async def fake_capture(client, env, url):
+		seen.append(url)
+		token = parse_qs(urlsplit(url).query).get('pageToken')
+		payload = {'studies': [{'protocolSection': {'identificationModule': {'nctId': 'NCT00000001' if not token else 'NCT00000002'}}}]}
+		if not token:
+			payload['nextPageToken'] = 'page2'
+		return httpx.Response(200, json=payload), {'url': url}
+
+	async def fake_registry(*args):
+		nct = args[2]
+		return {'id': nct, 'case': nct, 'url': 'https://clinicaltrials.gov/api/v2/studies/' + nct, 'text': 'evidence'}
+
+	monkeypatch.setattr(module, 'capture', fake_capture)
+	monkeypatch.setattr(module, 'registry_document', fake_registry)
+	source = 'https://clinicaltrials.gov/api/v2/studies?query.locn=Norway&pageSize=3'
+	spec = {'sources': [source], 'sft_discovery_limit': 25}
+	await module.collect(tmp_path, spec)
+	assert not json.loads((tmp_path / 'sft-frontier.json').read_text())[source]['exhausted']
+	await module.collect(tmp_path, spec)
+	assert json.loads((tmp_path / 'sft-frontier.json').read_text())[source]['exhausted']
+	assert parse_qs(urlsplit(seen[1]).query)['pageToken'] == ['page2']
+	assert parse_qs(urlsplit(seen[0]).query)['pageSize'] == ['25']

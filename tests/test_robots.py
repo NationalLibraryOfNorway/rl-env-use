@@ -49,3 +49,61 @@ async def test_missing_policy_differs_from_unavailable_policy(tmp_path, code, al
 		else:
 			with pytest.raises(PermissionError):
 				await guard.check('https://a.org/study')
+
+
+@pytest.mark.asyncio
+async def test_documented_ctg_study_api_overrides_generic_robots_but_records_both(tmp_path):
+	def handle(request):
+		return httpx.Response(200, text='User-agent: *\nDisallow: /api/' if request.url.path == '/robots.txt' else '{}')
+
+	async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+		guard = RobotsGuard(tmp_path, client, 0)
+		r, decisions = await guard.get('https://clinicaltrials.gov/api/v2/studies/NCT00000001')
+		assert r.status_code == 200
+		proof = decisions[0]
+		assert proof['allowed'] and proof['robots_allowed'] is False
+		assert proof['reason'] == 'documented_public_api'
+		assert 'nlm.nih.gov/pubs/techbull/' in proof['authorization_url']
+		assert proof['crawl_delay'] >= 1
+		with pytest.raises(PermissionError):
+			await guard.check('https://clinicaltrials.gov/api/int/studies')
+
+
+@pytest.mark.parametrize(
+	'url',
+	[
+		'https://clinicaltrials.gov/api/v2/private',
+		'https://clinicaltrials.gov/api/v2/studies/NCT00000001/history',
+		'https://clinicaltrials.gov.evil.org/api/v2/studies',
+		'http://clinicaltrials.gov/api/v2/studies',
+		'https://clinicaltrials.gov:8443/api/v2/studies',
+		'https://user@clinicaltrials.gov/api/v2/studies',
+	],
+)
+def test_public_api_exception_is_narrow(url):
+	from rl_env_use.robots import documented_public_api
+
+	assert not documented_public_api(url)
+
+
+@pytest.mark.asyncio
+async def test_api_retry_after_is_respected(tmp_path, monkeypatch):
+	from unittest.mock import AsyncMock
+
+	import rl_env_use.robots as module
+
+	sleep = AsyncMock()
+	monkeypatch.setattr(module.asyncio, 'sleep', sleep)
+	attempts = 0
+
+	def handle(request):
+		nonlocal attempts
+		if request.url.path == '/robots.txt':
+			return httpx.Response(200, text='User-agent: *\nDisallow: /api/')
+		attempts += 1
+		return httpx.Response(429, headers={'Retry-After': '7'}) if attempts == 1 else httpx.Response(200, json={})
+
+	async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+		r, _ = await RobotsGuard(tmp_path, client).get('https://clinicaltrials.gov/api/v2/studies')
+		assert r.status_code == 200 and attempts == 2
+		assert any(call.args[0] >= 7 for call in sleep.await_args_list)

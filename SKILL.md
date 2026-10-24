@@ -281,8 +281,11 @@ counts, and split by trial ID or study URL. `export` follows the saved mode.
 For continuous SFT collection set `target_tasks=0`, `sft_continuous=true` and a
 source batch size; resume from `sft-frontier.json`. Check robots.txt before every
 download and redirect, respect crawl delays, and fail closed on unavailable
-policies. ClinicalTrials.gov currently disallows its `/api/` routes: use permitted
-publication sources, not cached API text or browser calls to evade the restriction.
+policies. ClinicalTrials.gov has a narrow exception for its documented public v2
+study API: NLM explicitly recommends automated access, and the user authorized it.
+Keep the generic robots denial and the specific NLM authorization in provenance.
+Pace API calls at least one second apart and back off on throttling/server errors;
+internal APIs and other sites still require robots permission.
 The export includes extracted evidence, source URLs and dates; portable records
 link raw permitted HTML/JSON snapshots, checksums and robots decisions. Keep the
 snapshot folders with the dataset. See the continuous-collection section in the

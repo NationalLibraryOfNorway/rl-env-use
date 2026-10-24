@@ -597,16 +597,28 @@ Robots policies and decisions are stored in `robots-captures/` and
 `robots-audit.jsonl`. Permission to fetch a page is checked separately from whether
 its content provides enough evidence for a task.
 
-**ClinicalTrials.gov currently disallows `/api/`**, including the v2 study route.
-The SFT downloader therefore excludes those API downloads and their prior cached
-training examples. Explicit Allow exceptions are evaluated by longest-match rules;
-the collector does not use browser rendering to evade a disallowed data endpoint.
-`recovery_publications` can map a trial ID to a known original/related PMID; its
-complete indexed abstract is fetched through the permitted Europe PMC service.
+**ClinicalTrials.gov's generic robots policy disallows `/api/`, but NLM explicitly
+recommends automated use of its public v2 API.** See the [official July 2025
+guidance](https://www.nlm.nih.gov/pubs/techbull/ja25/ja25_clinical_trials_screen-scraping.html),
+which provides v2 study request examples and instructions for automated collection.
+The user authorized restoring this documented API access. The downloader therefore
+has a provider-specific exception for HTTPS requests to the exact
+`clinicaltrials.gov` host and documented public v2 study/version endpoints. It does
+not cover internal APIs, arbitrary v2 paths, lookalike hosts or redirects outside
+the permitted scope. All other downloads retain the robots gate.
+
+API provenance preserves `robots_allowed=false` alongside effective `allowed=true`,
+`reason=documented_public_api` and the NLM authorization reference. The exception
+also requires at least one second between API requests. Throttling and transient
+server errors trigger bounded retries with exponential backoff and Retry-After
+handling. API study discovery follows `nextPageToken` across batches; complete
+JSON snapshots and all primary-outcome analyses remain in the source archive.
+
+`recovery_publications` can also map a trial ID to a known original/related PMID;
+its complete indexed abstract is fetched through the permitted Europe PMC service.
 These are declared abstracts, not claimed full articles. A related or secondary
 publication supports only questions justified by that publication; it cannot
-establish an unreported original primary outcome. Existing registry bibliography
-IDs may guide source discovery without importing disallowed registry text into SFT.
+establish an unreported original primary outcome.
 
 The training input includes the complete extracted evidence for the question,
 source URL and capture date. Raw permitted responses are saved without truncation

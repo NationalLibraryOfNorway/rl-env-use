@@ -5,11 +5,21 @@ import hashlib
 import re
 import time
 from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
 from urllib.parse import urljoin, urlsplit
 
 from .store import load_jsonl, save_jsonl, write_atomic
 
 AGENT = 'rl-env-use'
+CTG_API_AUTHORIZATION = 'https://www.nlm.nih.gov/pubs/techbull/ja25/ja25_clinical_trials_screen-scraping.html'
+
+
+def documented_public_api(url):
+	"""Provider-documented study API only; never private/internal paths or lookalike hosts."""
+	p = urlsplit(url)
+	if p.scheme != 'https' or p.hostname != 'clinicaltrials.gov' or p.port not in (None, 443) or p.username or p.password:
+		return False
+	return bool(re.fullmatch(r'/api/v2/(?:version|studies(?:/(?:NCT\d{8}|metadata|search-areas|enums))?)', p.path))
 
 
 def rules_allow(text, url, agent=AGENT):
@@ -96,6 +106,10 @@ class RobotsGuard:
 		allowed, delay = rules_allow(p['text'], url) if p['valid'] else (bool(p['missing']), 0)
 		decision = {k: v for k, v in p.items() if k not in ('text', 'valid', 'missing')}
 		decision.update(url=url, allowed=allowed, reason='no_robots_file' if p['missing'] else 'robots_rules' if p['valid'] else 'robots_unavailable', crawl_delay=delay)
+		if documented_public_api(url):
+			decision.update(robots_allowed=allowed if p['valid'] or p['missing'] else None, allowed=True, reason='documented_public_api', authorization_url=CTG_API_AUTHORIZATION)
+			allowed, delay = True, max(delay, 1.0)
+			decision['crawl_delay'] = delay
 		self.audit.append(decision)
 		save_jsonl(self.env / 'robots-audit.jsonl', self.audit)
 		if not allowed:
@@ -111,7 +125,20 @@ class RobotsGuard:
 		decisions = []
 		for _ in range(10):
 			decisions.append(await self.check(url, pace=True))
-			r = await self.client.get(url, follow_redirects=False, headers={'User-Agent': AGENT})
+			for attempt in range(3):
+				if attempt:
+					decisions.append(await self.check(url, pace=True))
+				r = await self.client.get(url, follow_redirects=False, headers={'User-Agent': AGENT})
+				if r.status_code not in (429, 500, 502, 503, 504) or attempt == 2:
+					break
+				try:
+					retry_after = float(r.headers.get('Retry-After', '0'))
+				except ValueError:
+					try:
+						retry_after = (parsedate_to_datetime(r.headers['Retry-After']) - datetime.now(UTC)).total_seconds()
+					except (KeyError, TypeError, ValueError):
+						retry_after = 0
+				await asyncio.sleep(max(2 ** (attempt + 1), retry_after))
 			if r.is_redirect:
 				url = urljoin(url, r.headers['location'])
 				continue
