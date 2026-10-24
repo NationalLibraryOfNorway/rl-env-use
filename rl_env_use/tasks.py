@@ -51,13 +51,13 @@ class CaseTaskDraft(BaseModel):
 		description='derive: an expert can reach the answer from the materials alone; predict: a yes/no question about a later outcome the materials make forecastable but do not state (answer_type prob).'
 	)
 	material_ids: list[str] = Field(description='The materials the model is given (ids from MATERIALS).')
-	answer: str
 	answer_type: AnswerType
 	aliases: list[str] = Field(default_factory=list, description='Other acceptable surface forms of the answer.')
 	choices: list[str] = Field(default_factory=list, description='Which-of questions only: every candidate named in the prompt (the gold is one of them).')
 	rel_tol: float = 0.0
 	fact_ids: list[str] = Field(description='The outcome facts the gold comes from.')
-	derivation: str = Field('', description='Empty if the answer is literally in a cited outcome quote, else how it follows from them.')
+	derivation: str = Field('', description='Concise final justification in 2-4 sentences: how the resolution follows from the cited outcome evidence. No drafts, deliberation or self-corrections.')
+	answer: str = Field(description='Commit the private gold after deriving it above. For forecasts this is yes/no, not a probability.')
 	expression: str = Field(
 		'',
 		description='derive tasks with a numeric answer: the whole computation as ONE arithmetic expression over the numbers exactly as written in the materials (digits, + - * / ** and parentheses only), e.g. 10875 / (10875 + 6939) * 100. Code evaluates it: the gold must be its value rounded as the prompt asks.',
@@ -312,8 +312,9 @@ def finish(t: dict, facts: dict) -> dict:
 	t.update(rounding_tol(t))
 	if t['answer_type'] == 'prob':
 		t['answer'] = norm(t['answer'])
-		if 'probab' not in t['prompt'].lower():
-			t['prompt'] += ' ' + PROBABILITY.get(t['language'], '(0–1)')
+		instruction = PROBABILITY.get(t['language'], '(0–1)')
+		if 'probab' not in t['prompt'].lower() and instruction not in t['prompt']:
+			t['prompt'] += ' ' + instruction
 	t['checks'] = {'structural': structural_issues(t, facts), 'leakage': leaks(t)}
 	return t
 

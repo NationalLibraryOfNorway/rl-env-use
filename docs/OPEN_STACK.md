@@ -451,3 +451,6 @@ The task critic is explicitly told that a forecast's private gold is its observe
 `yes`/`no` event resolution while the policy output is a probability graded with
 a Brier score. A difference between these formats is intentional and must not
 itself be reported as a task defect. Evidence and precision checks still apply.
+Case-draft schemas place a concise final justification before the private gold
+field, so structured decoding can resolve the event before committing its label.
+The localized probability instruction is appended only when it is absent.

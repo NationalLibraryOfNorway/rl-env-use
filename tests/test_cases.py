@@ -21,9 +21,20 @@ from rl_env_use.env import Env
 def test_forecast_schema_requires_binary_private_gold():
 	schema = T.ForecastDrafts.model_json_schema()
 	assert schema['$defs']['ForecastDraft']['properties']['answer']['enum'] == ['yes', 'no']
+	fields = list(schema['$defs']['ForecastDraft']['properties'])
+	assert fields.index('derivation') < fields.index('answer')
 	with pytest.raises(ValidationError) as error:
 		T.ForecastDraft.model_validate({'answer': '0.1'})
 	assert any(e['loc'] == ('answer',) and e['type'] == 'literal_error' for e in error.value.errors())
+
+
+def test_bokmal_probability_instruction_is_not_duplicated():
+	from rl_env_use.language import PROBABILITY, language_scope
+
+	with language_scope({'language': 'nob'}):
+		task = T.finish({'prompt': 'Vil forsøket lykkes? ' + PROBABILITY['nob'], 'answer': 'no',
+			'answer_type': 'prob', 'fact_ids': [], 'kind': 'predict', 'material_ids': ['m0'], 'context': 'Protocol'}, {})
+	assert task['prompt'].count(PROBABILITY['nob']) == 1
 
 PAGE = (
 	'Header junk. ITEM 2. LIQUIDITY Cash fell to $4.1 million while the company burned $3.0 million per quarter. '
