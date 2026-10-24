@@ -4,6 +4,9 @@ import asyncio
 import json
 from types import SimpleNamespace as NS
 
+import pytest
+from pydantic import ValidationError
+
 from conftest import jl, mk_task
 
 import rl_env_use.checks as C
@@ -13,6 +16,14 @@ import rl_env_use.tasks as T
 import rl_env_use.verify as V
 from rl_env_use.__main__ import main, write_state
 from rl_env_use.env import Env
+
+
+def test_forecast_schema_requires_binary_private_gold():
+	schema = T.ForecastDrafts.model_json_schema()
+	assert schema['$defs']['ForecastDraft']['properties']['answer']['enum'] == ['yes', 'no']
+	with pytest.raises(ValidationError) as error:
+		T.ForecastDraft.model_validate({'answer': '0.1'})
+	assert any(e['loc'] == ('answer',) and e['type'] == 'literal_error' for e in error.value.errors())
 
 PAGE = (
 	'Header junk. ITEM 2. LIQUIDITY Cash fell to $4.1 million while the company burned $3.0 million per quarter. '

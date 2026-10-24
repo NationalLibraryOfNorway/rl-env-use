@@ -123,6 +123,18 @@ comparisons and verify structured/image support before a full run.
 
 ## Recovering stalled reviews
 
+Named routes may set `"enable_thinking": false` to pass
+`chat_template_kwargs.enable_thinking=false` to a supporting server. Omit this
+field on servers without the template option. This prevents long thinking
+generation; ignoring a separate reasoning field alone does not save inference
+time. Keep token/context ceilings separate from thinking control.
+
+For clinical trials, include journal-published primary results even when the
+registry has no results table. A `HasResults` filter can exclude such cases.
+Use public pre-results protocols as input and original results publications as
+private gold evidence. A single configured panel model leaves panel measurement
+incomplete; never bypass that gate or count two aliases of one model as independent.
+
 On ClinicalTrials.gov API study pages, `record_outcome` requires the exact primary-outcome title and saves the
 complete outcome JSON object verbatim, including every reported analysis. Text markers are ignored for these
 pages. Invalid/incomplete JSON, ambiguous titles and oversized objects are rejected without saving a partial

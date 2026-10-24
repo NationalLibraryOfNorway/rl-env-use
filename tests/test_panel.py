@@ -90,6 +90,22 @@ def test_all_right_is_saturated_and_no_adjudication(monkeypatch):
 	assert not T.keep(t)
 
 
+def test_same_local_weights_on_two_routes_are_not_two_panel_models(monkeypatch):
+	import asyncio
+	import json
+
+	import rl_env_use.verify as verify
+
+	monkeypatch.setenv('RLENV_LOCAL_MODELS', json.dumps({
+		'writer': {'model': 'same-qwen', 'base_url': 'http://a.test/v1'},
+		'critic': {'model': 'same-qwen', 'base_url': 'http://b.test/v1'},
+	}))
+	t = ct()
+	asyncio.run(verify.panel([t], {}, models=['local:writer', 'local:critic']))
+	assert t['checks']['panel']['verdict'] == 'unmeasured'
+	assert t['checks']['panel']['models'] == ['local:writer']
+
+
 def test_policy_never_sees_gold(monkeypatch):
 	t = ct(answer='98765')
 	log = run(monkeypatch, [t], {m: '1' for m in MODELS}, CONFIRM)
@@ -110,6 +126,23 @@ def test_single_model_repeating_a_wrong_answer_is_not_shared(monkeypatch):
 	t = ct()
 	log = run(monkeypatch, [t], {'haiku': '2000', 'sonnet46': '1500', 'gpt6': '1500', 'gemini': '1500'})
 	assert t['checks']['panel']['verdict'] == 'keep' and not adj_calls(log)
+
+
+def test_single_configured_panel_fails_before_spending_model_calls(monkeypatch):
+	import asyncio
+
+	import rl_env_use.rollout as rollout
+	import rl_env_use.verify as verify
+
+	async def unexpected(*args, **kwargs):
+		raise AssertionError('An insufficient panel must not make model calls')
+
+	monkeypatch.setattr(rollout, 'solve_case', unexpected)
+	t = ct()
+	asyncio.run(verify.panel([t], {}, models=['local:writer', 'local:writer']))
+	assert t['checks']['panel']['verdict'] == 'unmeasured'
+	assert 'no model calls made' in t['checks']['panel']['error']
+	assert not T.keep(t)
 
 
 def test_distinct_wrong_answers_are_not_shared(monkeypatch):

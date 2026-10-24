@@ -18,6 +18,40 @@ class Answer(BaseModel):
 	answer: str
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize('thinking', [None, False, True])
+async def test_route_thinking_option_preserves_final_json_and_separates_reasoning(monkeypatch, thinking):
+	config = {'model': 'qwen', 'base_url': 'http://local.test/v1'}
+	if thinking is not None:
+		config['enable_thinking'] = thinking
+	monkeypatch.setenv('RLENV_LOCAL_MODELS', json.dumps({'qwen': config}))
+	bodies = []
+
+	def handler(request):
+		bodies.append(json.loads(request.content))
+		return httpx.Response(200, json={'id': 't', 'object': 'chat.completion', 'created': 0, 'model': 'qwen',
+			'choices': [{'index': 0, 'message': {'role': 'assistant', 'reasoning_content': 'private reasoning', 'content': '{"answer":"42"}'}, 'finish_reason': 'stop'}]})
+
+	chat = LocalChat('qwen')
+	async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+		chat._chat.http_client = client
+		result = await chat.ainvoke([UserMessage(content='Question')], output_format=Answer)
+	assert result.completion.answer == '42'
+	assert 'private reasoning' not in result.completion.model_dump_json()
+	assert bodies[0]['response_format']['type'] == 'json_schema'
+	if thinking is None:
+		assert 'chat_template_kwargs' not in bodies[0]
+	else:
+		assert bodies[0]['chat_template_kwargs'] == {'enable_thinking': thinking}
+
+
+@pytest.mark.parametrize('value', ['false', 0, None])
+def test_thinking_option_rejects_non_boolean(monkeypatch, value):
+	monkeypatch.setenv('RLENV_LOCAL_MODELS', json.dumps({'qwen': {'enable_thinking': value}}))
+	with pytest.raises(ValueError, match='must be a boolean'):
+		LocalChat('qwen')
+
+
 @pytest.fixture
 def strict(monkeypatch):
 	monkeypatch.setenv('RLENV_OPEN_ONLY', '1')

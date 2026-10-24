@@ -117,6 +117,8 @@ async def check_live(tasks: list[dict], facts: dict, headless: bool = True) -> N
 CASE_CRITIC = (
 	' The model under test reads the CONTEXT and answers the PROMPT; the EVIDENCE is the true outcome it never sees. Flag tasks the context answers outright, and tasks that are not well posed.'
 	' A predict task is uncertain by design, so judge it as a forecasting question: unambiguous = exactly one outcome resolves it (not: one forecast is forced);'
+	' For predict tasks the GOLD is a private yes/no resolution label used by a Brier-score grader; the policy outputs a probability from 0 to 1.'
+	' This difference is intentional and is NOT a format mismatch or an ambiguity. Never demand that the private gold be a probability.'
 	' well posed = the predicted quantity is precisely defined, the evidence resolves it, and the context gives an expert a real basis to forecast it (design, size, arms, trends) -'
 	' not well posed if it hinges on events the context cannot foresee (a financing, an acquisition, an outside halt),'
 	' or if the PROMPT states, paraphrases or hints at the outcome ("the posted results show...") or points to results data the context does not hold.'
@@ -147,7 +149,7 @@ async def critique(tasks: list[dict], facts: dict, model: str = TEXT_MODEL, *, c
 				)
 			else:
 				how = (
-					('The EVIDENCE states the actual outcome: report it, do not forecast.' + (' Answer yes or no: did it happen?' if t['answer_type'] == 'prob' else ''))
+					('The EVIDENCE states the actual outcome: report it, do not forecast.' + (' Answer yes or no: did it happen? Return the private resolution label used in Brier-score grading, not the policy probability.' if t['answer_type'] == 'prob' else ''))
 					if t.get('kind') == 'predict'
 					else ''
 				)
@@ -216,6 +218,20 @@ async def panel(tasks: list[dict], facts: dict, models: list[str] = PANEL, k: in
 	Forecasts are judged without looking at the outcome: kept if the materials move the panel's probability and the
 	panel cannot answer blind; whether the materials help on average is an env-level number (panel_lift)."""
 	from .rollout import public, solve_case
+	from .local import local_model_config
+	from .llm import routes
+	unique = {}
+	for model in models:
+		identity = model
+		if model.startswith('local:') or model in ('local-text', 'local-browser'):
+			_, alias = routes(model)[0]
+			identity = 'local:' + local_model_config(alias).get('model', alias)
+		unique.setdefault(identity, model)
+	models = list(unique.values())
+	if len(models) < 2:
+		for t in tasks:
+			t['checks']['panel'] = {'verdict': 'unmeasured', 'models': models, 'error': 'At least two distinct panel models are required; no model calls made.'}
+		return
 
 	async def solve(t, m, blind=False):
 		pub = public(t) | ({'context': '(materials withheld)'} if blind else {})

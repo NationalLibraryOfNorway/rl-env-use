@@ -421,3 +421,33 @@ review. A complete source object does not prove a valid success label: missing
 statistics, historical provenance, time points and prespecified rules remain
 separate checks. Existing partial records require repair; they are not silently
 upgraded by this change.
+
+## Per-route thinking control
+
+A named route may set `"enable_thinking": false` (or `true`). The compatible
+transport forwards this as `chat_template_kwargs.enable_thinking` while retaining
+the normal message serializer, JSON schema, usage accounting and response parser.
+Omit the field for servers that do not support this template option; omission
+preserves server defaults. This is separate from the completion-token ceiling.
+Reasoning returned in a separate `reasoning_content` field is not imported into
+dataset tasks. Disabling thinking prevents its generation on supporting servers;
+discarding that response field alone does not reduce generation time.
+
+Clinical-trial discovery should also include studies whose primary results are
+published in journals but have no registry `resultsSection`. Requiring
+`AREA[HasResults]true` limits discovery to registry-posted results. Use a broader
+Norway/interventional query when collecting publication-backed cases and pair
+the dated public protocol with the original primary results publication.
+
+For prediction-only drafting (`mix=predict`), the response schema enforces
+`kind=predict`, `answer_type=prob`, and a private `yes`/`no` gold label. The
+policy still produces a probability: the private resolution is not a forecast.
+An insufficient panel is marked unmeasured before any policy calls. Repeated
+aliases, including local routes resolving to the same served model ID, do not
+count as independent panel members. An endpoint change alone does not establish
+a different model.
+
+The task critic is explicitly told that a forecast's private gold is its observed
+`yes`/`no` event resolution while the policy output is a probability graded with
+a Brier score. A difference between these formats is intentional and must not
+itself be reported as a task defect. Evidence and precision checks still apply.

@@ -75,6 +75,17 @@ class CaseDrafts(BaseModel):
 	tasks: list[CaseTaskDraft]
 
 
+class ForecastDraft(CaseTaskDraft):
+	"""The policy predicts a probability; the private gold is a resolved binary event."""
+	kind: Literal['predict'] = 'predict'
+	answer_type: Literal['prob'] = 'prob'
+	answer: Literal['yes', 'no'] = Field(description='Private outcome label from evidence; never a forecast probability.')
+
+
+class ForecastDrafts(BaseModel):
+	tasks: list[ForecastDraft]
+
+
 SYNTH_SYS = """You turn scouted web evidence into tasks for a browser-agent RL environment.
 Rules:
 - Every task's answer MUST come from the cited facts' quotes (copy the value exactly), or be a simple derivation from them (state it in `derivation`).
@@ -261,7 +272,7 @@ async def synthesize_cases(
 			+ f'\n\nALREADY WRITTEN (do not duplicate):\n{chr(10).join(written) or "-"}\n\n{ask}'
 		)
 		try:
-			d, _, _ = await call(model, system, user, CaseDrafts, temperature=0.7, audience='dataset')
+			d, _, _ = await call(model, system, user, ForecastDrafts if mix == 'predict' else CaseDrafts, temperature=0.7, audience='dataset')
 		except Exception as e:  # one case must not sink the round: it is topped up on the next synth
 			print(f'synth: case {key} skipped ({type(e).__name__}: {str(e)[:120]})')
 			return []

@@ -58,3 +58,20 @@ def test_total_review_deadline_is_saved_as_retryable_error(tmp_path, monkeypatch
 	row = load_jsonl(path)[0]
 	assert 'total review deadline' in row['checks']['critic']['issues']
 	assert unverified(row)
+
+
+def test_forecast_critic_distinguishes_private_label_from_policy_probability(monkeypatch):
+	task = mk_task(0, answer='no', answer_type='prob', kind='predict', context='Pre-results trial protocol.')
+	seen = []
+
+	async def fake(model, system, user, schema, **kwargs):
+		seen.append(system)
+		if schema is V.Recompute:
+			assert 'private resolution label' in system and 'GOLD:' not in user
+			return schema(calculation='P=0.78 > alpha=0.05', recomputed_answer='no'), {}, model
+		assert 'Brier-score' in system and 'NOT a format mismatch' in system
+		return schema(unambiguous=True, gold_supported=True, realistic=True, issues='', answer_in_context=False, well_posed=True), {}, model
+
+	monkeypatch.setattr(V, 'call', fake)
+	asyncio.run(V.critique([task], {}))
+	assert len(seen) == 2 and task['checks']['critic']['agrees']

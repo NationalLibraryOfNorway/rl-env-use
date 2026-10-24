@@ -4,10 +4,30 @@ import json
 import os
 import re
 from copy import copy
+from dataclasses import dataclass
 from urllib.parse import urlparse
 
 from browser_use import ChatOpenAI
 from browser_use.llm.exceptions import ModelProviderError
+
+
+@dataclass
+class TemplateChat(ChatOpenAI):
+	"""Keep browser-use serialization while forwarding an explicit server template option."""
+	enable_thinking: bool | None = None
+
+	def get_client(self):
+		client = super().get_client()
+		if self.enable_thinking is not None:
+			create = client.chat.completions.create
+
+			async def configured_create(**kwargs):
+				extra = dict(kwargs.pop('extra_body', None) or {})
+				extra['chat_template_kwargs'] = dict(extra.get('chat_template_kwargs') or {}) | {'enable_thinking': self.enable_thinking}
+				return await create(**kwargs, extra_body=extra)
+
+			client.chat.completions.create = configured_create
+		return client
 
 
 def local_model_config(name: str) -> dict:
@@ -19,9 +39,11 @@ def local_model_config(name: str) -> dict:
 	if not isinstance(models, dict):
 		raise ValueError('RLENV_LOCAL_MODELS must be a JSON object of local model configurations')
 	config = models.get(name, {})
-	if not isinstance(config, dict) or set(config) - {'model', 'base_url', 'api_key_env'}:
-		raise ValueError('local model configuration must contain only model, base_url and api_key_env')
-	if any(not isinstance(value, str) or not value.strip() for value in config.values()):
+	if not isinstance(config, dict) or set(config) - {'model', 'base_url', 'api_key_env', 'enable_thinking'}:
+		raise ValueError('local model configuration must contain only model, base_url, api_key_env and enable_thinking')
+	if 'enable_thinking' in config and not isinstance(config['enable_thinking'], bool):
+		raise ValueError('local model enable_thinking must be a boolean')
+	if any(not isinstance(value, str) or not value.strip() for key, value in config.items() if key != 'enable_thinking'):
 		raise ValueError('local model configuration values must be nonempty strings')
 	return config
 
@@ -46,7 +68,7 @@ class LocalChat:
 			key = os.getenv(key_env)
 			if not key:
 				raise ValueError('local model api_key_env names an unset or empty environment variable')
-		self._chat = ChatOpenAI(
+		self._chat = TemplateChat(
 			model=config.get('model', model),
 			base_url=base.rstrip('/'),
 			api_key=key,
@@ -55,6 +77,7 @@ class LocalChat:
 			max_completion_tokens=int(os.getenv('RLENV_LOCAL_MAX_TOKENS', '262144')),
 			timeout=float(os.getenv('RLENV_LOCAL_TIMEOUT', '1200')),
 			max_retries=0,  # call()/the browser agent own retries; never change providers
+			enable_thinking=config.get('enable_thinking'),
 		)
 
 	@property
