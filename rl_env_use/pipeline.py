@@ -118,6 +118,10 @@ async def build(env: Path, spec: dict, only: str | None = None, model: str | Non
 	model, critic = writer_critic_models(model, critic, spec)
 	spec.update(writer_model=model, critic_model=critic)
 	use_browser_spec(spec)
+	if spec.get('mode') == 'sft':
+		from .sft_pipeline import build_sft
+
+		return json.dumps(await build_sft(env, spec, model, critic, only))
 	out, scouted = [], False
 	if only in (None, 'scout') and (only or not (env / 'kb.json').exists()):
 		kb = await scout(
@@ -332,6 +336,10 @@ async def create(env: Path, spec: dict, model: str | None = None, log=print, *, 
 	model, critic = writer_critic_models(model, critic, spec)
 	spec.update(writer_model=model, critic_model=critic)
 	use_browser_spec(spec)
+	if spec.get('mode') == 'sft':
+		from .sft_pipeline import build_sft
+
+		return await build_sft(env, spec, model, critic)
 	target, dry, prior = spec.get('target_tasks', 150), 0, spec.get('spent_usd', 0.0)  # a resumed env keeps its earlier spend
 	budget = spec.get('budget_usd', 40.0) - prior
 	per_mission = 0.35  # $ per mining mission, measured on earlier envs
@@ -440,6 +448,13 @@ def regrade_row(vdir: Path, task: dict, row: dict) -> dict:
 
 
 def export(env: Path, out: Path) -> int:
+	if (env / 'spec.json').exists() and json.loads((env / 'spec.json').read_text()).get('mode') == 'sft':
+		from .sft_pipeline import export_accepted
+
+		count = export_accepted(env)
+		if out != env / 'dataset-sft.jsonl':
+			write_atomic(out, (env / 'dataset-sft.jsonl').read_text())
+		return count
 	e = Env(env)
 	if any(not t.get('context') for t in e.tasks()):
 		e.export_browser_use_yaml(env / 'agent_tasks')

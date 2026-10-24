@@ -1,6 +1,6 @@
 ---
 name: rl-env-use
-description: Build and evaluate RL environments from real cases mined from the web, using self-hosted open-weight models and local Browser Use agents. Use when the user knows a domain and the input-to-outcome skill to measure but needs help collecting cases, verifying tasks, benchmarking policies, optimizing prompts, or exporting tasks for an external RL trainer.
+description: Build RL environments or source-grounded SFT datasets from real cases mined from the web, using self-hosted open-weight models and local Browser Use agents. Use when the user knows a domain and the input-to-outcome skill to measure but needs help collecting cases, verifying tasks, benchmarking policies, optimizing prompts, or exporting tasks for an external RL trainer.
 ---
 
 # rl-env-use
@@ -253,3 +253,37 @@ dataset.jsonl      default CLI export
 Slots are `baseline`, `v1`, `v2`, etc. Each climb slot's `change.md` describes the edit and `prompt.txt` stores the
 prompt extension. Infrastructure failures are recorded separately from graded answers. Keep model/pool provenance
 with results and distinguish a passing integration check from evidence of mining quality or policy improvement.
+
+## Norwegian clinical-trial SFT mode
+
+For supervised evidence interpretation, use `--mode sft` on `new`, `build` or
+`create`. The automated collector currently supports Norwegian clinical-trial
+sources; see [docs/OPEN_STACK.md](docs/OPEN_STACK.md) for limits and artifact schemas.
+Use a new environment when recovering old RL candidates: fetch fresh evidence and
+write new questions instead of reversing forecasting rejections. Published results
+belong in SFT inputs. Current registry metadata may support retrospective reading
+without being misrepresented as a pre-results snapshot. Never rewrite explanations
+to invent support for an outcome; missing results do not imply failure.
+
+SFT uses exact evidence quotations, structural checks and separate critic calls for
+source support, correctness, clarity and language. RL difficulty, closed-book and
+forecast-balance gates do not apply to this different task. Source quotations remain
+verbatim; generated questions, answers and concise final explanations use the saved
+ISO 639-3 language. Keep diagnostics in English unless explicitly requested otherwise.
+
+For Norwegian runs include Helsenorge, NorTrials and NORCRIN/Helse Vest alongside
+the trial registries. Inspect `sft-discovery.jsonl` to distinguish attempted sources
+from sources that actually supplied evidence. `dataset-sft.jsonl` contains accepted
+chat examples; inspect `sft-preview.md`, `dataset-sft.audit.json` and rejected
+`sft-candidates.jsonl` before scaling. Report both example and independent-trial
+counts, and split by trial ID or study URL. `export` follows the saved mode.
+
+For continuous SFT collection set `target_tasks=0`, `sft_continuous=true` and a
+source batch size; resume from `sft-frontier.json`. Check robots.txt before every
+download and redirect, respect crawl delays, and fail closed on unavailable
+policies. ClinicalTrials.gov currently disallows its `/api/` routes: use permitted
+publication sources, not cached API text or browser calls to evade the restriction.
+The export includes extracted evidence, source URLs and dates; portable records
+link raw permitted HTML/JSON snapshots, checksums and robots decisions. Keep the
+snapshot folders with the dataset. See the continuous-collection section in the
+open-stack guide for configuration and artifact names.

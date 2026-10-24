@@ -100,6 +100,7 @@ def cmd_new(a):
 	spec = {'topic': a.topic, 'sources': a.sources, 'missions': max(4, 2 * len(a.sources)), 'agent_model': BROWSER_MODEL, 'max_steps': 40, 'concurrency': 4}
 	spec |= {'skill': a.skill, 'tasks_per_case': 2, 'panel': PANEL} if a.skill else {'n_tasks': 30, 'hard': False}
 	spec.update(language_options(a))
+	spec['mode'] = a.mode or 'rl'
 	spec |= ({'profile_id': a.profile} if a.profile else {}) | ({'proxy_country': a.proxy_country} if a.proxy_country else {})
 	(env / 'spec.json').write_text(json.dumps(spec, indent=1))
 	print(f'{env}/spec.json written. Next: rl-env-use build {env}')
@@ -134,6 +135,8 @@ def cmd_create(a):
 			'panel_reps': 2,
 		}
 	spec.update(language_options(a, spec, env))
+	if a.mode:
+		spec['mode'] = a.mode
 	writer, critic = pipeline.writer_critic_models(a.model, a.critic, spec)
 	spec.update(writer_model=writer, critic_model=critic)
 	spec |= {k: v for k, v in (('budget_usd', a.budget), ('target_tasks', a.tasks), ('mix', a.mix)) if v is not None}  # a resume keeps what it was given unless told otherwise
@@ -147,6 +150,9 @@ def cmd_create(a):
 	with ui.board(f'rl-env-use create · {env.name}'):
 		res = run(pipeline.create(env, spec), timeout=float(os.getenv('RLENV_GLOBAL_TIMEOUT', '0')) or None)
 	print(json.dumps(res, indent=1))
+	if spec.get('mode') == 'sft':
+		print(f'SFT dataset: {env}/dataset-sft.jsonl; preview: {env}/sft-preview.md')
+		return
 	report(env, judges=False)
 	print(f'next: rl-env-use climb {env} --model <the policy you will train>')
 
@@ -200,6 +206,8 @@ def cmd_build(a):
 	env = Path(a.env)
 	spec = spec_of(env)
 	spec.update(language_options(a, spec, env))
+	if a.mode:
+		spec['mode'] = a.mode
 	writer, critic = pipeline.writer_critic_models(a.model, a.critic, spec)
 	spec.update(writer_model=writer, critic_model=critic)
 	pipeline.use_browser_spec(spec)
@@ -461,7 +469,8 @@ def cmd_export(a):
 	from .pipeline import export
 
 	env = Path(a.env)
-	print(f'{export(env, env / "dataset.jsonl")} tasks -> {env}/dataset.jsonl')
+	name = 'dataset-sft.jsonl' if spec_of(env).get('mode') == 'sft' else 'dataset.jsonl'
+	print(f'{export(env, env / name)} tasks -> {env}/{name}')
 
 
 def cmd_sft(a):
@@ -594,6 +603,7 @@ def main(argv=None):
 			q.add_argument('--seed', type=int, default=0)
 	for command in ('new', 'create', 'build'):
 		parser = sp.choices[command]
+		parser.add_argument('--mode', choices=['rl', 'sft'], help='RL forecasting/reward tasks or source-grounded SFT evidence interpretation (default: saved mode or rl)')
 		parser.add_argument('--language', type=language_code, metavar='ISO639_3', help='dataset language, e.g. eng, nob, nno or spa (default: saved language or RLENV_LANGUAGE/eng)')
 		parser.add_argument('--localize-diagnostics', action=argparse.BooleanOptionalAction, default=None, help='also generate model feedback, mining notes and diagnostics in the dataset language (default: saved setting or false)')
 	a = p.parse_args(argv)

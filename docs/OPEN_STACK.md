@@ -503,3 +503,124 @@ exclude these trials from any later prospective forecasting evaluation after tra
 
 For the Norwegian clinical-trial pilot, `envs/norwegian-trial-endpoints-pilot/sft-targets.json`
 contains four edited targets. This is a format-review seed set, not a sufficient fine-tuning corpus.
+
+## Automated Norwegian clinical-trial SFT collection
+
+`new`, `build` and `create` accept `--mode sft` (saved in `spec.json`). RL remains
+the default. The current automated SFT source collector supports Norwegian clinical
+trials: Helsenorge's listing API and hospital study pages, linked ClinicalTrials.gov
+IDs, and discovery probes of the configured Norwegian/EU portals. It logs failed
+or empty sources; listing a portal does not imply that it contributed an example.
+Heavy JavaScript portal search is not automated by this HTTP collector; use the
+browser workflow to obtain additional source evidence when needed.
+
+```sh
+rl-env-use build envs/norwegian-clinical-trials-sft --mode sft \
+  --writer local:writer --critic local:critic \
+  --language nob --no-localize-diagnostics
+```
+
+A fresh spec can be made with `new --mode sft`; set its sources and limits before
+`build`. `create --mode sft --name <existing-name>` runs one bounded pass over the
+saved sources and imported document cache. It does not invoke RL panels, hardening,
+closed-book recall or forecast label balancing. The automated SFT path has its own
+source documents and candidate files; original RL tasks/reviews are not imported
+or silently approved. Previously rejected trials are recovered through fresh source
+captures and newly checked tasks, not by undoing their forecasting rejections.
+
+The spec supports:
+
+- `recovery_trial_ids`: canonical ClinicalTrials.gov IDs to recapture, including old
+  forecasting candidates. Each record must list a Norwegian location.
+- `tasks_per_case` (default 2): maximum drafts per captured document, with distinct
+  extraction, result interpretation or evidence-sufficiency questions. This is a
+  document limit; report independent trial counts separately from example counts.
+- `target_tasks`: accepted-example target, including any explicitly imported seeds.
+- `sft_discovery_limit` (default 6): linked pages/registry IDs followed per source.
+- `sft_model_timeout` (default 120 seconds per attempt), with two attempts per call.
+- `sft_question_max_chars` (default 2000), `sft_explanation_max_chars` (2400), and
+  `sft_explanation_max_words` (250). Explanations are normally 60–180 words; extra
+  length should explain evidence and limitations, not add unsupported detail.
+
+Every registry capture includes the relevant current protocol modules and **complete**
+posted primary-outcome objects with all analyses. The protocol modules are a declared
+structured projection, not a claimed historical snapshot. Oversized/incomplete outcomes
+are rejected rather than cut off. Missing results can support endpoint extraction or
+carefully scoped insufficiency questions; they cannot establish trial failure.
+
+The writer drafts a question, final answer, edited explanation and exact supporting
+quotations. Structural checks preserve numeric signs in quotations. A separate critic
+call checks source support, correctness, question clarity and target-language quality;
+only examples passing every check are exported. Writer and critic may use the same
+configured model through separate calls. This is model-based validation, not human
+review or a guarantee of clinical correctness. Failed calls and rejected drafts stay
+in the candidate audit. Completed reviews resume from cache keyed by evidence, model
+routes, language and limits; use a fresh output directory after changing weights behind
+an unchanged route alias.
+
+Artifacts in the SFT environment:
+
+```text
+source-captures/         complete fetched responses, referenced by hash
+sft-discovery.jsonl      attempted sources, followed links and explicit exclusions
+sft-documents.jsonl      relevant evidence with provenance and transformations
+sft-candidates.jsonl     drafts and critic verdicts, including rejected examples
+sft-status.json         latest phase and completion status
+dataset-sft.jsonl       accepted chat messages only
+dataset-sft.audit.json  source, model, evidence hash and review provenance
+sft-preview.md          readable accepted questions, answers and explanations
+```
+
+`build --only scout` collects sources without drafting; `--only synth` or
+`--only verify` resumes cached documents and unfinished reviews. `export` re-exports
+the accepted SFT pool. To repeat completed criticisms after changing instructions,
+retain the original candidate audit in a backup and start a new environment. Split by
+trial ID (or study URL when no ID exists); more questions from one trial do not create
+independent trial evidence. Do not evaluate prospective forecasting on trials whose
+results were included in SFT training.
+
+### Continuous collection, robots policies and portable source snapshots
+
+Set `target_tasks=0` and `sft_continuous=true` to remove the example-count stop.
+The collector advances through Helsenorge's listing in `sft_discovery_limit` batches,
+writing `sft-frontier.json` after each source. It drafts and checks each batch before
+collecting the next. It stops when the source frontier is exhausted or interrupted;
+`sft_max_batches=0` imposes no additional batch limit. A large listing can yield
+thousands of examples, but source availability and correctness checks determine the
+actual count. Restart the same command to resume; cached reviews remain available.
+
+Every download and redirect passes a robots gate using the `rl-env-use` user agent.
+The longest applicable Allow/Disallow rule wins, Allow wins ties, and crawl delays
+are respected. A missing robots file (404/410) means no published restrictions;
+403, server failures, invalid HTML responses and unavailable policies fail closed.
+Robots policies and decisions are stored in `robots-captures/` and
+`robots-audit.jsonl`. Permission to fetch a page is checked separately from whether
+its content provides enough evidence for a task.
+
+**ClinicalTrials.gov currently disallows `/api/`**, including the v2 study route.
+The SFT downloader therefore excludes those API downloads and their prior cached
+training examples. Explicit Allow exceptions are evaluated by longest-match rules;
+the collector does not use browser rendering to evade a disallowed data endpoint.
+`recovery_publications` can map a trial ID to a known original/related PMID; its
+complete indexed abstract is fetched through the permitted Europe PMC service.
+These are declared abstracts, not claimed full articles. A related or secondary
+publication supports only questions justified by that publication; it cannot
+establish an unreported original primary outcome. Existing registry bibliography
+IDs may guide source discovery without importing disallowed registry text into SFT.
+
+The training input includes the complete extracted evidence for the question,
+source URL and capture date. Raw permitted responses are saved without truncation
+as `.html`, `.json`, `.xml`, `.pdf` or `.txt` according to content type. Full raw
+HTML is kept outside the model prompt to avoid filling the context with navigation
+and scripts. `dataset-sft.records.jsonl` pairs each messages row with provenance,
+including the raw snapshot path, SHA-256 and robots decisions. Keep that file,
+`dataset-sft.audit.json`, `source-captures/` and `robots-captures/` together when
+moving the dataset. Snapshot checksums are checked again before export; missing or
+modified snapshots are excluded. Failed or disallowed earlier captures remain in
+the audit but do not appear in the compliant SFT export.
+
+For source/language spot-checks, `sft-reviews.jsonl` accepts per-example rejections
+such as `{"id":"sft_...","verdict":"reject","notes":"..."}`. The latest verdict
+wins and rejected examples are omitted from every export even if the model critic
+passed them. Corrected examples retain their original source snapshot and receive
+a new ID and a fresh critic review; the original and its rejection stay in the audit.
