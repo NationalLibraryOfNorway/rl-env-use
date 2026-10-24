@@ -29,8 +29,16 @@ async def test_route_thinking_option_preserves_final_json_and_separates_reasonin
 
 	def handler(request):
 		bodies.append(json.loads(request.content))
-		return httpx.Response(200, json={'id': 't', 'object': 'chat.completion', 'created': 0, 'model': 'qwen',
-			'choices': [{'index': 0, 'message': {'role': 'assistant', 'reasoning_content': 'private reasoning', 'content': '{"answer":"42"}'}, 'finish_reason': 'stop'}]})
+		return httpx.Response(
+			200,
+			json={
+				'id': 't',
+				'object': 'chat.completion',
+				'created': 0,
+				'model': 'qwen',
+				'choices': [{'index': 0, 'message': {'role': 'assistant', 'reasoning_content': 'private reasoning', 'content': '{"answer":"42"}'}, 'finish_reason': 'stop'}],
+			},
+		)
 
 	chat = LocalChat('qwen')
 	async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
@@ -222,20 +230,33 @@ def test_browser_vision_mode_rejects_invalid_setting(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_named_local_models_route_requests_and_auth_independently(strict, monkeypatch):
-	monkeypatch.setenv('RLENV_LOCAL_MODELS', json.dumps({
-		'writer': {'model': 'shared-id', 'base_url': 'http://writer.test:8000/v1', 'api_key_env': 'WRITER_TOKEN'},
-		'critic': {'model': 'shared-id', 'base_url': 'http://critic.test:9000/v1', 'api_key_env': 'CRITIC_TOKEN'},
-	}))
+	monkeypatch.setenv(
+		'RLENV_LOCAL_MODELS',
+		json.dumps(
+			{
+				'writer': {'model': 'shared-id', 'base_url': 'http://writer.test:8000/v1', 'api_key_env': 'WRITER_TOKEN'},
+				'critic': {'model': 'shared-id', 'base_url': 'http://critic.test:9000/v1', 'api_key_env': 'CRITIC_TOKEN'},
+			}
+		),
+	)
 	monkeypatch.setenv('WRITER_TOKEN', 'writer-token')
 	monkeypatch.setenv('CRITIC_TOKEN', 'critic-token')
 	requests = []
+
 	def handler(request):
 		requests.append(request)
-		return httpx.Response(200, json={
-			'id': 'test', 'object': 'chat.completion', 'created': 0, 'model': 'shared-id',
-			'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': '{"answer":"42"}'}, 'finish_reason': 'stop'}],
-			'usage': {'prompt_tokens': 1, 'completion_tokens': 1, 'total_tokens': 2},
-		})
+		return httpx.Response(
+			200,
+			json={
+				'id': 'test',
+				'object': 'chat.completion',
+				'created': 0,
+				'model': 'shared-id',
+				'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': '{"answer":"42"}'}, 'finish_reason': 'stop'}],
+				'usage': {'prompt_tokens': 1, 'completion_tokens': 1, 'total_tokens': 2},
+			},
+		)
+
 	for alias in ('writer', 'critic'):
 		chat = llm.make_llm(f'local:{alias}', agent=False, fallback=True)
 		assert chat.model == f'local:{alias}'
@@ -293,13 +314,30 @@ def test_local_completion_default_and_override(strict, monkeypatch, alias):
 async def test_context_limit_retries_with_remaining_budget_without_mutating_default(strict, monkeypatch):
 	monkeypatch.setenv('RLENV_LOCAL_MAX_TOKENS', '262144')
 	requests = []
+
 	def handler(request):
 		requests.append(request)
 		if len(requests) == 1:
-			return httpx.Response(400, json={'error': {'message': "Requested token count exceeds the model's maximum context length of 262144 tokens. You requested a total of 262322 tokens: 178 tokens from the input messages and 262144 tokens for the completion."}})
-		return httpx.Response(200, json={'id': 'test', 'object': 'chat.completion', 'created': 0, 'model': 'test-text',
-			'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': '{"answer":"42"}'}, 'finish_reason': 'stop'}],
-			'usage': {'prompt_tokens': 178, 'completion_tokens': 4, 'total_tokens': 182}})
+			return httpx.Response(
+				400,
+				json={
+					'error': {
+						'message': "Requested token count exceeds the model's maximum context length of 262144 tokens. You requested a total of 262322 tokens: 178 tokens from the input messages and 262144 tokens for the completion."
+					}
+				},
+			)
+		return httpx.Response(
+			200,
+			json={
+				'id': 'test',
+				'object': 'chat.completion',
+				'created': 0,
+				'model': 'test-text',
+				'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': '{"answer":"42"}'}, 'finish_reason': 'stop'}],
+				'usage': {'prompt_tokens': 178, 'completion_tokens': 4, 'total_tokens': 182},
+			},
+		)
+
 	chat = llm.make_llm('local-text')
 	async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
 		chat._chat.http_client = client
@@ -316,9 +354,11 @@ async def test_context_limit_retries_with_remaining_budget_without_mutating_defa
 @pytest.mark.parametrize('message', ['bad schema', 'maximum context length of 100 tokens; 101 tokens from the input messages'])
 async def test_other_provider_errors_and_oversized_input_do_not_get_budget_retry(strict, message):
 	requests = []
+
 	def handler(request):
 		requests.append(request)
 		return httpx.Response(400, json={'error': {'message': message}})
+
 	chat = llm.make_llm('local-text')
 	async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
 		chat._chat.http_client = client
@@ -342,14 +382,50 @@ async def test_per_call_budget_timeout_and_retry_logging(strict, monkeypatch, ca
 	original_budget = chat._chat.max_completion_tokens
 	monkeypatch.setattr(llm, 'make_llm', lambda *a, **kw: chat)
 	attempts = []
+
 	async def invoke(self, *a, **kw):
 		attempts.append(self._chat.max_completion_tokens)
 		if len(attempts) == 1:
 			await llm.asyncio.sleep(1)
 		return SimpleNamespace(completion=Answer(answer='42'), usage=None)
+
 	monkeypatch.setattr(LocalChat, 'ainvoke', invoke)
 	result, _, _ = await llm.call('local-text', 's', 'u', Answer, retries=2, timeout=0.01, max_completion_tokens=4096, log_context='critic task-id')
 	assert result.answer == '42' and attempts == [4096, 4096]
 	assert chat._chat.max_completion_tokens == original_budget
 	log = capsys.readouterr().out
 	assert 'request 1/2' in log and 'TimeoutError' in log and 'retrying' in log and 'completed in' in log
+
+
+@pytest.mark.asyncio
+async def test_reasoning_is_captured_in_request_scope_without_polluting_answer(monkeypatch):
+	from rl_env_use.reasoning import capture_reasoning
+
+	monkeypatch.setenv('RLENV_LOCAL_MODELS', json.dumps({'thinking': {'model': 'qwen', 'base_url': 'http://local.test/v1', 'enable_thinking': True}}))
+
+	def handler(request):
+		assert json.loads(request.content)['chat_template_kwargs']['enable_thinking'] is True
+		return httpx.Response(
+			200,
+			json={
+				'id': 'r1',
+				'object': 'chat.completion',
+				'created': 0,
+				'model': 'qwen',
+				'choices': [
+					{'index': 0, 'message': {'role': 'assistant', 'reasoning_content': 'Model-provided critic reasoning.', 'content': '{"answer":"42"}'}, 'finish_reason': 'stop'}
+				],
+			},
+		)
+
+	chat = LocalChat('thinking')
+	async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+		chat._chat.http_client = client
+		with capture_reasoning() as records:
+			result = await chat.ainvoke([UserMessage(content='Question')], output_format=Answer)
+		assert records[0]['reasoning'] == 'Model-provided critic reasoning.'
+		assert records[0]['field'] == 'reasoning_content'
+		assert result.completion.answer == '42'
+		assert 'reasoning' not in result.completion.model_dump_json()
+		await chat.ainvoke([UserMessage(content='Another question')], output_format=Answer)
+		assert len(records) == 1  # no capture leaks outside the context

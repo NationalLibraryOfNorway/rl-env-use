@@ -566,7 +566,7 @@ sft-discovery.jsonl      attempted sources, followed links and explicit exclusio
 sft-documents.jsonl      relevant evidence with provenance and transformations
 sft-candidates.jsonl     drafts and critic verdicts, including rejected examples
 sft-status.json         latest phase and completion status
-dataset-sft.jsonl       accepted chat messages only
+dataset-sft.jsonl       accepted messages plus separate critic-reasoning attributes
 dataset-sft.audit.json  source, model, evidence hash and review provenance
 sft-preview.md          readable accepted questions, answers and explanations
 ```
@@ -636,3 +636,53 @@ such as `{"id":"sft_...","verdict":"reject","notes":"..."}`. The latest verdict
 wins and rejected examples are omitted from every export even if the model critic
 passed them. Corrected examples retain their original source snapshot and receive
 a new ID and a fresh critic review; the original and its rejection stay in the audit.
+
+### Switching the critic to thinking mode at an accepted-example milestone
+
+Keep writer and critic routes separate. A thinking route can point to the same
+weights and endpoint as `local:critic`, with `"enable_thinking": true`; keep
+`local:writer` and the original critic route unchanged. Configure a saved SFT spec:
+
+```json
+{
+  "critic_model": "local:critic",
+  "sft_critic_switch_at": 2500,
+  "sft_thinking_critic": "local:critic-thinking",
+  "sft_thinking_critic_timeout": 1200,
+  "sft_thinking_critic_max_tokens": 32768,
+  "target_tasks": 10000,
+  "sft_continuous": true
+}
+```
+
+The threshold counts accepted, exported examples, including manual exclusions and
+source checks. Selection is checked between examples, even within a two-example
+writer batch. After 2,500 acceptances, the first cohort is frozen under
+`cohorts/nonthinking-2500/` with its source snapshots. The next review uses the
+thinking critic; `sft-critic-transition.json` makes this transition persistent.
+Previously completed cases keep their existing reviews. Collection stops at the
+total target without overshooting it or when the source frontier is exhausted.
+
+Thinking uses the server's template option, not a request to reveal reasoning in
+the final review schema. The compatible transport captures model-provided
+`reasoning_content` (or `reasoning`) separately from the structured verdict.
+For thinking reviews, missing reasoning is an explicit error and is not silently
+accepted. No reasoning is fabricated or reconstructed from the verdict.
+
+Every automatic SFT example in `dataset-sft.jsonl` and
+`dataset-sft.records.jsonl` has separate attributes:
+
+```json
+{
+  "messages": ["...training messages only..."],
+  "critic_thinking": true,
+  "critic_reasoning": "...model-provided critic reasoning..."
+}
+```
+
+Non-thinking examples have `critic_thinking=false` and normally
+`critic_reasoning=null`. The richer records/audit also identify critic phase,
+model, response and capture metadata. Critic reasoning never enters the system,
+user or assistant training messages. `dataset-sft.chat.jsonl` contains only
+`messages` for trainers that reject extra attributes. The reasoning is diagnostic
+model output, not verified explanatory supervision or a human review.

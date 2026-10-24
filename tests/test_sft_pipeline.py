@@ -182,3 +182,78 @@ async def test_ctg_discovery_paginates_and_reopens_only_after_last_page(tmp_path
 	assert json.loads((tmp_path / 'sft-frontier.json').read_text())[source]['exhausted']
 	assert parse_qs(urlsplit(seen[1]).query)['pageToken'] == ['page2']
 	assert parse_qs(urlsplit(seen[0]).query)['pageSize'] == ['25']
+
+
+def test_critic_switch_latches_and_only_snapshots_once(tmp_path, monkeypatch):
+	import rl_env_use.sft_pipeline as module
+
+	freeze = __import__('unittest.mock', fromlist=['Mock']).Mock(return_value=tmp_path / 'cohorts' / 'first')
+	monkeypatch.setattr(module, 'freeze_cohort', freeze)
+	spec = {'sft_critic_switch_at': 2500, 'sft_thinking_critic': 'thinking'}
+	assert module.scheduled_critic(tmp_path, spec, 'baseline', 2499) == ('baseline', False)
+	assert module.scheduled_critic(tmp_path, spec, 'baseline', 2500) == ('thinking', True)
+	assert module.scheduled_critic(tmp_path, spec, 'baseline', 2499) == ('thinking', True)
+	assert freeze.call_count == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('target,switch_at,expected_count', [(3, 2, 3), (2, 999, 2)])
+async def test_switch_and_target_are_checked_between_examples(tmp_path, monkeypatch, target, switch_at, expected_count):
+	import hashlib
+
+	import rl_env_use.sft_pipeline as module
+	from rl_env_use.reasoning import REASONING_RECORDS
+
+	raw = b'Primary pain at 6 weeks.'
+	(tmp_path / 'raw.txt').write_bytes(raw)
+	proof = {'capture': 'raw.txt', 'response_sha256': hashlib.sha256(raw).hexdigest(), 'captured_at': '2026-10-24', 'robots': [{'allowed': True}]}
+	draft = {
+		'task_type': 'endpoint_extraction',
+		'question': 'Hva er det primaere endepunktet og tidspunktet for maalingen?',
+		'answer': 'Smerte etter seks uker.',
+		'explanation': 'Kilden oppgir smerte som primaert endepunkt og seks uker som tidspunkt for den planlagte maalingen.',
+		'quotes': ['Primary pain at 6 weeks.'],
+	}
+	seed = {
+		'id': 'seed',
+		'case': 'old',
+		'document_id': 'seed',
+		'source_url': 'https://a.org/source',
+		'language': 'nob',
+		'writer': 'writer',
+		'critic': 'baseline',
+		'evidence_sha256': 'e',
+		'draft': draft,
+		'evidence': raw.decode(),
+		'review': {},
+		'accepted': True,
+		'robots_allowed': True,
+		'system': 'Svar paa norsk.',
+		'source_capture': proof,
+	}
+	save_jsonl(tmp_path / 'sft-candidates.jsonl', [seed])
+	save_jsonl(tmp_path / 'sft-documents.jsonl', [{'id': 'doc', 'case': 'new', 'url': 'https://a.org/source', 'text': raw.decode(), 'robots_allowed': True, **proof}])
+	calls = []
+
+	async def fake_call(model, system, user, schema, **kwargs):
+		if schema is Drafts:
+			return Drafts(examples=[Draft(**draft), Draft(**draft)]), {}, 'writer'
+		calls.append((model, kwargs))
+		if model == 'thinking':
+			REASONING_RECORDS.get().append({'reasoning': 'Private model critic trace.', 'field': 'reasoning_content', 'model': model})
+		return Critic(supported=True, correct=True, well_posed=True, language_ok=True, issues=[]), {}, model
+
+	monkeypatch.setattr(module, 'call', fake_call)
+	spec = {'language': 'nob', 'target_tasks': target, 'tasks_per_case': 2, 'sft_critic_switch_at': switch_at, 'sft_thinking_critic': 'thinking'}
+	assert await module.synthesize_sft(tmp_path, spec, 'writer', 'baseline') == expected_count
+	rows = load_jsonl(tmp_path / 'dataset-sft.jsonl')
+	assert rows[1]['critic_thinking'] is False and rows[1]['critic_reasoning'] is None
+	if target == 3:
+		assert [c[0] for c in calls] == ['baseline', 'thinking']
+		assert rows[2]['critic_reasoning'] == 'Private model critic trace.'
+		assert 'Private model' not in json.dumps(rows[2]['messages'])
+		assert 'critic_reasoning' not in load_jsonl(tmp_path / 'dataset-sft.chat.jsonl')[2]
+		assert len(load_jsonl(tmp_path / 'cohorts' / 'nonthinking-2' / 'dataset-sft.jsonl')) == 2
+		assert calls[1][1]['timeout'] == 1200 and calls[1][1]['max_completion_tokens'] == 32768
+	else:
+		assert len(calls) == 1  # no target overshoot from a two-example writer batch

@@ -290,3 +290,13 @@ The export includes extracted evidence, source URLs and dates; portable records
 link raw permitted HTML/JSON snapshots, checksums and robots decisions. Keep the
 snapshot folders with the dataset. See the continuous-collection section in the
 open-stack guide for configuration and artifact names.
+
+To switch critic thinking after a collection milestone, set
+`sft_critic_switch_at` and `sft_thinking_critic`, with the named route explicitly
+configured `enable_thinking=true`. Keep the writer unchanged. `target_tasks` is
+the combined total; selection is checked between accepted examples. The first
+cohort is frozen and old cases are not re-reviewed automatically. Model-provided
+critic reasoning belongs in each example's `critic_reasoning` attribute, separate
+from `messages`; use `dataset-sft.chat.jsonl` for chat-only training. Capture actual
+response reasoning, never reconstruct it from a verdict. See the open-stack guide
+for timeout/token controls and transition artifacts.

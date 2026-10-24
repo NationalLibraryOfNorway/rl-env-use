@@ -10,21 +10,27 @@ from urllib.parse import urlparse
 from browser_use import ChatOpenAI
 from browser_use.llm.exceptions import ModelProviderError
 
+from .reasoning import REASONING_RECORDS, record_reasoning
+
 
 @dataclass
 class TemplateChat(ChatOpenAI):
 	"""Keep browser-use serialization while forwarding an explicit server template option."""
+
 	enable_thinking: bool | None = None
 
 	def get_client(self):
 		client = super().get_client()
-		if self.enable_thinking is not None:
+		if self.enable_thinking is not None or REASONING_RECORDS.get() is not None:
 			create = client.chat.completions.create
 
 			async def configured_create(**kwargs):
 				extra = dict(kwargs.pop('extra_body', None) or {})
-				extra['chat_template_kwargs'] = dict(extra.get('chat_template_kwargs') or {}) | {'enable_thinking': self.enable_thinking}
-				return await create(**kwargs, extra_body=extra)
+				if self.enable_thinking is not None:
+					extra['chat_template_kwargs'] = dict(extra.get('chat_template_kwargs') or {}) | {'enable_thinking': self.enable_thinking}
+				response = await create(**kwargs, extra_body=extra)
+				record_reasoning(response)
+				return response
 
 			client.chat.completions.create = configured_create
 		return client
