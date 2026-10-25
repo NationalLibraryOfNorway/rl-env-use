@@ -487,7 +487,7 @@ def cmd_collect_sources(a):
 	spec = spec_of(env)
 	if spec.get('mode') != 'administrative-sources':
 		raise SystemExit('collect-sources requires a separate administrative-sources environment')
-	print(json.dumps(run(collect_admin(env, spec))))
+	print(json.dumps(run(collect_admin(env, spec, a.retry_urls, a.retry_only))))
 
 
 def cmd_sft(a):
@@ -600,6 +600,8 @@ def main(argv=None):
 	q.add_argument('--no-judges', action='store_true', help='skip applying calibrated judges to new runs')
 	q = sp.add_parser('collect-sources', help='collect public administrative guidance without any model calls')
 	q.add_argument('env')
+	q.add_argument('--retry-urls', nargs='+', default=[], help='retry specified failed public URLs; preserve prior errors in admin-retries.jsonl')
+	q.add_argument('--retry-only', action='store_true', help='process only the explicit retry URLs and preserve the remaining frontier')
 	q = sp.add_parser('sft', help='export curated evidence-interpretation examples with short explanations')
 	q.add_argument('env')
 	q.add_argument('--targets', required=True, help='JSON array of edited prompts, labels and explanations; see docs/OPEN_STACK.md')

@@ -108,3 +108,71 @@ async def test_limit_keeps_frontier_for_resume(tmp_path, monkeypatch):
 	assert json.loads((tmp_path / 'admin-status.json').read_text())['phase'] == 'limit_reached'
 	s['source_max_pages'] = 2
 	assert (await admin.collect_admin(tmp_path, s))['documents'] == 2
+
+
+def test_split_is_lossless_bounded_and_retains_legal_context():
+	text = (
+		'Document title\nKapittel 1. Virkeområde\n§ 1-1. Formål\n'
+		+ ('Alle vilkår og unntak gjelder.\n' * 30)
+		+ 'Kapittel 2. Plikter\n§ 2-1. Arbeidsgiver\n'
+		+ 'Rettigheter gjelder.\n' * 30
+	)
+	parts = admin.split_source(text, 180)
+	assert ''.join(p['text'] for p in parts) == text
+	assert all(0 < len(p['text']) <= 180 for p in parts)
+	assert all(text[p['source_text_start'] : p['source_text_end']] == p['text'] for p in parts)
+	assert any(p['section_path'] == ['Kapittel 1. Virkeområde', '§ 1-1. Formål'] and p['continues_section'] for p in parts)
+	assert any(p['section_path'] == ['Kapittel 2. Plikter', '§ 2-1. Arbeidsgiver'] for p in parts)
+
+
+def test_long_unbroken_section_splits_without_dropping_characters():
+	text = 'x' * 301
+	parts = admin.split_source(text, 100)
+	assert ''.join(p['text'] for p in parts) == text
+	assert [len(p['text']) for p in parts] == [100, 100, 100, 1]
+
+
+def test_parts_share_full_source_provenance_and_hash():
+	text = 'Kapittel 1. Test\n§ 1-1. Vilkår\n' + 'Komplette vilkår -2.5% med unntak.\n' * 40
+	proof = {'capture': 'raw.html', 'response_sha256': 'rawhash', 'robots': [{'allowed': True}]}
+	parts = admin.source_documents(
+		'https://example.org/guidance', text, proof, {'title': 'Lov'}, {'depth': 0, 'discovered_from': 'seed'}, spec() | {'source_max_chars': 250, 'source_chunk_chars': 120}
+	)
+	assert len(parts) > 1
+	assert len({p['parent_document_id'] for p in parts}) == 1
+	assert all(p['source_text_sha256'] == admin.digest(text) and p['context_required'] for p in parts)
+	assert all(p['capture'] == 'raw.html' and p['response_sha256'] == 'rawhash' and p['title'] == 'Lov' for p in parts)
+	assert [p['part_index'] for p in parts] == list(range(1, len(parts) + 1))
+	assert ''.join(p['text'] for p in parts) == text
+
+
+@pytest.mark.asyncio
+async def test_retry_recovers_oversized_page_and_preserves_audit_and_other_frontier(tmp_path, monkeypatch):
+	from rl_env_use.store import save_jsonl
+
+	url = 'https://example.org/guidance/long-law'
+	old = {'url_requested': url, 'agency': 'example.org', 'status': 'error', 'error': 'ValueError', 'detail': 'oversized'}
+	save_jsonl(tmp_path / 'admin-collection.jsonl', [old])
+	(tmp_path / 'admin-frontier.json').write_text(json.dumps({'queue': [{'url': 'https://example.org/guidance/untouched', 'depth': 0}]}))
+	text = '§ 1-1. Vilkår\n' + 'Alle vilkår gjelder.\n' * 50
+
+	async def handler(req):
+		if req.url.path == '/robots.txt':
+			return httpx.Response(200, text='User-agent: *\nAllow: /')
+		assert req.url.path == '/guidance/long-law'
+		return httpx.Response(200, headers={'Content-Type': 'text/html'}, text='<main>' + text + '</main>')
+
+	factory = httpx.AsyncClient
+	monkeypatch.setattr(admin.httpx, 'AsyncClient', lambda **kwargs: factory(transport=httpx.MockTransport(handler), **kwargs))
+	s = spec() | {'source_max_chars': 250, 'source_chunk_chars': 120}
+	result = await admin.collect_admin(tmp_path, s, [url], retry_only=True)
+	assert result['documents'] > 1
+	assert load_jsonl(tmp_path / 'admin-retries.jsonl')[0]['previous_result'] == old
+	row = load_jsonl(tmp_path / 'admin-collection.jsonl')[0]
+	assert row['status'] == 'collected' and row['part_count'] == result['documents']
+	assert 'document_id' not in row
+	parts = load_jsonl(tmp_path / 'admin-documents.jsonl')
+	assert ''.join(p['text'] for p in parts) == text.strip()
+	assert json.loads((tmp_path / 'admin-frontier.json').read_text())['queue'][0]['url'].endswith('/untouched')
+	# Retrying the same command after success does not duplicate the recovered parts.
+	assert (await admin.collect_admin(tmp_path, s, [url], retry_only=True))['documents'] == result['documents']

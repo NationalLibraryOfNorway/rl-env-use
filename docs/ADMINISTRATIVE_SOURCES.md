@@ -46,7 +46,7 @@ Use the fork and branch that contain the collector. On the destination machine,
 with Python 3.11+ and `uv` installed:
 
 ```sh
-git clone --branch open-stack https://github.com/versae/rl-env-use.git
+git clone --branch open-stack https://github.com/NationalLibraryOfNorway/rl-env-use.git
 cd rl-env-use
 uv venv --python 3.11
 uv pip install --python .venv/bin/python -e .
@@ -126,10 +126,20 @@ An agency-specific agreement or supported export can be added later with its act
 scope and provenance; collection currently uses the ordinary robots gate.
 
 HTTP 429/5xx retry/backoff behavior is inherited from `RobotsGuard`. Blocked or failed
-URLs remain in the audit and are not repeatedly retried on resume. To retry after a
-policy or transient failure is resolved, retain an audit copy, remove the selected
-row from `admin-collection.jsonl`, and add that URL to the configured seeds. Do not
-remove genuine robots refusals merely to force retries.
+URLs remain in the audit and are not repeatedly retried on ordinary resume. To retry
+specific failed URLs after fixing an extraction issue or transient failure, use:
+
+```sh
+.venv/bin/rl-env-use collect-sources envs/norwegian-administrative-sources \
+  --retry-only --retry-urls https://www.example.org/permitted-failed-page
+```
+
+Replace the placeholder with actual in-scope URLs. `--retry-only` leaves unrelated
+pending work queued; omitting it also continues normal collection. Prior failures
+are preserved in `admin-retries.jsonl`. Already collected URLs are skipped, so the
+same retry command can be resumed after partial success. Robots and scope checks
+remain enforced; blocked rows cannot be retried through this flag. Global and
+per-agency URL limits still apply.
 
 ## Evidence artifacts
 
@@ -138,6 +148,7 @@ remove genuine robots refusals merely to force retries.
 | `admin-documents.jsonl` | Full extracted evidence, title, declared language/dates, URLs, hashes and download provenance |
 | `admin-collection.jsonl` | Every attempted URL, collection/block/error status, discovery parent and depth |
 | `admin-frontier.json` | Pending URLs and crawl depth; survives interruption |
+| `admin-retries.jsonl` | Original failed collection records preserved before explicit retries |
 | `admin-status.json` | Current URL, counts by status and successful documents by agency |
 | `source-captures/` | Complete raw permitted HTML/PDF responses |
 | `robots-captures/`, `robots-audit.jsonl` | Policy snapshots, permission decisions and crawl delays |
@@ -148,8 +159,44 @@ forms and explicitly hidden elements. It does not render JavaScript or retrieve
 hidden accordion content. Dynamic/incomplete documents require a supported content
 API or a later rendering adapter. Text-bearing PDFs are extracted across all pages;
 scanned PDFs need OCR, and tables/minus signs need verification. Documents under
-300 or over 150,000 extracted characters are excluded; raw responses over 10 MB are
-rejected. No evidence text is truncated to make it pass the bounds.
+300 extracted characters are excluded; raw responses over 10 MB are rejected.
+Documents over `source_max_chars` (default 150,000 characters) are split into
+shorter evidence parts instead of being discarded. `source_chunk_chars` controls
+the part ceiling (default 24,000 characters, capped by `source_max_chars`).
+
+The splitter prefers legal chapter/section headings, then line and word boundaries;
+an unbroken span falls back to character boundaries. The parts are contiguous,
+non-overlapping slices: joining them in `part_index` order reconstructs the complete
+extracted source exactly. No text is truncated or replaced with a summary. Short
+final parts remain included so the reconstruction loses nothing.
+
+Each part retains the source title, URL, declared dates, raw capture/hash and robots
+provenance. Additional fields are `parent_document_id`, `part_index`, `part_count`,
+`source_text_start`/`source_text_end` (Unicode character offsets, end exclusive),
+`source_text_sha256`, `source_text_length`, `section_path`, `continues_section`,
+`boundary_after` and `context_required=true`. Offsets refer to the full extracted
+text, not HTML bytes. Section metadata is inferred from visible legal-heading lines;
+it is not an authoritative legal hierarchy or an effective-date determination.
+
+A part is an evidence instance, not an independent adjudicated case or SFT example.
+Its provisions can depend on definitions, exceptions, tables and cross-references
+elsewhere. Retrieve that context before composing an answer; never treat a chunk
+boundary as the boundary of a legal rule. Keep all parts of a parent in the same
+train/validation/test split. URL-level `collected` counts remain counts of source
+attempts; `admin-documents.jsonl` can now have several evidence rows per source.
+Split collection records use `document_ids` and `part_count`; a single-part source
+also keeps the legacy `document_id` field.
+
+For an existing checkout that rejected the three long Arbeidstilsynet documents,
+pull the latest `open-stack` code and retry just those URLs:
+
+```sh
+.venv/bin/rl-env-use collect-sources envs/norwegian-administrative-sources \
+  --retry-only --retry-urls \
+  https://www.arbeidstilsynet.no/regelverk/lover/arbeidsmiljoloven--aml/ \
+  https://www.arbeidstilsynet.no/regelverk/forskrifter/forskrift-om-utforelse-av-arbeid/ \
+  https://www.arbeidstilsynet.no/regelverk/forskrifter/forskrift-om-organisering-ledelse-og-medvirkning/
+```
 
 Declared page dates are stored without being equated to rule-effective dates.
 `captured_at` proves when we fetched a snapshot, not when its rules took effect.

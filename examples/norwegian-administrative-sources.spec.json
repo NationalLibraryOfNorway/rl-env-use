@@ -119,5 +119,6 @@
     "repository": "https://github.com/SimulaMet/SimpleAudit",
     "commit": "6636ae8883033e1acaaf326a975e826e7c7bee37",
     "purpose": "source discovery only; no audit questions or expected answers imported"
-  }
+  },
+  "source_chunk_chars": 24000
 }

@@ -344,3 +344,9 @@ source inventory, allowlist and resume workflow. This makes no model calls and c
 run alongside generation. Keep evaluation prompts separate, preserve source dates,
 scheme/population exceptions and raw snapshots, and record reuse status separately
 from robots permission. Agency affiliation alone does not configure an access override.
+Oversized sources are split losslessly with parent IDs, legal-heading context and
+exact character offsets. Treat parts as evidence requiring surrounding definitions
+and exceptions, not independent labeled cases; group dataset splits by parent.
+After upgrading, use `collect-sources --retry-only --retry-urls <URLs...>` to recover
+specific formerly oversized failures while preserving the other frontier and audit.
+The canonical fork is `NationalLibraryOfNorway/rl-env-use`, branch `open-stack`.

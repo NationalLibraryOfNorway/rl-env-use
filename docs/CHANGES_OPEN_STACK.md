@@ -65,13 +65,13 @@ git remote rename origin delivery
 git remote add upstream https://github.com/browser-use/rl-env-use.git
 ```
 
-The GitHub fork is [versae/rl-env-use](https://github.com/versae/rl-env-use).
+The GitHub fork is [NationalLibraryOfNorway/rl-env-use](https://github.com/NationalLibraryOfNorway/rl-env-use).
 The implementation is prepared on the local `open-stack` branch. Publishing is
 currently blocked by the connected integration's write permissions. After the
 branch is published, clone it directly:
 
 ```bash
-git clone --branch open-stack https://github.com/versae/rl-env-use.git
+git clone --branch open-stack https://github.com/NationalLibraryOfNorway/rl-env-use.git
 cd rl-env-use
 git remote add upstream https://github.com/browser-use/rl-env-use.git
 ```
@@ -79,7 +79,7 @@ git remote add upstream https://github.com/browser-use/rl-env-use.git
 When restoring the earlier portable bundle, add the fork as the publish remote:
 
 ```bash
-git remote add origin https://github.com/versae/rl-env-use.git
+git remote add origin https://github.com/NationalLibraryOfNorway/rl-env-use.git
 ```
 
 The original delivery bundle records the initial preparation commit. The
