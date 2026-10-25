@@ -1,0 +1,22 @@
+{
+  "mode": "endpoint-assessment",
+  "topic": "Assess whether Norwegian clinical trials met their prespecified primary endpoints from paired historical registration and results evidence",
+  "language": "nob",
+  "localize_diagnostics": false,
+  "writer_model": "local:writer",
+  "critic_model": "local:critic-thinking",
+  "target_tasks": 100,
+  "sources": [
+    "https://www.helsenorge.no/api/v1/kliniskestudier",
+    "https://www.nortrials.no/",
+    "https://www.helse-vest.no/nb/norcrin",
+    "https://clinicaltrials.gov/api/v2/studies?query.locn=Norway&filter.overallStatus=COMPLETED&pageSize=25&format=json"
+  ],
+  "sft_discovery_limit": 25,
+  "endpoint_continuous": false,
+  "endpoint_max_batches": 1,
+  "endpoint_include_insufficient": false,
+  "endpoint_model_timeout": 1200,
+  "endpoint_critic_max_tokens": 32768,
+  "endpoint_cases": {}
+}

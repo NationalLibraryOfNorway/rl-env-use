@@ -686,3 +686,12 @@ model, response and capture metadata. Critic reasoning never enters the system,
 user or assistant training messages. `dataset-sft.chat.jsonl` contains only
 `messages` for trainers that reject extra attributes. The reasoning is diagnostic
 model output, not verified explanatory supervision or a human review.
+
+## Domain-specific primary-endpoint assessment
+
+Use the separate `--mode endpoint-assessment` when the objective is whether a trial
+met its prespecified primary endpoints. It pairs reviewed historical registrations
+with results, records endpoint-level and overall decisions separately, and blocks
+critic-requested corrections. General `--mode sft` remains available and unchanged.
+See [PRIMARY_ENDPOINTS.md](PRIMARY_ENDPOINTS.md) for the Norwegian starter spec,
+evidence manifest, strict eligibility rules, source limitations and exports.

@@ -300,3 +300,17 @@ critic reasoning belongs in each example's `critic_reasoning` attribute, separat
 from `messages`; use `dataset-sft.chat.jsonl` for chat-only training. Capture actual
 response reasoning, never reconstruct it from a verdict. See the open-stack guide
 for timeout/token controls and transition artifacts.
+
+## Primary-endpoint assessment mode
+
+When the requested objective is whether a trial met its prespecified primary
+endpoint, use a separate environment with `--mode endpoint-assessment`, not general
+`--mode sft`. Read [docs/PRIMARY_ENDPOINTS.md](docs/PRIMARY_ENDPOINTS.md) for the
+starter spec, historical-evidence manifest and workflow. Pair registration with
+results, retain prespecification provenance, assess every primary endpoint and keep
+overall trial success separate from mixed endpoint findings. Missing evidence is
+queued by default; do not count general extraction/recruitment examples toward this
+objective. Any critic-requested correction blocks acceptance. Keep raw critic
+reasoning outside messages in each example's `critic_reasoning` attribute. This is
+retrospective SFT with results in the input; prospective forecasting needs a separate
+outcome-blind design. Preserve existing general-purpose SFT environments and runs.

@@ -118,6 +118,10 @@ async def build(env: Path, spec: dict, only: str | None = None, model: str | Non
 	model, critic = writer_critic_models(model, critic, spec)
 	spec.update(writer_model=model, critic_model=critic)
 	use_browser_spec(spec)
+	if spec.get('mode') == 'endpoint-assessment':
+		from .endpoint_pipeline import build_endpoints
+
+		return json.dumps(await build_endpoints(env, spec, model, critic, only))
 	if spec.get('mode') == 'sft':
 		from .sft_pipeline import build_sft
 
@@ -336,6 +340,10 @@ async def create(env: Path, spec: dict, model: str | None = None, log=print, *, 
 	model, critic = writer_critic_models(model, critic, spec)
 	spec.update(writer_model=model, critic_model=critic)
 	use_browser_spec(spec)
+	if spec.get('mode') == 'endpoint-assessment':
+		from .endpoint_pipeline import build_endpoints
+
+		return await build_endpoints(env, spec, model, critic)
 	if spec.get('mode') == 'sft':
 		from .sft_pipeline import build_sft
 
@@ -448,6 +456,13 @@ def regrade_row(vdir: Path, task: dict, row: dict) -> dict:
 
 
 def export(env: Path, out: Path) -> int:
+	if (env / 'spec.json').exists() and json.loads((env / 'spec.json').read_text()).get('mode') == 'endpoint-assessment':
+		from .endpoint_pipeline import export_endpoint
+
+		count = export_endpoint(env)
+		if out != env / 'dataset-endpoints.jsonl':
+			write_atomic(out, (env / 'dataset-endpoints.jsonl').read_text())
+		return count
 	if (env / 'spec.json').exists() and json.loads((env / 'spec.json').read_text()).get('mode') == 'sft':
 		from .sft_pipeline import export_accepted
 

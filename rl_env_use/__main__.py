@@ -136,6 +136,8 @@ def cmd_create(a):
 		}
 	spec.update(language_options(a, spec, env))
 	if a.mode:
+		if spec.get('mode', 'rl') != a.mode and (any(env.glob('*candidates.jsonl')) or (env / 'tasks.jsonl').exists()):
+			raise SystemExit('Use a new environment for a different dataset mode; existing candidates are preserved')
 		spec['mode'] = a.mode
 	writer, critic = pipeline.writer_critic_models(a.model, a.critic, spec)
 	spec.update(writer_model=writer, critic_model=critic)
@@ -150,6 +152,9 @@ def cmd_create(a):
 	with ui.board(f'rl-env-use create · {env.name}'):
 		res = run(pipeline.create(env, spec), timeout=float(os.getenv('RLENV_GLOBAL_TIMEOUT', '0')) or None)
 	print(json.dumps(res, indent=1))
+	if spec.get('mode') == 'endpoint-assessment':
+		print(f'Endpoint dataset: {env}/dataset-endpoints.jsonl; evidence queue: {env}/endpoint-needs-evidence.jsonl')
+		return
 	if spec.get('mode') == 'sft':
 		print(f'SFT dataset: {env}/dataset-sft.jsonl; preview: {env}/sft-preview.md')
 		return
@@ -207,6 +212,8 @@ def cmd_build(a):
 	spec = spec_of(env)
 	spec.update(language_options(a, spec, env))
 	if a.mode:
+		if spec.get('mode', 'rl') != a.mode and (any(env.glob('*candidates.jsonl')) or (env / 'tasks.jsonl').exists()):
+			raise SystemExit('Use a new environment for a different dataset mode; existing candidates are preserved')
 		spec['mode'] = a.mode
 	writer, critic = pipeline.writer_critic_models(a.model, a.critic, spec)
 	spec.update(writer_model=writer, critic_model=critic)
@@ -469,7 +476,7 @@ def cmd_export(a):
 	from .pipeline import export
 
 	env = Path(a.env)
-	name = 'dataset-sft.jsonl' if spec_of(env).get('mode') == 'sft' else 'dataset.jsonl'
+	name = {'sft': 'dataset-sft.jsonl', 'endpoint-assessment': 'dataset-endpoints.jsonl'}.get(spec_of(env).get('mode'), 'dataset.jsonl')
 	print(f'{export(env, env / name)} tasks -> {env}/{name}')
 
 
@@ -603,7 +610,7 @@ def main(argv=None):
 			q.add_argument('--seed', type=int, default=0)
 	for command in ('new', 'create', 'build'):
 		parser = sp.choices[command]
-		parser.add_argument('--mode', choices=['rl', 'sft'], help='RL forecasting/reward tasks or source-grounded SFT evidence interpretation (default: saved mode or rl)')
+		parser.add_argument('--mode', choices=['rl', 'sft', 'endpoint-assessment'], help='RL tasks, general SFT, or paired primary-endpoint assessment (default: saved mode or rl)')
 		parser.add_argument('--language', type=language_code, metavar='ISO639_3', help='dataset language, e.g. eng, nob, nno or spa (default: saved language or RLENV_LANGUAGE/eng)')
 		parser.add_argument('--localize-diagnostics', action=argparse.BooleanOptionalAction, default=None, help='also generate model feedback, mining notes and diagnostics in the dataset language (default: saved setting or false)')
 	a = p.parse_args(argv)

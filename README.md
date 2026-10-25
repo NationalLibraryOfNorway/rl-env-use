@@ -19,6 +19,10 @@ Start with [installation](install.md), then see the
 validation, and limitations. See the [change log](docs/CHANGES_OPEN_STACK.md)
 for implementation details.
 
+For clinical trials, [primary-endpoint assessment](docs/PRIMARY_ENDPOINTS.md) is a
+separate retrospective SFT mode that pairs historical registration with results.
+General evidence-reading SFT remains available.
+
 The original README follows unchanged. Its hosted API-key setup applies to
 explicit compatibility mode (`RLENV_OPEN_ONLY=0`); use the guides above for the
 self-hosted setup.
