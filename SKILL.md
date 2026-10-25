@@ -1,6 +1,6 @@
 ---
 name: rl-env-use
-description: Build RL environments or source-grounded SFT datasets from real cases mined from the web, using self-hosted open-weight models and local Browser Use agents. Use when the user knows a domain and the input-to-outcome skill to measure but needs help collecting cases, verifying tasks, benchmarking policies, optimizing prompts, or exporting tasks for an external RL trainer.
+description: Build RL environments, source-grounded SFT datasets, or a model-free corpus of Norwegian administrative guidance from public web sources, using open-weight models and local tools where needed. Use when the user knows a domain and the input-to-outcome skill to measure but needs help collecting cases, verifying tasks, benchmarking policies, optimizing prompts, or exporting tasks for an external RL trainer.
 ---
 
 # rl-env-use
@@ -11,6 +11,26 @@ creating a spec instead makes a browse-task environment, where the policy finds 
 
 This fork defaults to self-hosted open-weight models. `climb` optimizes a system prompt; it does not update model
 weights. Actual RL training requires a separate trainer consuming the exported tasks and rewards.
+
+## Choose the workflow
+
+- Public administrative source collection (NAV, Skatteetaten and related agencies):
+  use `collect-sources` in a separate `mode=administrative-sources` environment.
+  Read [docs/ADMINISTRATIVE_SOURCES.md](docs/ADMINISTRATIVE_SOURCES.md), including
+  "Run on another system", before setup. This phase needs Python and HTTP access,
+  not a model endpoint, API key, GPU or Chromium. It does not yet generate SFT data.
+- General clinical-trial evidence-reading SFT: use `--mode sft`.
+- Whether a trial met its prespecified primary endpoints: use
+  `--mode endpoint-assessment` and [docs/PRIMARY_ENDPOINTS.md](docs/PRIMARY_ENDPOINTS.md).
+- RL tasks, policy evaluation and prompt optimization: use the default `rl` workflow.
+
+Install from this fork's `open-stack` branch and run from its repository root.
+`SKILL.md` depends on the repository's `docs/` and `examples/`; keep those relative
+links available when installing the skill on another system. Do not copy a local
+`.venv`, secrets or machine-specific paths. Runtime `envs/` data is not supplied by
+cloning the repo: either initialize from the tracked example spec or transfer a
+consistent checkpoint with all source and robots snapshots. Use one collector per
+environment; a host's `launch.json` PID cannot control a process on another host.
 
 ## Setup and model selection
 

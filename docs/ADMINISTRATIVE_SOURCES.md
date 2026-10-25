@@ -40,6 +40,52 @@ UDI, Altinn, Sivilombudet, Datatilsynet and municipal guidance are possible late
 extensions. They are not all identified by the above packs and are not part of the
 initial active allowlist. Add them deliberately when the task scope is defined.
 
+## Run on another system
+
+Use the fork and branch that contain the collector. On the destination machine,
+with Python 3.11+ and `uv` installed:
+
+```sh
+git clone --branch open-stack https://github.com/versae/rl-env-use.git
+cd rl-env-use
+uv venv --python 3.11
+uv pip install --python .venv/bin/python -e .
+.venv/bin/rl-env-use collect-sources --help
+```
+
+For source collection alone, no `.env`, model API key, GPU or Chromium setup is
+required. The CLI help check does not download sources or call a model. Keep the
+repository's `SKILL.md`, `docs/` and `examples/` together when registering the skill
+with the destination agent; a standalone copy of `SKILL.md` loses its references.
+The institutional source workflow currently ends at the evidence corpus. The
+administrative writer/critic and training export are not implemented by this mode.
+
+Choose a fresh collection or transfer the existing checkpoint:
+
+- **Fresh collection:** follow "Start and resume" below using the tracked example
+  spec. The Git repository does not include downloaded `envs/` artifacts.
+- **Continue existing collection:** first stop only the source collector on its
+  original host and confirm it has exited, leaving unrelated clinical runs active.
+  Copy the complete `envs/norwegian-administrative-sources/` folder into the same
+  relative location in the destination checkout. Include `spec.json`, both admin
+  JSONL files, `admin-frontier.json`, `source-captures/`, `robots-captures/`,
+  `robots-audit.jsonl` and the optional SimpleAudit reference inventory. Copying only
+  extracted text loses download evidence; copying a live directory can mix different
+  checkpoint generations. Preserve the original checkpoint until the transfer is verified.
+
+Do not transfer `.venv` or `.env` as part of this workflow. Exclude or archive
+`launch.json` and `run.log`: they describe the original host's executable, PID and
+log, not a portable launcher. After transfer, resume with:
+
+```sh
+.venv/bin/rl-env-use collect-sources envs/norwegian-administrative-sources
+```
+
+Run one collector against each environment directory. There is no multi-process
+writer lock or cross-host shared throttling; simultaneous collectors can overwrite
+checkpoints and multiply requests to the same agency. This documentation does not
+stop or migrate an already running worker automatically.
+
 ## Start and resume
 
 From the repository root, for a new environment:
