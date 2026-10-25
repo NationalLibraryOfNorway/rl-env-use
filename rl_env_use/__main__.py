@@ -480,6 +480,16 @@ def cmd_export(a):
 	print(f'{export(env, env / name)} tasks -> {env}/{name}')
 
 
+def cmd_collect_sources(a):
+	from .admin_sources import collect_admin
+
+	env = Path(a.env)
+	spec = spec_of(env)
+	if spec.get('mode') != 'administrative-sources':
+		raise SystemExit('collect-sources requires a separate administrative-sources environment')
+	print(json.dumps(run(collect_admin(env, spec))))
+
+
 def cmd_sft(a):
 	from .sft import export_sft
 
@@ -588,6 +598,8 @@ def main(argv=None):
 	q = sp.add_parser('report', help='regrade, audit, write report.html')
 	q.add_argument('env')
 	q.add_argument('--no-judges', action='store_true', help='skip applying calibrated judges to new runs')
+	q = sp.add_parser('collect-sources', help='collect public administrative guidance without any model calls')
+	q.add_argument('env')
 	q = sp.add_parser('sft', help='export curated evidence-interpretation examples with short explanations')
 	q.add_argument('env')
 	q.add_argument('--targets', required=True, help='JSON array of edited prompts, labels and explanations; see docs/OPEN_STACK.md')
@@ -624,7 +636,7 @@ def main(argv=None):
 	if a.cmd in ('create', 'climb') and sys.stdout.isatty():  # the live board replaces the agents' step-by-step log
 		os.environ.setdefault('BROWSER_USE_LOGGING_LEVEL', 'result')
 	try:
-		globals()[f'cmd_{a.cmd}'](a)
+		globals()['cmd_' + a.cmd.replace('-', '_')](a)
 	finally:
 		if LEDGER.by_model:
 			print(f'spend: ${LEDGER.usd:.3f}  {json.dumps(LEDGER.by_model)}')

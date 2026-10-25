@@ -695,3 +695,11 @@ with results, records endpoint-level and overall decisions separately, and block
 critic-requested corrections. General `--mode sft` remains available and unchanged.
 See [PRIMARY_ENDPOINTS.md](PRIMARY_ENDPOINTS.md) for the Norwegian starter spec,
 evidence manifest, strict eligibility rules, source limitations and exports.
+
+## Model-free administrative source collection
+
+Use `collect-sources envs/<name>` with a separate `mode=administrative-sources`
+spec to collect Norwegian public guidance while a model-bound run continues.
+See [ADMINISTRATIVE_SOURCES.md](ADMINISTRATIVE_SOURCES.md) for the SimpleAudit source
+review, agency allowlist, robots rules, bounds and checkpoint artifacts. This stage
+collects evidence only; it does not generate or label SFT examples.

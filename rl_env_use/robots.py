@@ -31,7 +31,7 @@ def rules_allow(text, url, agent=AGENT):
 			groups.append((names.copy(), rules.copy(), delay))
 
 	started = False
-	for raw in text.splitlines():
+	for raw in text.lstrip('\ufeff').splitlines():
 		line = raw.split('#', 1)[0].strip()
 		if ':' not in line:
 			continue

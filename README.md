@@ -21,7 +21,8 @@ for implementation details.
 
 For clinical trials, [primary-endpoint assessment](docs/PRIMARY_ENDPOINTS.md) is a
 separate retrospective SFT mode that pairs historical registration with results.
-General evidence-reading SFT remains available.
+General evidence-reading SFT remains available. For model-free collection from NAV,
+Skatteetaten and related agencies, see [administrative sources](docs/ADMINISTRATIVE_SOURCES.md).
 
 The original README follows unchanged. Its hosted API-key setup applies to
 explicit compatibility mode (`RLENV_OPEN_ONLY=0`); use the guides above for the

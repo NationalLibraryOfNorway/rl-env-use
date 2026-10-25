@@ -1,0 +1,123 @@
+{
+  "mode": "administrative-sources",
+  "language": "nob",
+  "localize_diagnostics": false,
+  "administrative_sources": {
+    "nav.no": {
+      "paths": [
+        "/"
+      ],
+      "seeds": [
+        "https://www.nav.no/aap",
+        "https://www.nav.no/dagpenger",
+        "https://www.nav.no/foreldrepenger",
+        "https://www.nav.no/grunnbelopet",
+        "https://www.nav.no/sykepenger"
+      ]
+    },
+    "skatteetaten.no": {
+      "paths": [
+        "/"
+      ],
+      "seeds": [
+        "https://www.skatteetaten.no/person/",
+        "https://www.skatteetaten.no/person/folkeregister/identitetsnummer-og-elektronisk-id/d-nummer/",
+        "https://www.skatteetaten.no/person/folkeregister/identitetsnummer-og-elektronisk-id/id-kontroll/",
+        "https://www.skatteetaten.no/satser/minstefradrag/",
+        "https://www.skatteetaten.no/satser/personfradrag/"
+      ]
+    },
+    "helfo.no": {
+      "paths": [
+        "/"
+      ],
+      "seeds": [
+        "https://www.helfo.no/nyheter/endring-i-beregning-av-egenandel-ved-bla-resept-fra-1.januar-2026",
+        "https://www.helfo.no/regelverk/egenandeler-for-helsetjenester"
+      ]
+    },
+    "lanekassen.no": {
+      "paths": [
+        "/nb-NO"
+      ],
+      "seeds": [
+        "https://lanekassen.no/nb-NO/laresteder/nyheter/forskriftene-for-2026-2027-er-klare/",
+        "https://lanekassen.no/nb-NO/regelverk/klage/",
+        "https://lanekassen.no/nb-NO/stipend-og-lan/omgjoring-av-basislan/"
+      ]
+    },
+    "toll.no": {
+      "paths": [
+        "/no"
+      ],
+      "seeds": [
+        "https://www.toll.no/no/bedrift/tollbestemmelser-for-fly--og-fergepersonell",
+        "https://www.toll.no/no/handle-i-utlandet/verdigrensa",
+        "https://www.toll.no/no/varer/alkohol-og-tobakk/kvote"
+      ]
+    },
+    "arbeidstilsynet.no": {
+      "paths": [
+        "/"
+      ],
+      "seeds": [
+        "https://www.arbeidstilsynet.no/arbeidstid-og-organisering/arbeidstid/",
+        "https://www.arbeidstilsynet.no/arbeidstid-og-organisering/arbeidstid/ledende-og-sarlig-uavhengige-stillinger/"
+      ]
+    },
+    "nb.no": {
+      "paths": [
+        "/tjenester"
+      ],
+      "seeds": [
+        "https://www.nb.no/tjenester/pliktavlevering/",
+        "https://www.nb.no/tjenester/pliktavlevering/boker/",
+        "https://www.nb.no/tjenester/pliktavlevering/ofte-stilte-sporsmal/",
+        "https://www.nb.no/tjenester/pliktavlevering/smatrykk/",
+        "https://www.nb.no/tjenester/standardnummerering/isbn/",
+        "https://www.nb.no/tjenester/standardnummerering/isbn/faq/",
+        "https://www.nb.no/tjenester/standardnummerering/ismn/",
+        "https://www.nb.no/tjenester/standardnummerering/issn/"
+      ]
+    },
+    "lovdata.no": {
+      "paths": [
+        "/dokument"
+      ],
+      "seeds": [
+        "https://lovdata.no/dokument/NL/lov/1967-02-10",
+        "https://lovdata.no/dokument/NL/lov/1997-02-28-19",
+        "https://lovdata.no/dokument/NL/lov/2005-06-17-62"
+      ]
+    },
+    "helsenorge.no": {
+      "paths": [
+        "/"
+      ],
+      "seeds": [
+        "https://www.helsenorge.no/betaling-for-helsetjenester/bla-resept/",
+        "https://www.helsenorge.no/betaling-for-helsetjenester/frikort-for-helsetjenester/"
+      ]
+    },
+    "ung.no": {
+      "paths": [
+        "/"
+      ],
+      "seeds": [
+        "https://www.ung.no/arbeid/",
+        "https://www.ung.no/utdanning/"
+      ]
+    }
+  },
+  "source_max_pages": 2000,
+  "source_max_pages_per_agency": 250,
+  "source_max_depth": 2,
+  "source_min_delay": 1.0,
+  "source_min_chars": 300,
+  "source_max_chars": 150000,
+  "reference": {
+    "repository": "https://github.com/SimulaMet/SimpleAudit",
+    "commit": "6636ae8883033e1acaaf326a975e826e7c7bee37",
+    "purpose": "source discovery only; no audit questions or expected answers imported"
+  }
+}

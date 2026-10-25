@@ -314,3 +314,13 @@ objective. Any critic-requested correction blocks acceptance. Keep raw critic
 reasoning outside messages in each example's `critic_reasoning` attribute. This is
 retrospective SFT with results in the input; prospective forecasting needs a separate
 outcome-blind design. Preserve existing general-purpose SFT environments and runs.
+
+## Administrative evidence collection
+
+For source-only collection from Norwegian administrative agencies, use the separate
+`collect-sources` command and `mode=administrative-sources` environment. Read
+[docs/ADMINISTRATIVE_SOURCES.md](docs/ADMINISTRATIVE_SOURCES.md) for the SimpleAudit
+source inventory, allowlist and resume workflow. This makes no model calls and can
+run alongside generation. Keep evaluation prompts separate, preserve source dates,
+scheme/population exceptions and raw snapshots, and record reuse status separately
+from robots permission. Agency affiliation alone does not configure an access override.
